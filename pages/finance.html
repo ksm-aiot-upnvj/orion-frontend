@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id" class="dark scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kas Keuangan — KSM AIoT UPNVJ</title>
+  <meta name="description" content="Sistem Pembukuan Kas, Pemasukan Hibah, dan Pengeluaran Operasional KSM AIoT." />
+  <link rel="icon" type="image/png" href="/ksm-aiot-logo.png" />
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+
+<body class="bg-aiot-dark text-slate-200 font-sans bg-grid-pattern relative min-h-screen flex flex-col antialiased">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-6 right-6 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none"></div>
+
+  <!-- CRM Collapsible Sidebar -->
+  <aside id="crm-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-aiot-dark/95 backdrop-blur-2xl border-r border-slate-800/90 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl"></aside>
+
+  <!-- Sidebar Backdrop -->
+  <div id="crm-sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm hidden transition-opacity"></div>
+
+  <!-- Unified Navigation Bar (Identical in height & structure to index.html) -->
+  <header id="crm-topbar"></header>
+
+  <!-- ============================================================== -->
+  <!-- MAIN CONTENT CONTAINER (Spacious, Flowbite-Styled Form)        -->
+  <!-- ============================================================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Page Header Banner -->
+    <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div class="space-y-2">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Kas Keuangan & Mutasi Saldo KSM</h1>
+        <p class="text-xs sm:text-sm text-slate-400 font-mono max-w-2xl leading-relaxed">
+          Pencatatan saldo kas aktif, arus dana hibah riset fakultas, iuran anggota, dan pengeluaran pengadaan alat lab.
+        </p>
+      </div>
+
+      <button id="open-add-transaction-modal" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-aiot-cyan to-aiot-purple text-slate-950 font-bold text-xs font-mono flex items-center space-x-2 shadow-lg glow-cyan hover:opacity-95 transition-all self-start md:self-auto">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        <span>Catat Transaksi Baru</span>
+      </button>
+    </div>
+
+    <!-- Financial Metrics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+      
+      <!-- Card Saldo Aktif -->
+      <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/90 relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono text-slate-400 uppercase tracking-wider font-semibold">Saldo Kas Aktif</span>
+          <span class="p-2 rounded-xl bg-cyan-950 text-aiot-cyan border border-cyan-800">
+            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+          </span>
+        </div>
+        <div class="text-3xl sm:text-4xl font-black text-aiot-cyan font-mono mt-3" id="stat-active-balance">
+          Rp 12.450.000
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+          <span>Bendahara: Aniqah Raniah</span>
+          <span class="text-emerald-400 font-bold">Balance Sehat</span>
+        </div>
+      </div>
+
+      <!-- Card Pemasukan -->
+      <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/90">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono text-emerald-400 uppercase tracking-wider font-semibold flex items-center space-x-1.5">
+            <i data-lucide="trending-up" class="w-4 h-4"></i>
+            <span>Total Pemasukan</span>
+          </span>
+          <span class="p-2 rounded-xl bg-emerald-950 text-emerald-400 border border-emerald-800">
+            <i data-lucide="arrow-left" class="w-4 h-4 rotate-45"></i>
+          </span>
+        </div>
+        <div class="text-3xl sm:text-4xl font-black text-white font-mono mt-3" id="stat-total-income">
+          Rp 15.200.000
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800/80 text-xs font-mono text-slate-400">
+          Hibah Fakultas & Iuran Kas Anggota
+        </div>
+      </div>
+
+      <!-- Card Pengeluaran -->
+      <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/90">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono text-aiot-pink uppercase tracking-wider font-semibold flex items-center space-x-1.5">
+            <i data-lucide="trending-down" class="w-4 h-4"></i>
+            <span>Total Pengeluaran</span>
+          </span>
+          <span class="p-2 rounded-xl bg-pink-950 text-aiot-pink border border-pink-800">
+            <i data-lucide="arrow-left" class="w-4 h-4 -rotate-135"></i>
+          </span>
+        </div>
+        <div class="text-3xl sm:text-4xl font-black text-white font-mono mt-3" id="stat-total-expense">
+          Rp 2.750.000
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800/80 text-xs font-mono text-slate-400">
+          Pengadaan Alat Lab & Operasional
+        </div>
+      </div>
+    </div>
+
+    <!-- Log Mutasi Table -->
+    <div class="glass-panel rounded-3xl border border-slate-800/80 shadow-2xl">
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white font-mono flex items-center space-x-2">
+          <i data-lucide="trending-up" class="w-4 h-4 text-aiot-cyan"></i>
+          <span>Buku Mutasi Transaksi Kas</span>
+        </h3>
+        <span class="text-xs text-aiot-cyan font-mono font-semibold">Tahun Anggaran 2026</span>
+      </div>
+
+      <div class="table-scroll-container rounded-b-3xl">
+        <table class="w-full text-left text-xs whitespace-nowrap min-w-[960px]">
+          <thead class="text-slate-400 font-mono border-b border-slate-800 uppercase text-[11px] tracking-wider whitespace-nowrap">
+            <tr>
+              <th class="py-4 px-5 whitespace-nowrap">Tanggal Transaksi</th>
+              <th class="py-4 px-5 whitespace-nowrap">Rincian Keterangan</th>
+              <th class="py-4 px-5 whitespace-nowrap">Kategori Transaksi</th>
+              <th class="py-4 px-5 whitespace-nowrap">Jenis Arus</th>
+              <th class="py-4 px-5 whitespace-nowrap">Nominal (Rp)</th>
+              <th class="py-4 px-5 whitespace-nowrap">Penanggung Jawab (PIC)</th>
+              <th class="py-4 px-5 text-center whitespace-nowrap">Status</th>
+            </tr>
+          </thead>
+          <tbody id="transaction-tbody" class="divide-y divide-slate-800/60 text-slate-300">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Flowbite-Styled Add Transaction Modal -->
+  <div id="transaction-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-lg p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+          <i data-lucide="trending-up" class="w-5 h-5 text-aiot-cyan"></i>
+          <span>Catat Transaksi Kas Baru</span>
+        </h3>
+        <button id="close-transaction-modal" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="add-tx-form" class="space-y-6">
+        <div>
+          <label for="tx-desc" class="block mb-2.5 text-sm font-semibold text-slate-200">Rincian / Keterangan Transaksi <span class="text-aiot-pink">*</span></label>
+          <input type="text" id="tx-desc" required placeholder="Contoh: Pembelian Modul ESP32 & Breadboard"
+            class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-4 placeholder-slate-500" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-5">
+          <div>
+            <label for="tx-type" class="block mb-2.5 text-sm font-semibold text-slate-200">Jenis Transaksi <span class="text-aiot-pink">*</span></label>
+            <select id="tx-type" class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-4">
+              <option value="Pengeluaran">Pengeluaran (Debet)</option>
+              <option value="Pemasukan">Pemasukan (Kredit)</option>
+            </select>
+          </div>
+          <div>
+            <label for="tx-amount" class="block mb-2.5 text-sm font-semibold text-slate-200">Nominal (Rp) <span class="text-aiot-pink">*</span></label>
+            <input type="number" id="tx-amount" min="1000" step="1000" value="250000" required
+              class="form-input-aiot text-slate-100 text-sm font-mono rounded-xl block w-full p-4" />
+          </div>
+        </div>
+
+        <div>
+          <label for="tx-category" class="block mb-2.5 text-sm font-semibold text-slate-200">Kategori Anggaran <span class="text-aiot-pink">*</span></label>
+          <select id="tx-category" class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-4">
+            <option value="Pengadaan Alat">Pengadaan Komponen / Alat Lab Riset</option>
+            <option value="Iuran Kas">Iuran Kas Anggota</option>
+            <option value="Hibah / Sponsor">Hibah / Dana Sponsor Lomba</option>
+            <option value="Konsumsi & Acara">Konsumsi & Operasional Acara</option>
+          </select>
+        </div>
+
+        <button type="submit" class="w-full py-4 rounded-2xl bg-gradient-to-r from-aiot-cyan to-aiot-purple text-slate-950 font-bold text-sm hover:opacity-90 transition-all shadow-lg glow-cyan">
+          Simpan ke Buku Kas
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="/src/scripts/finance.js"></script>
+</body>
+</html>

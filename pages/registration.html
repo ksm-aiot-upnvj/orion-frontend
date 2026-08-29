@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id" class="dark scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pendaftaran Calon Anggota — KSM AIoT UPNVJ</title>
+  <meta name="description"
+    content="Portal Pendaftaran dan Seleksi Calon Anggota Baru KSM AIoT UPN 'Veteran' Jakarta." />
+  <link rel="icon" type="image/png" href="/ksm-aiot-logo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+
+<body class="bg-aiot-dark text-slate-200 font-sans bg-grid-pattern relative min-h-screen flex flex-col antialiased">
+
+  <div id="toast-container" class="fixed top-6 right-6 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none">
+  </div>
+
+  <!-- Public Topbar Navbar -->
+  <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+
+      <!-- Brand Logo -->
+      <a href="/index.html" class="flex items-center space-x-3 group">
+        <img src="/ksm-aiot-logo.png" alt="KSM AIoT Logo"
+          class="w-10 h-10 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_0_12px_rgba(0,242,254,0.4)]" />
+        <div class="flex flex-col">
+          <span class="font-extrabold text-lg text-white tracking-wider font-mono flex items-center space-x-1">
+            <span>KSM</span>
+            <span class="text-aiot-cyan">AIoT</span>
+          </span>
+          <span class="text-[10px] text-slate-400 font-mono tracking-widest uppercase">Portal Calon Anggota</span>
+        </div>
+      </a>
+
+      <!-- Right Action Links -->
+      <div class="flex items-center space-x-3">
+        <a href="/index.html"
+          class="px-4 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs font-mono font-medium flex items-center space-x-2 transition-all">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">Kembali ke Beranda</span>
+        </a>
+        <a href="/index.html?open_login=1"
+          class="px-4 py-2 rounded-xl bg-aiot-cyan/15 hover:bg-aiot-cyan/25 text-aiot-cyan border border-aiot-cyan/40 text-xs font-mono font-bold flex items-center space-x-2 transition-all">
+          <i data-lucide="shield-check" class="w-4 h-4"></i>
+          <span>Login Pengurus</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Page Title Banner -->
+    <div
+      class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+      <div class="relative z-10 space-y-2">
+        <div
+          class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-800 text-aiot-cyan text-xs font-mono font-bold mb-1">
+          <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+          <span>Penerimaan Anggota Baru 2026</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Formulir Pendaftaran Calon Anggota KSM
+          AIoT</h1>
+        <p class="text-xs sm:text-sm text-slate-400 font-mono max-w-2xl leading-relaxed">
+          Silakan lengkapi formulir di bawah ini dengan data diri valid mahasiswa FIK UPN "Veteran" Jakarta.
+        </p>
+      </div>
+
+      <div
+        class="relative z-10 flex items-center space-x-2 text-xs font-mono text-slate-400 bg-slate-900/90 border border-slate-800 px-4 py-2.5 rounded-2xl flex-shrink-0">
+        <i data-lucide="clock" class="w-4 h-4 text-aiot-cyan"></i>
+        <span>Batas Submit: <strong>31 Agustus 2026</strong></span>
+      </div>
+    </div>
+
+    <!-- Stepper Visualizer (Flowbite Style with Centered Alignment) -->
+    <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/80">
+      <div class="text-center mb-8">
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Alur Seleksi Calon Anggota</h2>
+        <p class="text-xs text-slate-400 font-mono mt-1">Status tahapan seleksi berkas hingga penerbitan ID Anggota
+          resmi.</p>
+      </div>
+
+      <div class="w-full max-w-2xl mx-auto px-4" id="flowbite-stepper">
+        <div class="flex items-start justify-between relative">
+          <!-- Step 1: Berkas -->
+          <div id="step-item-1" class="flex flex-col items-center relative z-10">
+            <div id="step-icon-1"
+              class="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-cyan-950/90 border-2 border-aiot-cyan text-aiot-cyan rounded-full shadow-[0_0_20px_rgba(0,242,254,0.4)] transition-all">
+              <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M5 11.917 9.724 16.5 19 7.5" />
+              </svg>
+            </div>
+            <span id="step-label-1" class="text-[11px] font-bold text-aiot-cyan mt-2.5 font-mono whitespace-nowrap">1.
+              Berkas</span>
+          </div>
+
+          <!-- Connecting Line 1 (Between Step 1 and 2) -->
+          <div class="flex-1 mx-3 lg:mx-4 mt-5 lg:mt-6 -translate-y-1/2 h-1 bg-slate-800 rounded-full overflow-hidden">
+            <div id="step-line-1" class="h-full bg-aiot-cyan transition-all duration-300 w-full"></div>
+          </div>
+
+          <!-- Step 2: Seleksi -->
+          <div id="step-item-2" class="flex flex-col items-center relative z-10">
+            <div id="step-icon-2"
+              class="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-slate-800 border border-slate-700 text-slate-400 rounded-full transition-all">
+              <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 9h3m-3 3h3m-3 3h3m-6 1c-.306-.613-.933-1-1.618-1H7.618c-.685 0-1.312.387-1.618 1M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm7 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" />
+              </svg>
+            </div>
+            <span id="step-label-2"
+              class="text-[11px] font-semibold text-slate-400 mt-2.5 font-mono whitespace-nowrap">2. Seleksi</span>
+          </div>
+
+          <!-- Connecting Line 2 (Between Step 2 and 3) -->
+          <div class="flex-1 mx-3 lg:mx-4 mt-5 lg:mt-6 -translate-y-1/2 h-1 bg-slate-800 rounded-full overflow-hidden">
+            <div id="step-line-2" class="h-full bg-slate-800 transition-all duration-300 w-0"></div>
+          </div>
+
+          <!-- Step 3: Selesai -->
+          <div id="step-item-3" class="flex flex-col items-center relative z-10">
+            <div id="step-icon-3"
+              class="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-slate-800 border border-slate-700 text-slate-400 rounded-full transition-all">
+              <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-6 7 2 2 4-4m-5-9v4h4V3h-4Z" />
+              </svg>
+            </div>
+            <span id="step-label-3"
+              class="text-[11px] font-semibold text-slate-400 mt-2.5 font-mono whitespace-nowrap">3. Selesai</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registration Grid (Form + Live Card Preview) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- Left: Form -->
+      <div class="lg:col-span-7 glass-panel p-6 sm:p-10 rounded-3xl border border-slate-800/80 space-y-8 shadow-2xl">
+        <div class="flex items-center justify-between pb-5 border-b border-slate-800/80">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center space-x-2.5">
+              <i data-lucide="user-plus" class="w-5 h-5 text-aiot-cyan"></i>
+              <span>Formulir Pendaftaran Mahasiswa</span>
+            </h3>
+            <p class="text-xs text-slate-400 font-mono mt-1">Lengkapi data diri calon anggota aktif KSM AIoT Periode
+              2026.</p>
+          </div>
+          <span class="text-xs text-aiot-cyan font-mono px-3 py-1 rounded-xl bg-cyan-950/80 border border-cyan-800">FIK
+            UPNVJ</span>
+        </div>
+
+        <form id="pendaftaran-form" class="space-y-6">
+
+          <!-- Upload Pasfoto Calon Anggota -->
+          <div>
+            <label class="block mb-2.5 text-sm font-semibold text-slate-200">
+              Pasfoto Calon Anggota <span class="text-xs font-normal text-slate-400 font-mono">(Format JPG/PNG/WebP,
+                Maks 3MB)</span>
+            </label>
+            <div
+              class="p-4 sm:p-5 rounded-2xl bg-slate-900/60 border-2 border-dashed border-slate-700 hover:border-aiot-cyan/50 transition-all group"
+              id="photo-dropzone">
+              <input type="file" id="reg-photo-input" accept="image/png, image/jpeg, image/jpg, image/webp"
+                class="hidden" />
+
+              <div class="flex flex-col sm:flex-row items-center gap-4">
+                <!-- Thumbnail Preview in Form -->
+                <div
+                  class="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-800 border-2 border-slate-700 flex-shrink-0 flex items-center justify-center group-hover:border-aiot-cyan transition-colors shadow-md cursor-pointer"
+                  id="form-photo-container">
+                  <img id="form-photo-preview"
+                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"
+                    alt="Preview Foto" class="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                  <div
+                    class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <i data-lucide="camera" class="w-5 h-5 text-aiot-cyan"></i>
+                  </div>
+                </div>
+
+                <!-- Action Buttons & Filename Info -->
+                <div class="flex-1 text-center sm:text-left space-y-2">
+                  <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                    <button type="button" id="btn-trigger-upload"
+                      class="px-4 py-2 rounded-xl bg-aiot-cyan/15 hover:bg-aiot-cyan/25 border border-aiot-cyan/40 text-aiot-cyan text-xs font-mono font-bold flex items-center space-x-1.5 transition-all shadow-sm">
+                      <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                      <span>Upload Foto</span>
+                    </button>
+                    <button type="button" id="btn-remove-photo"
+                      class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-red-950/60 hover:text-red-400 hover:border-red-800 border border-slate-700 text-slate-400 text-xs font-mono transition-all hidden flex items-center space-x-1">
+                      <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                      <span>Hapus</span>
+                    </button>
+                  </div>
+                  <p id="photo-filename-label" class="text-[11px] text-slate-400 font-mono truncate max-w-xs">
+                    Klik upload atau seret file gambar
+                  </p>
+                </div>
+
+                <!-- Preset Avatars Quick Select -->
+                <div
+                  class="w-full sm:w-auto border-t sm:border-t-0 sm:border-l border-slate-800 pt-3 sm:pt-0 sm:pl-4 flex flex-col items-center sm:items-start space-y-1.5">
+                  <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Preset Avatar:</span>
+                  <div class="flex items-center space-x-2" id="preset-avatars-container">
+                    <button type="button"
+                      data-preset-avatar="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"
+                      class="preset-avatar-btn w-8 h-8 rounded-xl overflow-hidden border-2 border-aiot-cyan hover:scale-110 transition-all focus:outline-none"
+                      title="Preset 1 (Default)">
+                      <img
+                        src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"
+                        class="w-full h-full object-cover" alt="Preset 1" />
+                    </button>
+                    <button type="button"
+                      data-preset-avatar="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=200&auto=format&fit=crop"
+                      class="preset-avatar-btn w-8 h-8 rounded-xl overflow-hidden border border-slate-700 hover:border-aiot-cyan hover:scale-110 transition-all focus:outline-none"
+                      title="Preset 2">
+                      <img
+                        src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=200&auto=format&fit=crop"
+                        class="w-full h-full object-cover" alt="Preset 2" />
+                    </button>
+                    <button type="button"
+                      data-preset-avatar="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop"
+                      class="preset-avatar-btn w-8 h-8 rounded-xl overflow-hidden border border-slate-700 hover:border-aiot-cyan hover:scale-110 transition-all focus:outline-none"
+                      title="Preset 3">
+                      <img
+                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop"
+                        class="w-full h-full object-cover" alt="Preset 3" />
+                    </button>
+                    <button type="button"
+                      data-preset-avatar="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=200&auto=format&fit=crop"
+                      class="preset-avatar-btn w-8 h-8 rounded-xl overflow-hidden border border-slate-700 hover:border-aiot-cyan hover:scale-110 transition-all focus:outline-none"
+                      title="Preset 4">
+                      <img
+                        src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=200&auto=format&fit=crop"
+                        class="w-full h-full object-cover" alt="Preset 4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nama Lengkap -->
+          <div>
+            <label for="reg-name" class="block mb-2.5 text-sm font-semibold text-slate-200">Nama Lengkap Mahasiswa <span
+                class="text-aiot-pink">*</span></label>
+            <input type="text" id="reg-name" required placeholder="Contoh: Budi Santoso"
+              class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-4 placeholder-slate-500" />
+          </div>
+
+          <!-- NIM + Program Studi -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label for="reg-nim" class="block mb-2.5 text-sm font-semibold text-slate-200">NIM Mahasiswa <span
+                  class="text-aiot-pink">*</span></label>
+              <input type="text" id="reg-nim" required placeholder="Contoh: 2410511099"
+                class="form-input-aiot text-slate-100 text-sm font-mono rounded-xl block w-full p-4 placeholder-slate-500" />
+            </div>
+            <div>
+              <label for="reg-prodi" class="block mb-2.5 text-sm font-semibold text-slate-200">Program Studi <span
+                  class="text-aiot-pink">*</span></label>
+              <select id="reg-prodi" class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-4">
+                <option value="S1 Informatika">S1 Informatika</option>
+                <option value="S1 Sistem Informasi">S1 Sistem Informasi</option>
+                <option value="D3 Sistem Informasi">D3 Sistem Informasi</option>
+                <option value="S1 Sains Data">S1 Sains Data</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Email + Angkatan -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label for="reg-email" class="block mb-2.5 text-sm font-semibold text-slate-200">Email Kampus
+                (@upnvj.ac.id) <span class="text-aiot-pink">*</span></label>
+              <input type="email" id="reg-email" required placeholder="budi@mahasiswa.upnvj.ac.id"
+                class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-4 placeholder-slate-500" />
+            </div>
+            <div>
+              <label for="reg-angkatan" class="block mb-2.5 text-sm font-semibold text-slate-200">Angkatan Mahasiswa
+                <span class="text-aiot-pink">*</span></label>
+              <select id="reg-angkatan" class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-4">
+                <option value="2025">Angkatan 2025</option>
+                <option value="2024" selected>Angkatan 2024</option>
+                <option value="2023">Angkatan 2023</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- WhatsApp + Peminatan Riset -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label for="reg-phone" class="block mb-2.5 text-sm font-semibold text-slate-200">Nomor WhatsApp
+                Aktif</label>
+              <input type="tel" id="reg-phone" placeholder="0812-3456-7890"
+                class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-4 placeholder-slate-500" />
+            </div>
+            <div>
+              <label for="reg-track" class="block mb-2.5 text-sm font-semibold text-slate-200">Peminatan Riset
+                KSM</label>
+              <select id="reg-track" class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-4">
+                <option value="Artificial Intelligence & ML">Artificial Intelligence & ML</option>
+                <option value="Internet of Things & Robotics">Internet of Things & Robotics</option>
+                <option value="Software & Cloud Systems">Software & Cloud Systems</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Motivasi -->
+          <div>
+            <label for="reg-motivation" class="block mb-2.5 text-sm font-semibold text-slate-200">Motivasi
+              Bergabung</label>
+            <textarea id="reg-motivation" rows="3" placeholder="Ceritakan minat dan motivasi riset Anda..."
+              class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-4 placeholder-slate-500 resize-none"></textarea>
+          </div>
+
+          <!-- Submit & Reset -->
+          <div class="pt-2 flex items-center gap-4">
+            <button type="submit"
+              class="flex-1 py-4 rounded-2xl bg-gradient-to-r from-aiot-cyan to-aiot-purple text-slate-950 font-bold text-sm hover:opacity-90 transition-all flex items-center justify-center space-x-2 shadow-lg glow-cyan">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>Submit Berkas Pendaftaran</span>
+            </button>
+            <button type="button" id="reset-stepper-btn"
+              class="px-6 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-mono transition-all border border-slate-700">
+              Reset
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right: Live Result Card -->
+      <div class="lg:col-span-5 flex flex-col gap-6 sticky top-28">
+        <div
+          class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/80 flex flex-col justify-between shadow-2xl"
+          id="stepper-result-box">
+          <div>
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+              <span class="text-xs font-mono text-slate-400 font-semibold uppercase tracking-wider">Member Card
+                Preview</span>
+              <span id="reg-status-badge"
+                class="px-3 py-1 rounded-full text-xs font-mono bg-amber-950/80 text-amber-300 border border-amber-800 font-bold">
+                Tahap 1: Pengisian Form
+              </span>
+            </div>
+
+            <div class="member-card-id mt-6 p-6 rounded-2xl relative overflow-hidden transition-all">
+              <div class="absolute top-0 right-0 w-40 h-40 bg-aiot-cyan/10 rounded-full blur-3xl pointer-events-none">
+              </div>
+
+              <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center space-x-2.5">
+                  <img src="/ksm-aiot-logo.png" width="28" height="28" style="width:28px; height:28px;"
+                    class="object-contain flex-shrink-0" alt="Logo" />
+                  <span class="member-card-brand font-mono font-bold text-xs tracking-wider">KSM AIoT MEMBER</span>
+                </div>
+                <span id="card-member-id"
+                  class="text-xs font-mono px-2.5 py-1 rounded-lg bg-amber-950/80 text-amber-300 font-bold border border-amber-800">ID:
+                  PENDING</span>
+              </div>
+
+              <div class="flex items-center space-x-4">
+                <div
+                  class="member-card-avatar-box w-[72px] h-[72px] rounded-2xl overflow-hidden flex items-center justify-center flex-shrink-0 shadow-md">
+                  <img id="card-avatar"
+                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"
+                    style="width:72px; height:72px; object-fit:cover;" class="w-full h-full object-cover"
+                    alt="Member" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h4 id="card-name" class="member-card-name text-lg font-bold truncate">Nama Calon Anggota</h4>
+                  <p id="card-nim" class="member-card-nim text-xs font-mono mt-0.5">NIM: -</p>
+                  <p id="card-prodi" class="member-card-prodi text-xs font-mono truncate mt-0.5">Program Studi: -</p>
+                  <p id="card-track" class="member-card-track text-[11px] font-mono truncate mt-0.5">Track: -</p>
+                </div>
+              </div>
+
+              <div class="member-card-footer mt-5 pt-4 border-t flex items-center justify-between text-xs font-mono">
+                <span>Fakultas Ilmu Komputer</span>
+                <span id="card-status-text" class="text-amber-400 font-semibold">Menunggu Submit</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-500 font-semibold">Simulasi Tahapan:</span>
+            <div class="flex items-center space-x-2">
+              <button type="button" id="btn-force-step-1"
+                class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">Step
+                1</button>
+              <button type="button" id="btn-force-step-2"
+                class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-300 transition-colors">Step
+                2</button>
+              <button type="button" id="btn-force-step-3"
+                class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold transition-colors">Step
+                3 (Lolos)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-slate-800/80 bg-slate-950 py-8">
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-500">
+      <div class="flex items-center space-x-2">
+        <img src="/ksm-aiot-logo.png" class="w-6 h-6 object-contain" alt="Logo" />
+        <span>KSM AIoT FIK UPN "Veteran" Jakarta</span>
+      </div>
+      <p>&copy; 2026 KSM AIoT. Hak Cipta Dilindungi.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/scripts/registration.js"></script>
+</body>
+
+</html>

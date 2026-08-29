@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id" class="dark scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Seleksi Calon Anggota — KSM AIoT CRM</title>
+  <meta name="description" content="Panel Review Berkas & Keputusan Seleksi Calon Anggota Baru KSM AIoT UPNVJ." />
+  <link rel="icon" type="image/png" href="/ksm-aiot-logo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+
+<body class="bg-aiot-dark text-slate-200 font-sans bg-grid-pattern relative min-h-screen flex flex-col antialiased">
+
+  <div id="toast-container" class="fixed top-6 right-6 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none"></div>
+
+  <!-- Unified CRM Layout Elements -->
+  <aside id="crm-sidebar"
+    class="fixed inset-y-0 left-0 z-50 w-72 bg-aiot-dark/95 backdrop-blur-2xl border-r border-slate-800/90 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl">
+  </aside>
+  <div id="crm-sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm hidden transition-opacity">
+  </div>
+  <header id="crm-topbar"></header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Page Header Banner -->
+    <div
+      class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+      <div class="relative z-10 space-y-2">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Seleksi & Verifikasi Calon Anggota
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-400 font-mono max-w-2xl leading-relaxed">
+          Tinjau berkas pendaftaran, evaluasi motivasi riset calon anggota, dan terbitkan Member ID resmi ke database
+          anggota aktif.
+        </p>
+      </div>
+
+      <div class="relative z-10 flex items-center space-x-3 flex-shrink-0">
+        <a href="/pages/registration.html" target="_blank"
+          class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-mono font-medium flex items-center space-x-2 transition-all">
+          <i data-lucide="external-link" class="w-3.5 h-3.5 text-aiot-cyan"></i>
+          <span>Lihat Form Publik</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="glass-panel p-5 rounded-2xl border border-slate-800/80 flex items-center space-x-4">
+        <div
+          class="w-12 h-12 rounded-2xl bg-cyan-950/80 text-aiot-cyan border border-cyan-800 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="users" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-[11px] font-mono text-slate-400 uppercase">Total Pendaftar</span>
+          <h3 class="text-2xl font-black text-white font-mono" id="stat-total-reg">0</h3>
+        </div>
+      </div>
+
+      <div class="glass-panel p-5 rounded-2xl border border-slate-800/80 flex items-center space-x-4">
+        <div
+          class="w-12 h-12 rounded-2xl bg-amber-950/80 text-amber-300 border border-amber-800 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="clock" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-[11px] font-mono text-slate-400 uppercase">Menunggu Review</span>
+          <h3 class="text-2xl font-black text-amber-300 font-mono" id="stat-pending-reg">0</h3>
+        </div>
+      </div>
+
+      <div class="glass-panel p-5 rounded-2xl border border-slate-800/80 flex items-center space-x-4">
+        <div
+          class="w-12 h-12 rounded-2xl bg-emerald-950/80 text-emerald-400 border border-emerald-800 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-[11px] font-mono text-slate-400 uppercase">Lolos (Approved)</span>
+          <h3 class="text-2xl font-black text-emerald-400 font-mono" id="stat-approved-reg">0</h3>
+        </div>
+      </div>
+
+      <div class="glass-panel p-5 rounded-2xl border border-slate-800/80 flex items-center space-x-4">
+        <div
+          class="w-12 h-12 rounded-2xl bg-red-950/80 text-red-400 border border-red-800 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="alert-circle" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-[11px] font-mono text-slate-400 uppercase">Ditolak</span>
+          <h3 class="text-2xl font-black text-red-400 font-mono" id="stat-rejected-reg">0</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter & Registrations Table -->
+    <div class="glass-panel rounded-3xl border border-slate-800/80 shadow-2xl overflow-hidden">
+      <div class="p-6 border-b border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h3 class="text-base font-bold text-white font-mono flex items-center space-x-2">
+            <i data-lucide="clipboard-list" class="w-5 h-5 text-aiot-cyan"></i>
+            <span>Antrean Berkas Pendaftaran Calon Anggota</span>
+          </h3>
+          <p class="text-xs text-slate-400 font-mono mt-0.5">Admin dapat memeriksa kualifikasi formulir, menyetujui
+            calon anggota, dan menerbitkan Member ID.</p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <div class="relative">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="admin-search-reg" placeholder="Cari Nama / NIM..."
+              class="form-input-aiot pl-9 pr-4 py-2.5 rounded-xl text-xs font-mono w-48 sm:w-60" />
+          </div>
+
+          <select id="admin-filter-status" class="form-input-aiot px-3 py-2.5 rounded-xl text-xs font-mono">
+            <option value="all">Semua Status</option>
+            <option value="PENDING" selected>Status PENDING</option>
+            <option value="APPROVED">Status APPROVED</option>
+            <option value="REJECTED">Status REJECTED</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table with Bi-directional Scroll -->
+      <div class="table-scroll-container">
+        <table class="w-full text-left text-xs whitespace-nowrap min-w-[960px]">
+          <thead
+            class="text-slate-400 font-mono border-b border-slate-800 uppercase text-[11px] tracking-wider whitespace-nowrap">
+            <tr>
+              <th class="py-4 px-5 whitespace-nowrap">Nama Calon</th>
+              <th class="py-4 px-5 whitespace-nowrap">NIM</th>
+              <th class="py-4 px-5 whitespace-nowrap">Program Studi</th>
+              <th class="py-4 px-5 whitespace-nowrap">Peminatan Riset</th>
+              <th class="py-4 px-5 whitespace-nowrap">Kontak (Email / WA)</th>
+              <th class="py-4 px-5 whitespace-nowrap">Tgl Submit</th>
+              <th class="py-4 px-5 whitespace-nowrap">Status</th>
+              <th class="py-4 px-5 text-center whitespace-nowrap">Aksi Review</th>
+            </tr>
+          </thead>
+          <tbody id="admin-registrations-tbody" class="divide-y divide-slate-800/60 text-slate-300">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Admin Review & Decision Modal -->
+  <div id="admin-review-modal"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div
+      class="glass-panel w-full max-w-2xl p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800/80">
+        <div class="flex items-center space-x-3">
+          <div
+            class="w-10 h-10 rounded-2xl bg-cyan-950/80 text-aiot-cyan border border-cyan-800 flex items-center justify-center">
+            <i data-lucide="file-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white font-mono">Pemeriksaan Berkas Calon Anggota</h3>
+            <p class="text-xs text-slate-400 font-mono">Verifikasi Kualifikasi & Keputusan Seleksi KSM AIoT</p>
+          </div>
+        </div>
+        <button id="close-admin-modal"
+          class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs font-mono">
+        <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 flex items-center justify-between gap-4">
+          <div class="flex items-center space-x-3.5">
+            <div
+              class="w-14 h-14 rounded-2xl overflow-hidden bg-slate-800 border-2 border-slate-700 flex-shrink-0 shadow-md">
+              <img id="modal-review-photo"
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"
+                alt="Foto Calon" class="w-full h-full object-cover" />
+            </div>
+            <div>
+              <span class="text-slate-500 uppercase text-[10px] block">Nama Lengkap & NIM</span>
+              <h4 class="text-base font-bold text-white mt-0.5" id="modal-review-name">-</h4>
+              <p class="text-aiot-cyan font-bold" id="modal-review-nim">-</p>
+            </div>
+          </div>
+          <span id="modal-review-status-badge"
+            class="px-3 py-1 rounded-full text-xs font-bold font-mono flex-shrink-0">PENDING</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
+            <span class="text-slate-500 uppercase text-[10px] block">Program Studi</span>
+            <span class="text-slate-200 font-bold mt-0.5 block" id="modal-review-prodi">-</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
+            <span class="text-slate-500 uppercase text-[10px] block">Angkatan</span>
+            <span class="text-slate-200 font-bold mt-0.5 block" id="modal-review-angkatan">-</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
+            <span class="text-slate-500 uppercase text-[10px] block">Email Kampus</span>
+            <span class="text-slate-200 font-bold mt-0.5 block break-all" id="modal-review-email">-</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
+            <span class="text-slate-500 uppercase text-[10px] block">Nomor WhatsApp</span>
+            <span class="text-slate-200 font-bold mt-0.5 block" id="modal-review-phone">-</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60 col-span-2">
+            <span class="text-slate-500 uppercase text-[10px] block">Peminatan Riset</span>
+            <span class="text-aiot-cyan font-bold mt-0.5 block" id="modal-review-track">-</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60 col-span-2">
+            <span class="text-slate-500 uppercase text-[10px] block">Motivasi Bergabung</span>
+            <p class="text-slate-300 font-sans mt-1 leading-relaxed text-xs" id="modal-review-motivation">-</p>
+          </div>
+        </div>
+
+        <div id="modal-review-memberid-box"
+          class="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-800/60 hidden">
+          <span class="text-emerald-400 uppercase text-[10px] font-bold block">Status: Anggota Resmi Terdaftar</span>
+          <p class="text-sm font-bold text-white mt-0.5">Member ID: <span id="modal-review-memberid"
+              class="text-aiot-cyan font-mono">-</span></p>
+        </div>
+      </div>
+
+      <!-- Decision Actions -->
+      <div class="pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center space-x-2">
+          <button type="button" id="btn-action-approve"
+            class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs font-mono flex items-center space-x-2 shadow-lg transition-all">
+            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+            <span>Setujui & Terbitkan Member ID</span>
+          </button>
+          <button type="button" id="btn-action-reject"
+            class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs font-mono flex items-center space-x-2 shadow-lg transition-all">
+            <i data-lucide="x" class="w-4 h-4"></i>
+            <span>Tolak Berkas</span>
+          </button>
+        </div>
+        <button type="button" id="btn-modal-close-footer"
+          class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono transition-all border border-slate-700">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/scripts/selection.js"></script>
+</body>
+
+</html>

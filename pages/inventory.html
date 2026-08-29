@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id" class="dark scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventaris Hardware — KSM AIoT UPNVJ</title>
+  <meta name="description" content="Manajemen Inventaris Alat Riset IoT, Edge AI, dan Perangkat Laboratorium KSM AIoT." />
+  <link rel="icon" type="image/png" href="/ksm-aiot-logo.png" />
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+
+<body class="bg-aiot-dark text-slate-200 font-sans bg-grid-pattern relative min-h-screen flex flex-col antialiased">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-6 right-6 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none"></div>
+
+  <!-- CRM Collapsible Sidebar -->
+  <aside id="crm-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-aiot-dark/95 backdrop-blur-2xl border-r border-slate-800/90 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl"></aside>
+
+  <!-- Sidebar Backdrop -->
+  <div id="crm-sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm hidden transition-opacity"></div>
+
+  <!-- Unified Navigation Bar (Identical in height & structure to index.html) -->
+  <header id="crm-topbar"></header>
+
+  <!-- ============================================================== -->
+  <!-- MAIN CONTENT CONTAINER (Spacious, Clean CRM Layout)             -->
+  <!-- ============================================================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Page Header Banner -->
+    <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div class="space-y-2">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Katalog Inventaris Alat & Perangkat Riset</h1>
+        <p class="text-xs sm:text-sm text-slate-400 font-mono max-w-2xl leading-relaxed">
+          Pendataan realtime modul Edge AI, mikrokontroler, gateway LoRaWAN, sensor bundle, dan alat laboratorium.
+        </p>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <span class="px-4 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300">
+          Status Lab: <strong class="text-emerald-400">Aktif & Siap Pakai</strong>
+        </span>
+      </div>
+    </div>
+
+    <!-- Summary Metrics Bar -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="glass-panel p-6 rounded-3xl border border-slate-800/80">
+        <span class="text-xs font-mono text-slate-400 uppercase tracking-wider">Total Seluruh Unit</span>
+        <div class="text-3xl font-black text-white font-mono mt-2" id="stat-total-units">62</div>
+        <span class="text-xs text-slate-500 font-mono mt-1 block">Tercatat di Sistem</span>
+      </div>
+
+      <div class="glass-panel p-6 rounded-3xl border border-slate-800/80">
+        <span class="text-xs font-mono text-emerald-400 uppercase tracking-wider">Tersedia di Lab</span>
+        <div class="text-3xl font-black text-emerald-400 font-mono mt-2" id="stat-available-units">50</div>
+        <span class="text-xs text-slate-500 font-mono mt-1 block">Siap Dipinjam Anggota</span>
+      </div>
+
+      <div class="glass-panel p-6 rounded-3xl border border-slate-800/80">
+        <span class="text-xs font-mono text-amber-400 uppercase tracking-wider">Sedang Dipinjam</span>
+        <div class="text-3xl font-black text-amber-400 font-mono mt-2" id="stat-borrowed-units">12</div>
+        <span class="text-xs text-slate-500 font-mono mt-1 block">Untuk Proyek Riset</span>
+      </div>
+
+      <div class="glass-panel p-6 rounded-3xl border border-slate-800/80">
+        <span class="text-xs font-mono text-aiot-cyan uppercase tracking-wider">Kondisi Alat</span>
+        <div class="text-3xl font-black text-aiot-cyan font-mono mt-2">98%</div>
+        <span class="text-xs text-slate-500 font-mono mt-1 block">Prima & Terkalibrasi</span>
+      </div>
+    </div>
+
+    <!-- Filter & Search Bar (Responsive CSS Grid) -->
+    <div class="glass-panel p-6 rounded-3xl border border-slate-800/80">
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+        <div class="sm:col-span-12 md:col-span-7 relative">
+          <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="search-inventory-input" placeholder="Cari perangkat (NVIDIA Jetson, Raspberry, ESP32, LiDAR)..."
+            class="form-input-aiot w-full pl-11 pr-4 py-3.5 rounded-2xl text-xs font-mono" />
+        </div>
+
+        <div class="sm:col-span-12 md:col-span-5">
+          <select id="filter-category" class="form-input-aiot w-full px-4 py-3.5 rounded-2xl text-xs font-mono">
+            <option value="all">Semua Kategori Perangkat</option>
+            <option value="Edge AI Device">Edge AI Device</option>
+            <option value="Microcontroller / SBC">Microcontroller / SBC</option>
+            <option value="Microcontroller / Vision">Microcontroller / Vision</option>
+            <option value="Embedded Dev Board">Embedded Dev Board</option>
+            <option value="Network / Gateway">Network / Gateway</option>
+            <option value="Sensors / Navigation">Sensors / Navigation</option>
+            <option value="Lab Hardware Tools">Lab Hardware Tools</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Table with Bi-directional Scroll -->
+    <div class="glass-panel rounded-3xl border border-slate-800/80 shadow-2xl">
+      <div class="table-scroll-container rounded-3xl">
+        <table class="w-full text-left text-xs whitespace-nowrap min-w-[900px]">
+          <thead class="text-slate-400 font-mono border-b border-slate-800 uppercase text-[11px] tracking-wider whitespace-nowrap">
+            <tr>
+              <th class="py-4 px-5 whitespace-nowrap">Nama Perangkat / Modul</th>
+              <th class="py-4 px-5 whitespace-nowrap">Kategori Hardware</th>
+              <th class="py-4 px-5 whitespace-nowrap">Total</th>
+              <th class="py-4 px-5 whitespace-nowrap">Tersedia</th>
+              <th class="py-4 px-5 whitespace-nowrap">Dipinjam</th>
+              <th class="py-4 px-5 whitespace-nowrap">Kondisi</th>
+              <th class="py-4 px-5 text-center whitespace-nowrap">Aksi Simulasi Lab</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-tbody" class="divide-y divide-slate-800/60 text-slate-300">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="/src/scripts/inventory.js"></script>
+</body>
+</html>
