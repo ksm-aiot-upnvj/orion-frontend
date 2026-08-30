@@ -6,252 +6,230 @@ document.addEventListener('DOMContentLoaded', () => {
   initIcons();
 
   // Form Elements
-  const form = document.getElementById('pendaftaran-form');
-  const nameInput = document.getElementById('reg-name');
-  const nimInput = document.getElementById('reg-nim');
-  const prodiInput = document.getElementById('reg-prodi');
-  const emailInput = document.getElementById('reg-email');
-  const trackInput = document.getElementById('reg-track');
-  const phoneInput = document.getElementById('reg-phone');
-  const angkatanInput = document.getElementById('reg-angkatan');
-  const motivationInput = document.getElementById('reg-motivation');
-  const resetBtn = document.getElementById('reset-stepper-btn');
+  const form = document.getElementById('registration-form');
+  const nimInput = document.getElementById('input-nim');
+  const nameInput = document.getElementById('input-name');
+  const prodiInput = document.getElementById('input-prodi');
+  const angkatanInput = document.getElementById('input-angkatan');
+  const emailInput = document.getElementById('input-email');
+  const phoneInput = document.getElementById('input-phone');
+  const trackInput = document.getElementById('input-track');
+  const motivationInput = document.getElementById('input-motivation');
+  const portfolioInput = document.getElementById('input-portfolio');
 
-  // Photo Upload Elements
-  const photoInput = document.getElementById('reg-photo-input');
-  const photoDropzone = document.getElementById('photo-dropzone');
-  const btnTriggerUpload = document.getElementById('btn-trigger-upload');
-  const btnRemovePhoto = document.getElementById('btn-remove-photo');
-  const formPhotoContainer = document.getElementById('form-photo-container');
-  const formPhotoPreview = document.getElementById('form-photo-preview');
+  // File Upload Elements
+  const photoFileInput = document.getElementById('input-photo-file');
   const photoFilenameLabel = document.getElementById('photo-filename-label');
-  const presetAvatarBtns = document.querySelectorAll('.preset-avatar-btn');
+  const cvFileInput = document.getElementById('input-cv-file');
+  const cvFilenameLabel = document.getElementById('cv-filename-label');
 
-  // Live Card Preview Elements
-  const cardName = document.getElementById('card-name');
-  const cardNim = document.getElementById('card-nim');
-  const cardProdi = document.getElementById('card-prodi');
-  const cardTrack = document.getElementById('card-track');
-  const cardAvatar = document.getElementById('card-avatar');
-  const cardMemberId = document.getElementById('card-member-id');
-  const cardStatusText = document.getElementById('card-status-text');
-  const regStatusBadge = document.getElementById('reg-status-badge');
+  // Live Preview Elements
+  const cardName = document.getElementById('card-preview-name');
+  const cardNim = document.getElementById('card-preview-nim');
+  const cardProdi = document.getElementById('card-preview-prodi');
+  const cardTrack = document.getElementById('card-preview-track');
+  const cardPhoto = document.getElementById('card-preview-photo');
 
-  // Stepper Visualizer Elements
-  const stepIcon1 = document.getElementById('step-icon-1');
+  // Stepper Elements
   const stepIcon2 = document.getElementById('step-icon-2');
-  const stepIcon3 = document.getElementById('step-icon-3');
-  const stepLine1 = document.getElementById('step-line-1');
-  const stepLine2 = document.getElementById('step-line-2');
-  const stepLabel1 = document.getElementById('step-label-1');
-  const stepLabel2 = document.getElementById('step-label-2');
-  const stepLabel3 = document.getElementById('step-label-3');
 
-  // Manual Step Simulation Buttons
-  const btnStep1 = document.getElementById('btn-force-step-1');
-  const btnStep2 = document.getElementById('btn-force-step-2');
-  const btnStep3 = document.getElementById('btn-force-step-3');
+  let uploadedPhotoBase64 = '';
+  let uploadedCvName = '';
 
-  const defaultAvatar = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop";
-  let currentPhotoData = defaultAvatar;
-
-  // Realtime Mirror to Live Member Card
-  function updateLiveCard() {
-    if (cardName) cardName.textContent = nameInput?.value.trim() || 'Nama Calon Anggota';
-    if (cardNim) cardNim.textContent = nimInput?.value.trim() ? `NIM: ${nimInput.value.trim()}` : 'NIM: -';
-    if (cardProdi) cardProdi.textContent = prodiInput?.value ? `Prodi: ${prodiInput.value}` : 'Program Studi: -';
-    if (cardTrack) cardTrack.textContent = trackInput?.value ? `Track: ${trackInput.value}` : 'Track: -';
+  // ============================================================
+  // Intake Status Verification (Controlled by BPH Control Panel)
+  // ============================================================
+  const savedConfig = localStorage.getItem('ksm_intake_config');
+  let intakeConfig = {
+    status: 'OPEN',
+    batchName: 'Penerimaan Anggota Baru Periode 2026',
+    deadline: '31 Agustus 2026'
+  };
+  if (savedConfig) {
+    try { intakeConfig = { ...intakeConfig, ...JSON.parse(savedConfig) }; } catch {}
   }
 
-  [nameInput, nimInput, prodiInput, trackInput].forEach(el => {
-    el?.addEventListener('input', updateLiveCard);
-    el?.addEventListener('change', updateLiveCard);
+  const closedBanner = document.getElementById('intake-closed-banner');
+  const formHeader = document.getElementById('form-header-box');
+  if (intakeConfig.status === 'CLOSED') {
+    if (form) form.classList.add('opacity-50', 'pointer-events-none');
+    if (formHeader) formHeader.classList.add('hidden');
+    if (closedBanner) closedBanner.classList.remove('hidden');
+  }
+
+  // ============================================================
+  // Dynamic 4-Year Intake Angkatan Generator (e.g., 2026 -> 26, 25, 24, 23)
+  // ============================================================
+  function populateDynamicAngkatan() {
+    if (!angkatanInput) return;
+    const currentYear = new Date().getFullYear() || 2026;
+    angkatanInput.innerHTML = '';
+
+    for (let i = 0; i < 4; i++) {
+      const year = currentYear - i;
+      const shortYear = String(year).slice(-2);
+      const option = document.createElement('option');
+      option.value = String(year);
+      option.className = 'bg-[#240d42] text-white';
+      option.textContent = `${year} (Angkatan '${shortYear})`;
+      if (i === 0) option.selected = true;
+      angkatanInput.appendChild(option);
+    }
+  }
+  populateDynamicAngkatan();
+
+  // Smart Auto-detection from NIM (First 2 digits -> Angkatan, digits -> Prodi)
+  nimInput?.addEventListener('input', () => {
+    const rawNim = nimInput.value.trim();
+    if (rawNim.length >= 2) {
+      const prefixYear = '20' + rawNim.slice(0, 2);
+      const matchingOption = Array.from(angkatanInput?.options || []).find(opt => opt.value === prefixYear);
+      if (matchingOption && angkatanInput.value !== prefixYear) {
+        angkatanInput.value = prefixYear;
+        showToast(`Tahun angkatan otomatis terdeteksi: ${prefixYear}`, 'info');
+      }
+    }
+
+    // Auto-detect prodi UPNVJ if match prefix (2410511... / 2410512...)
+    if (rawNim.length >= 7 && prodiInput) {
+      if (rawNim.includes('10511') || rawNim.includes('511')) {
+        prodiInput.value = 'S1 Informatika';
+      } else if (rawNim.includes('10512') || rawNim.includes('512')) {
+        prodiInput.value = 'S1 Sistem Informasi';
+      } else if (rawNim.includes('10513') || rawNim.includes('513')) {
+        prodiInput.value = 'S1 Sains Data';
+      } else if (rawNim.includes('00511') || rawNim.includes('051')) {
+        prodiInput.value = 'D3 Sistem Informasi';
+      }
+    }
+
+    updateLiveCard();
   });
 
-  // Photo Upload & Preset Pickers
-  function applyPhoto(photoUrl, filename = 'Preset Avatar Terpilih') {
-    currentPhotoData = photoUrl;
-    if (formPhotoPreview) formPhotoPreview.src = photoUrl;
-    if (cardAvatar) cardAvatar.src = photoUrl;
-    if (photoFilenameLabel) photoFilenameLabel.textContent = filename;
-    if (btnRemovePhoto) btnRemovePhoto.classList.remove('hidden');
-  }
-
-  function resetPhoto() {
-    currentPhotoData = defaultAvatar;
-    if (formPhotoPreview) formPhotoPreview.src = defaultAvatar;
-    if (cardAvatar) cardAvatar.src = defaultAvatar;
-    if (photoFilenameLabel) photoFilenameLabel.textContent = 'Klik upload atau seret file gambar';
-    if (btnRemovePhoto) btnRemovePhoto.classList.add('hidden');
-    if (photoInput) photoInput.value = '';
-    presetAvatarBtns.forEach(btn => {
-      btn.classList.remove('border-aiot-cyan');
-      btn.classList.add('border-slate-700');
-    });
-  }
-
-  btnTriggerUpload?.addEventListener('click', () => photoInput?.click());
-  formPhotoContainer?.addEventListener('click', () => photoInput?.click());
-
-  photoInput?.addEventListener('change', (e) => {
+  // Handle Photo File Upload & Base64 Conversion
+  photoFileInput?.addEventListener('change', (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 3 * 1024 * 1024) {
-      showToast('Ukuran foto melebihi batas maksimal 3MB!', 'error');
+    if (file.size > 2 * 1024 * 1024) {
+      showToast('Ukuran foto maksimal 2MB!', 'error');
+      photoFileInput.value = '';
       return;
+    }
+
+    if (photoFilenameLabel) {
+      photoFilenameLabel.textContent = file.name;
     }
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      applyPhoto(event.target.result, file.name);
-      showToast('Pasfoto berhasil diunggah!', 'success');
+      uploadedPhotoBase64 = event.target.result;
+      if (cardPhoto) {
+        cardPhoto.src = uploadedPhotoBase64;
+      }
+      showToast('Foto berhasil dimuat ke kartu preview!', 'info');
     };
     reader.readAsDataURL(file);
   });
 
-  photoDropzone?.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    photoDropzone.classList.add('border-aiot-cyan', 'bg-slate-800/80');
-  });
+  // Handle CV / Resume File Upload
+  cvFileInput?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  photoDropzone?.addEventListener('dragleave', () => {
-    photoDropzone.classList.remove('border-aiot-cyan', 'bg-slate-800/80');
-  });
-
-  photoDropzone?.addEventListener('drop', (e) => {
-    e.preventDefault();
-    photoDropzone.classList.remove('border-aiot-cyan', 'bg-slate-800/80');
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        applyPhoto(event.target.result, file.name);
-        showToast('Pasfoto berhasil diunggah via dropzone!', 'success');
-      };
-      reader.readAsDataURL(file);
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Ukuran berkas CV maksimal 5MB!', 'error');
+      cvFileInput.value = '';
+      return;
     }
-  });
 
-  presetAvatarBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const avatarUrl = btn.getAttribute('data-preset-avatar');
-      presetAvatarBtns.forEach(b => {
-        b.classList.remove('border-aiot-cyan');
-        b.classList.add('border-slate-700');
-      });
-      btn.classList.remove('border-slate-700');
-      btn.classList.add('border-aiot-cyan');
-      applyPhoto(avatarUrl, 'Preset Avatar');
-    });
-  });
-
-  btnRemovePhoto?.addEventListener('click', resetPhoto);
-
-  // Stepper Visual Transition Controller
-  function setStepperState(step, statusText = '') {
-    if (step === 1) {
-      stepIcon1.className = 'flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-cyan-950/90 border-2 border-aiot-cyan text-aiot-cyan rounded-full shadow-[0_0_20px_rgba(0,242,254,0.4)] transition-all';
-      stepIcon2.className = 'flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-slate-800 border border-slate-700 text-slate-400 rounded-full transition-all';
-      stepIcon3.className = 'flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-slate-800 border border-slate-700 text-slate-400 rounded-full transition-all';
-      stepLine1.className = 'h-full bg-slate-800 transition-all duration-500 w-0';
-      stepLine2.className = 'h-full bg-slate-800 transition-all duration-500 w-0';
-      stepLabel1.className = 'text-[11px] font-bold text-aiot-cyan mt-2.5 font-mono whitespace-nowrap';
-      stepLabel2.className = 'text-[11px] font-semibold text-slate-400 mt-2.5 font-mono whitespace-nowrap';
-      stepLabel3.className = 'text-[11px] font-semibold text-slate-400 mt-2.5 font-mono whitespace-nowrap';
-
-      regStatusBadge.textContent = 'Tahap 1: Pengisian Berkas';
-      regStatusBadge.className = 'px-3 py-1 rounded-full text-xs font-mono bg-cyan-950/80 text-aiot-cyan border border-cyan-800 font-bold';
-      cardMemberId.textContent = 'ID: PENDING';
-      cardMemberId.className = 'text-xs font-mono px-2.5 py-1 rounded-lg bg-amber-950/80 text-amber-300 font-bold border border-amber-800';
-      cardStatusText.textContent = statusText || 'Menunggu Submit';
-      cardStatusText.className = 'text-amber-400 font-semibold';
-    } else if (step === 2) {
-      stepIcon1.className = 'flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-cyan-950 border-2 border-aiot-cyan text-aiot-cyan rounded-full transition-all';
-      stepIcon2.className = 'flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-purple-950 border-2 border-purple-500 text-purple-300 rounded-full shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all animate-pulse';
-      stepIcon3.className = 'flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-slate-800 border border-slate-700 text-slate-400 rounded-full transition-all';
-      stepLine1.className = 'h-full bg-gradient-to-r from-aiot-cyan to-purple-500 transition-all duration-500 w-full';
-      stepLine2.className = 'h-full bg-slate-800 transition-all duration-500 w-0';
-      stepLabel1.className = 'text-[11px] font-semibold text-aiot-cyan mt-2.5 font-mono whitespace-nowrap';
-      stepLabel2.className = 'text-[11px] font-bold text-purple-400 mt-2.5 font-mono whitespace-nowrap';
-      stepLabel3.className = 'text-[11px] font-semibold text-slate-400 mt-2.5 font-mono whitespace-nowrap';
-
-      regStatusBadge.textContent = 'Tahap 2: Proses Review Seleksi';
-      regStatusBadge.className = 'px-3 py-1 rounded-full text-xs font-mono bg-purple-950/80 text-purple-300 border border-purple-800 font-bold';
-      cardMemberId.textContent = 'ID: REVIEWING';
-      cardMemberId.className = 'text-xs font-mono px-2.5 py-1 rounded-lg bg-purple-950/80 text-purple-300 font-bold border border-purple-800';
-      cardStatusText.textContent = statusText || 'Berkas Sedang Diseleksi';
-      cardStatusText.className = 'text-purple-400 font-semibold';
-    } else if (step === 3) {
-      stepIcon1.className = 'flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-cyan-950 border-2 border-aiot-cyan text-aiot-cyan rounded-full transition-all';
-      stepIcon2.className = 'flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-purple-950 border-2 border-purple-500 text-purple-300 rounded-full transition-all';
-      stepIcon3.className = 'flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-emerald-950 border-2 border-emerald-500 text-emerald-300 rounded-full shadow-[0_0_25px_rgba(16,185,129,0.5)] transition-all';
-      stepLine1.className = 'h-full bg-gradient-to-r from-aiot-cyan to-purple-500 transition-all duration-500 w-full';
-      stepLine2.className = 'h-full bg-gradient-to-r from-purple-500 to-emerald-500 transition-all duration-500 w-full';
-      stepLabel1.className = 'text-[11px] font-semibold text-aiot-cyan mt-2.5 font-mono whitespace-nowrap';
-      stepLabel2.className = 'text-[11px] font-semibold text-purple-400 mt-2.5 font-mono whitespace-nowrap';
-      stepLabel3.className = 'text-[11px] font-bold text-emerald-400 mt-2.5 font-mono whitespace-nowrap';
-
-      regStatusBadge.textContent = 'Tahap 3: Lolos Seleksi (Resmi)';
-      regStatusBadge.className = 'px-3 py-1 rounded-full text-xs font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-800 font-bold';
-      cardMemberId.textContent = 'AIOT-2026-NEW';
-      cardMemberId.className = 'text-xs font-mono px-2.5 py-1 rounded-lg bg-emerald-950/80 text-emerald-300 font-bold border border-emerald-800';
-      cardStatusText.textContent = 'Lolos Seleksi Anggota Aktif';
-      cardStatusText.className = 'text-emerald-400 font-semibold';
+    uploadedCvName = file.name;
+    if (cvFilenameLabel) {
+      cvFilenameLabel.textContent = `✓ ${file.name}`;
+      cvFilenameLabel.classList.add('text-emerald-300');
     }
+    showToast(`Berkas CV "${file.name}" siap diunggah.`, 'info');
+  });
+
+  // Live Mirror to Member Card
+  function updateLiveCard() {
+    if (cardName) cardName.textContent = nameInput?.value.trim() || 'Nama Mahasiswa';
+    if (cardNim) cardNim.textContent = nimInput?.value.trim() || '2410511088';
+    if (cardProdi) cardProdi.textContent = prodiInput?.value || 'S1 Informatika';
+    if (cardTrack) cardTrack.textContent = trackInput?.value || 'Hardware & IoT';
   }
 
-  // Simulation Button Listeners
-  btnStep1?.addEventListener('click', () => setStepperState(1));
-  btnStep2?.addEventListener('click', () => setStepperState(2));
-  btnStep3?.addEventListener('click', () => setStepperState(3));
+  [nimInput, nameInput, prodiInput, trackInput].forEach(el => {
+    el?.addEventListener('input', updateLiveCard);
+    el?.addEventListener('change', updateLiveCard);
+  });
 
-  // Form Submit Handler -> Sends application to Backend API
+  // Submit Handler - Direct Database Endpoint Hit
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn?.innerHTML || 'Kirim Formulir Pendaftaran';
+
+    const photoPayload = uploadedPhotoBase64 || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop';
+    let motivationText = motivationInput?.value.trim() || '';
+    if (uploadedCvName) {
+      motivationText += ` [Lampiran Berkas: ${uploadedCvName}]`;
+    }
 
     const payload = {
       student_id: nimInput.value.trim(),
       full_name: nameInput.value.trim(),
       program_of_study: prodiInput.value,
       email: emailInput.value.trim(),
-      contact_info: phoneInput.value.trim() || 'Belum diisi',
+      contact_info: phoneInput.value.trim(),
       intake_period: angkatanInput.value,
       interest_track: trackInput.value,
-      motivation: motivationInput.value.trim() || 'Minat riset AI & IoT',
-      photo: currentPhotoData
+      motivation: motivationText,
+      photo: photoPayload
     };
 
     try {
-      const res = await fetch(`${API_BASE_URL}/registrations`, {
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="inline-flex items-center space-x-2"><i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Menyimpan ke Database...</span></span>`;
+        initIcons();
+      }
+
+      const res = await fetch(`${API_BASE_URL}/registrations/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
       if (res.ok) {
-        setStepperState(2, 'Berkas Terkirim (Menunggu Review)');
-        showToast('Pendaftaran Berhasil! Berkas Anda masuk ke tahap seleksi admin.', 'success');
+        const data = await res.json();
+        showToast(`Pendaftaran Berhasil! Data NIM ${data.student_id} resmi tersimpan di database.`, 'success');
+        if (stepIcon2) {
+          stepIcon2.className = 'w-8 h-8 rounded-full bg-[#9B5CE8] text-white flex items-center justify-center font-bold text-xs shadow-sm';
+        }
+        form.reset();
+        uploadedPhotoBase64 = '';
+        uploadedCvName = '';
+        if (photoFilenameLabel) photoFilenameLabel.textContent = 'Pilih file (JPG / PNG, maks 2MB)';
+        if (cvFilenameLabel) {
+          cvFilenameLabel.textContent = 'Pilih file (PDF, maks 5MB)';
+          cvFilenameLabel.classList.remove('text-emerald-300');
+        }
+        updateLiveCard();
       } else {
         const err = await res.json().catch(() => ({}));
-        showToast(err.detail || 'Gagal mengirim berkas pendaftaran.', 'error');
+        showToast(err.detail || 'Gagal menyimpan pendaftaran ke database.', 'error');
       }
-    } catch {
-      // Offline fallback simulation
-      setStepperState(2, 'Berkas Terkirim (Simulasi)');
-      showToast('Pendaftaran Berhasil! (Mode Simulasi)', 'success');
+    } catch (err) {
+      console.error('Registration API Error:', err);
+      showToast('Koneksi backend gagal. Pastikan server API aktif di port 8000!', 'error');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+        initIcons();
+      }
     }
   });
-
-  resetBtn?.addEventListener('click', () => {
-    form.reset();
-    resetPhoto();
-    updateLiveCard();
-    setStepperState(1);
-    showToast('Formulir direset.', 'info');
-  });
-
-  // Initial State
-  setStepperState(1);
-  updateLiveCard();
 });
