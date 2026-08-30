@@ -90,7 +90,7 @@ function initProjectShowcase() {
     }
 
     grid.innerHTML = filtered.map(proj => `
-      <div class="rounded-xl bg-[#1E0A38] border border-[#561F99] overflow-hidden flex flex-col justify-between group hover:border-[#C9A4F6] transition-all hover:shadow-[0_4px_20px_rgba(155,92,232,0.3)]">
+      <div class="card-glowing flex flex-col justify-between group h-full">
         <!-- Project Asset Image Preview -->
         <div class="w-full h-48 bg-[#090312] overflow-hidden relative border-b border-[#561F99]">
           <img src="${proj.image}" alt="${proj.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
@@ -104,7 +104,7 @@ function initProjectShowcase() {
         <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
           <div>
             <h3 class="text-base font-bold text-white group-hover:text-[#C9A4F6] transition-colors">${proj.title}</h3>
-            <p class="text-xs text-[#D8B4FE] mt-2 leading-relaxed">${proj.description}</p>
+            <p class="text-xs text-gray-400 mt-2 leading-relaxed">${proj.description}</p>
           </div>
 
           <div class="pt-4 border-t border-[#561F99] space-y-3">
@@ -211,14 +211,34 @@ document.addEventListener('DOMContentLoaded', () => {
   openLoginBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      loginModal?.classList.remove('hidden');
-      loginModal?.classList.add('flex');
+      if (!loginModal) return;
+      loginModal.classList.remove('hidden');
+      loginModal.classList.add('flex');
+      // reflow
+      void loginModal.offsetWidth;
+      loginModal.classList.remove('opacity-0');
+      loginModal.classList.add('opacity-100');
+      const inner = loginModal.querySelector('div');
+      if (inner) {
+        inner.classList.remove('scale-95', 'opacity-0');
+        inner.classList.add('scale-100', 'opacity-100');
+      }
     });
   });
 
   closeLoginBtn?.addEventListener('click', () => {
-    loginModal?.classList.add('hidden');
-    loginModal?.classList.remove('flex');
+    if (!loginModal) return;
+    loginModal.classList.remove('opacity-100');
+    loginModal.classList.add('opacity-0');
+    const inner = loginModal.querySelector('div');
+    if (inner) {
+      inner.classList.remove('scale-100', 'opacity-100');
+      inner.classList.add('scale-95', 'opacity-0');
+    }
+    setTimeout(() => {
+      loginModal.classList.add('hidden');
+      loginModal.classList.remove('flex');
+    }, 300);
   });
 
   // Manual Form Login Handler
@@ -247,8 +267,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mobile Menu Toggle
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
   const mobileMenu = document.getElementById('mobile-menu');
+  
+  // Create a slide-down animation for the mobile menu
+  if (mobileMenu) {
+    mobileMenu.classList.add('transition-all', 'duration-300', 'origin-top', 'transform', 'scale-y-0', 'opacity-0', 'absolute', 'left-0', 'right-0', 'z-40');
+    mobileMenu.classList.remove('hidden', 'md:hidden'); // We will use opacity and scale instead of display:none for smooth animation
+  }
+  
   mobileMenuBtn?.addEventListener('click', () => {
-    mobileMenu?.classList.toggle('hidden');
+    mobileMenuBtn.classList.toggle('open');
+    if (mobileMenuBtn.classList.contains('open')) {
+      mobileMenu.classList.remove('scale-y-0', 'opacity-0');
+      mobileMenu.classList.add('scale-y-100', 'opacity-100');
+    } else {
+      mobileMenu.classList.remove('scale-y-100', 'opacity-100');
+      mobileMenu.classList.add('scale-y-0', 'opacity-0');
+    }
+  });
+
+  // Hide Header on Scroll Down
+  const mainHeader = document.getElementById('main-header');
+  let lastScrollY = window.scrollY;
+
+  window.addEventListener('scroll', () => {
+    if (!mainHeader) return;
+    const currentScrollY = window.scrollY;
+    
+    // Hide when scrolling down and past 100px
+    if (currentScrollY > lastScrollY && currentScrollY > 100) {
+      mainHeader.classList.add('-translate-y-full');
+    } else {
+      mainHeader.classList.remove('-translate-y-full');
+    }
+    lastScrollY = currentScrollY;
   });
 
   initIcons();

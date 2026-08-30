@@ -14,11 +14,11 @@
   --secondary-light: #C9A4F6;        /* Hover state, secondary badge, secondary accent */
   --deep-accent: #561F99;            /* Structural border, divider, card outlines */
 
-  /* Dark Theme Surfaces */
-  --bg-dark-canvas: #090312;         /* Primary Master Canvas: Jet Obsidian Black */
-  --bg-dark-surface: #1E0A38;        /* Secondary Surface: Rich Dark Purple (Cards, Sections) */
-  --bg-dark-card: #280E48;           /* Elevated Dark Purple: Modals, Popovers, Hover states */
-  --bg-dark-input: #120422;          /* Input fields, search bars */
+  /* Dark Theme Surfaces (True Dark / OLED Friendly) */
+  --bg-dark-canvas: #06020a;         /* Master Canvas: True Jet Black with purple hint */
+  --bg-dark-surface: #0a0412;        /* Elevated Surface: Pitch Black with Dark Violet Hue */
+  --bg-dark-card: #0c0516;           /* Component Surface: Midnight Plum */
+  --bg-dark-input: #08060B;          /* Recessed Input surface */
 
   /* High Contrast Typography */
   --text-white: #FFFFFF;             /* Crisp headings & primary text on dark */
@@ -83,24 +83,10 @@ body {
 
 .bg-mesh-continuous {
   background-color: var(--bg-dark-canvas);
-  background-image: 
-    radial-gradient(circle at 50% 8%, rgba(155, 92, 232, 0.28) 0%, rgba(30, 10, 56, 0.5) 30%, transparent 65%),
-    radial-gradient(circle at 85% 25%, rgba(86, 31, 153, 0.2) 0%, transparent 50%),
-    radial-gradient(circle at 15% 45%, rgba(155, 92, 232, 0.18) 0%, transparent 55%),
-    radial-gradient(circle at 80% 65%, rgba(86, 31, 153, 0.22) 0%, transparent 50%),
-    radial-gradient(circle at 30% 85%, rgba(155, 92, 232, 0.16) 0%, transparent 55%),
-    radial-gradient(circle at 70% 98%, rgba(86, 31, 153, 0.2) 0%, transparent 50%);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
 }
 
 .bg-mesh-hero {
   background-color: transparent;
-  background-image: 
-    radial-gradient(circle at 50% 30%, rgba(155, 92, 232, 0.3) 0%, rgba(30, 10, 56, 0.4) 45%, transparent 75%),
-    radial-gradient(circle at 10% 80%, rgba(86, 31, 153, 0.25) 0%, transparent 60%),
-    radial-gradient(circle at 90% 80%, rgba(201, 164, 246, 0.15) 0%, transparent 60%);
 }
 
 .bg-mesh-purple {
@@ -136,27 +122,45 @@ body {
 
 .btn-primary,
 .btn-brand-primary {
-  background-color: var(--primary-light-accent);
+  background: linear-gradient(145deg, #4c1d95 0%, #3b0764 100%);
   color: #FFFFFF !important;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.875rem;
   line-height: 1.25rem;
   padding: 0.625rem 1.25rem;
   border-radius: 8px;
-  border: 1px solid var(--primary-light-accent);
+  border: 1px solid #5b21b6;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  box-shadow: 0 2px 8px rgba(155, 92, 232, 0.35);
+  position: relative;
+  overflow: hidden;
 }
+
+.btn-primary::before,
+.btn-brand-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.btn-primary:hover::before,
+.btn-brand-primary:hover::before {
+  opacity: 1;
+}
+
 .btn-primary:hover,
 .btn-brand-primary:hover {
-  background-color: #8A45DB;
-  border-color: var(--secondary-light);
-  color: #FFFFFF !important;
-  box-shadow: 0 6px 25px rgba(155, 92, 232, 0.5), 0 0 12px rgba(201, 164, 246, 0.3);
+  border-color: #7c3aed;
   transform: translateY(-1px);
 }
 
@@ -212,11 +216,11 @@ body {
 
 .card-institutional {
   background-color: var(--bg-dark-surface);
-  border: 1px solid var(--deep-accent);
+  
   border-radius: 12px;
   color: var(--text-white);
-  box-shadow: 0 4px 20px -2px rgba(48, 16, 87, 0.5);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  
+  transition: all 0.2s ease;
 }
 .card-institutional:hover {
   border-color: rgba(155, 92, 232, 0.5);
@@ -255,7 +259,7 @@ body {
 
 .input-institutional {
   background-color: var(--bg-dark-input);
-  border: 1px solid var(--deep-accent);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--text-white);
   border-radius: 8px;
   font-size: 0.8125rem;
@@ -321,6 +325,220 @@ body {
 /* ============================================================
    KSM AIoT OFFICIAL DIGITAL MEMBER ID CARD CONTAINER
    ============================================================ */
+.card-glowing {
+  background: #05020a;
+  border: 1px solid #4c1d95;
+  border-radius: 24px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-glowing:hover {
+  border-color: #6d28d9;
+  background: #080312;
+}
+
+.card-glowing-icon {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.ksm-id-card {
+  background: linear-gradient(135deg, #301057 0%, #1e0936 60%, #561F99 100%);
+  border: 1px solid rgba(155, 92, 232, 0.45);
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.65), 0 0 25px rgba(155, 92, 232, 0.2);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ksm-id-card:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 20px 45px -4px rgba(0, 0, 0, 0.75), 0 0 35px rgba(155, 92, 232, 0.35);
+  border-color: var(--secondary-light);
+}
+.ksm-id-card::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 260px;
+  height: 260px;
+  line-height: 1.25rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--deep-accent);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.btn-secondary:hover,
+.btn-brand-secondary:hover {
+  background-color: #3b146b;
+  border-color: var(--secondary-light);
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 20px rgba(155, 92, 232, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-outline-neutral {
+  background-color: transparent;
+  color: var(--secondary-light) !important;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--deep-accent);
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.btn-outline-neutral:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--secondary-light);
+  color: #FFFFFF !important;
+}
+
+/* ============================================================
+   INSTITUTIONAL CARDS & TABLES
+   ============================================================ */
+
+.card-institutional {
+  background-color: var(--bg-dark-surface);
+  border-radius: 12px;
+  color: var(--text-white);
+  
+  transition: box-shadow 0.2s ease;
+}
+.card-institutional:hover {
+  box-shadow: 0 6px 24px -2px rgba(48, 16, 87, 0.7);
+}
+
+.table-institutional {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  text-align: left;
+}
+.table-institutional th {
+  background-color: var(--primary-dark);
+  color: var(--secondary-light);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: "JetBrains Mono", monospace;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--deep-accent);
+}
+.table-institutional td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid rgba(86, 31, 153, 0.35);
+  font-size: 0.8125rem;
+  color: var(--text-white);
+  vertical-align: middle;
+}
+.table-institutional tbody tr {
+  transition: background-color 0.15s ease;
+}
+.table-institutional tbody tr:hover {
+  background-color: var(--bg-dark-card);
+}
+
+.input-institutional {
+  background-color: var(--bg-dark-input);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-white);
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+.input-institutional::placeholder {
+  color: rgba(201, 164, 246, 0.4);
+}
+.input-institutional:focus {
+  border-color: var(--primary-light-accent);
+  box-shadow: 0 0 0 2px rgba(155, 92, 232, 0.25);
+  background-color: #210a40;
+}
+
+/* ============================================================
+   CLEAR SEMANTIC STATUS BADGES (High Contrast 4.5:1+)
+   ============================================================ */
+
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+/* PENDING - Deep Violet Tone */
+.badge-pending {
+  background-color: var(--state-pending-bg);
+  color: var(--state-pending-text);
+  border: 1px solid var(--state-pending-border);
+}
+
+/* APPROVED - Distinct Semantic Emerald Green */
+.badge-approved {
+  background-color: var(--state-success-bg);
+  color: var(--state-success-text);
+  border: 1px solid var(--state-success-border);
+}
+
+/* DITOLAK / REJECTED - Distinct Semantic Rose Red */
+.badge-danger {
+  background-color: var(--state-danger-bg);
+  color: var(--state-danger-text);
+  border: 1px solid var(--state-danger-border);
+}
+
+/* NEUTRAL / INFO */
+.badge-neutral {
+  background-color: rgba(48, 16, 87, 0.6);
+  color: var(--secondary-light);
+  border: 1px solid var(--deep-accent);
+}
+
+/* ============================================================
+   KSM AIoT OFFICIAL DIGITAL MEMBER ID CARD CONTAINER
+   ============================================================ */
+.card-glowing {
+  background: #05020a;
+  border: 1px solid #4c1d95;
+  border-radius: 24px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-glowing:hover {
+  border-color: #6d28d9;
+  background: #080312;
+}
+
+.card-glowing-icon {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
 .ksm-id-card {
   background: linear-gradient(135deg, #301057 0%, #1e0936 60%, #561F99 100%);
   border: 1px solid rgba(155, 92, 232, 0.45);
@@ -354,3 +572,15 @@ body {
   scrollbar-width: none;
 }
 
+/* ============================================================
+   MOBILE MENU HAMBURGER ANIMATION
+   ============================================================ */
+#mobile-menu-btn.open .hamburger-line:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+#mobile-menu-btn.open .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+#mobile-menu-btn.open .hamburger-line:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}

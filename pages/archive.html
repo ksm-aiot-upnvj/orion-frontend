@@ -12,13 +12,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet">
 
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 
-<body class="bg-[#150626] text-white font-sans min-h-screen flex flex-col antialiased selection:bg-[#9B5CE8] selection:text-white">
+<body class="bg-mesh-continuous text-white font-sans min-h-screen flex flex-col antialiased selection:bg-[#9B5CE8] selection:text-white">
 
   <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none"></div>
 
@@ -56,7 +56,7 @@
           <div class="sm:col-span-8 relative">
             <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#C9A4F6]"></i>
             <input type="text" id="search-archive-input" placeholder="Cari nomor surat, perihal, atau tujuan..."
-              class="input-institutional pl-11 py-2 text-xs" />
+              class="input-institutional !pl-11 !py-2 text-xs" />
           </div>
           <div class="sm:col-span-4">
             <select id="filter-archive-sifat" class="input-institutional py-2 px-3 text-xs">
@@ -105,15 +105,15 @@
 
         <!-- Form Controls Left 5 Cols -->
         <div class="lg:col-span-5 card-institutional p-5 space-y-4">
-          <div class="pb-3 border-b border-gray-200">
-            <h3 class="text-sm font-bold text-gray-900">Parameter Template Surat Resmi</h3>
-            <p class="text-xs text-gray-500 mt-0.5">Penomoran otomatis berformat standar baku universitas.</p>
+          <div class="pb-3 border-b border-[#561F99]">
+            <h3 class="text-sm font-bold text-white">Parameter Template Surat Resmi</h3>
+            <p class="text-xs text-gray-400 mt-0.5">Penomoran otomatis berformat standar baku universitas.</p>
           </div>
 
           <!-- Generated Number Live Display -->
-          <div class="p-3.5 rounded-lg bg-[#F3EDFD] border border-[#301057]/20">
-            <span class="text-[10px] text-gray-600 font-semibold uppercase block mb-0.5">Nomor Surat Tergenerate:</span>
-            <div id="generated-letter-number" class="text-xs font-mono font-bold text-[#301057] break-all">
+          <div class="p-3.5 rounded-lg bg-[#1E0A38] border border-[#561F99]">
+            <span class="text-[10px] text-gray-400 font-semibold uppercase block mb-0.5">Nomor Surat Tergenerate:</span>
+            <div id="generated-letter-number" class="text-xs font-mono font-bold text-[#C9A4F6] break-all">
               B/001/UN61/KSM-AIOT/III/2026
             </div>
           </div>
@@ -121,7 +121,7 @@
           <form id="letter-generator-form" class="space-y-3.5 text-xs">
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block font-semibold text-gray-700 mb-1">Sifat Surat</label>
+                <label class="block font-semibold text-gray-300 mb-1">Sifat Surat</label>
                 <select id="gen-sifat" class="input-institutional text-xs">
                   <option value="B" selected>B — Eksternal</option>
                   <option value="A">A — Internal</option>
@@ -129,7 +129,7 @@
                 </select>
               </div>
               <div>
-                <label class="block font-semibold text-gray-700 mb-1">Nomor Urut</label>
+                <label class="block font-semibold text-gray-300 mb-1">Nomor Urut</label>
                 <input type="number" id="gen-nomor" value="1" min="1" max="999" required
                   class="input-institutional font-mono text-xs" />
               </div>
@@ -137,38 +137,38 @@
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block font-semibold text-gray-700 mb-1">Tanggal Surat</label>
+                <label class="block font-semibold text-gray-300 mb-1">Tanggal Surat</label>
                 <input type="date" id="gen-date" value="2026-03-06" required
                   class="input-institutional text-xs" />
               </div>
               <div>
-                <label class="block font-semibold text-gray-700 mb-1">Lampiran</label>
+                <label class="block font-semibold text-gray-300 mb-1">Lampiran</label>
                 <input type="text" id="gen-lampiran" value="-" required
                   class="input-institutional text-xs" />
               </div>
             </div>
 
             <div>
-              <label class="block font-semibold text-gray-700 mb-1">Perihal Surat</label>
+              <label class="block font-semibold text-gray-300 mb-1">Perihal Surat</label>
               <input type="text" id="gen-perihal" value="Permohonan Izin Riset Laboratorium & Peminjaman Perangkat" required
                 class="input-institutional text-xs" />
             </div>
 
             <div>
-              <label class="block font-semibold text-gray-700 mb-1">Tujuan / Penerima Surat</label>
+              <label class="block font-semibold text-gray-300 mb-1">Tujuan / Penerima Surat</label>
               <input type="text" id="gen-tujuan" value="Dekan Fakultas Ilmu Komputer UPNVJ" required
                 class="input-institutional text-xs" />
             </div>
 
             <div>
-              <label class="block font-semibold text-gray-700 mb-1">Isi Paragraf Surat</label>
+              <label class="block font-semibold text-gray-300 mb-1">Isi Paragraf Surat</label>
               <textarea id="gen-body" rows="4" required
                 class="input-institutional text-xs leading-relaxed">Sehubungan dengan pelaksanaan riset IoT Smart Hydroponics dan Edge Computing yang dilakukan oleh anggota KSM AIoT, bersama ini kami memohon izin penggunaan fasilitas laboratorium serta peminjaman sensor dan dev board.</textarea>
             </div>
 
             <div class="grid grid-cols-2 gap-3 pt-2">
               <button type="button" id="btn-export-latex" class="btn-outline-neutral justify-center text-xs py-2">
-                <i data-lucide="file-code" class="w-3.5 h-3.5 text-gray-500"></i>
+                <i data-lucide="file-code" class="w-3.5 h-3.5 text-current"></i>
                 <span>Download LaTeX</span>
               </button>
               <button type="button" id="btn-save-archive" class="btn-primary text-xs py-2">
@@ -180,7 +180,7 @@
         </div>
 
         <!-- Live Letterhead Document Preview Right 7 Cols -->
-        <div class="lg:col-span-7 card-institutional p-8 bg-white border border-gray-300 shadow-md">
+        <div class="lg:col-span-7 rounded-xl p-8 bg-white border border-gray-300 shadow-md">
           <!-- Kop Surat Resmi -->
           <div class="pb-4 border-b-2 border-black flex items-center justify-between text-center gap-4">
             <img src="/Logo_UPNVJ.png" alt="Logo UPNVJ" class="w-14 h-14 object-contain flex-shrink-0" />
