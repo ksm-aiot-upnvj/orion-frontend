@@ -141,5 +141,9 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
+# Agents and Skills
+.agents/
+skills-lock.json
+
 # End of https://www.toptal.com/developers/gitignore/api/node
 
