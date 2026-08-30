@@ -1,3 +1,4 @@
+import { login } from '../modules/auth.js';
 import { initIcons, showToast } from '../modules/ui.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
@@ -232,4 +233,104 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+
+  // ==========================================
+  // SYNCED UI LOGIC FROM INDEX
+  // ==========================================
+  // Mobile Menu Logic
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  mobileMenuBtn?.addEventListener('click', () => {
+    mobileMenuBtn.classList.toggle('open');
+    if (mobileMenuBtn.classList.contains('open')) {
+      mobileMenu.classList.remove('scale-y-0', 'opacity-0');
+      mobileMenu.classList.add('scale-y-100', 'opacity-100');
+    } else {
+      mobileMenu.classList.remove('scale-y-100', 'opacity-100');
+      mobileMenu.classList.add('scale-y-0', 'opacity-0');
+    }
+  });
+
+  // Hide Header on Scroll Down
+  const mainHeader = document.getElementById('main-header');
+  let lastScrollY = window.scrollY;
+
+  window.addEventListener('scroll', () => {
+    if (!mainHeader) return;
+    const currentScrollY = window.scrollY;
+    if (currentScrollY > lastScrollY && currentScrollY > 100) {
+      mainHeader.classList.add('-translate-y-full');
+    } else {
+      mainHeader.classList.remove('-translate-y-full');
+    }
+    lastScrollY = currentScrollY;
+  });
+
+  // Login Modal Logic
+  const loginModal = document.getElementById('login-modal');
+  const openLoginBtns = document.querySelectorAll('.open-login-modal');
+  const closeLoginBtn = document.getElementById('close-login-modal');
+  const loginForm = document.getElementById('login-form');
+
+  if (loginModal) {
+    const toggleModal = (show) => {
+      if (show) {
+        loginModal.classList.remove('hidden');
+        loginModal.classList.add('flex');
+        void loginModal.offsetWidth;
+        loginModal.classList.remove('opacity-0');
+        loginModal.classList.add('opacity-100');
+        const inner = loginModal.querySelector('div');
+        if (inner) {
+          inner.classList.remove('scale-95', 'opacity-0');
+          inner.classList.add('scale-100', 'opacity-100');
+        }
+      } else {
+        loginModal.classList.remove('opacity-100');
+        loginModal.classList.add('opacity-0');
+        const inner = loginModal.querySelector('div');
+        if (inner) {
+          inner.classList.remove('scale-100', 'opacity-100');
+          inner.classList.add('scale-95', 'opacity-0');
+        }
+        setTimeout(() => {
+          loginModal.classList.remove('flex');
+          loginModal.classList.add('hidden');
+        }, 300);
+      }
+    };
+
+    openLoginBtns.forEach(btn => btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleModal(true);
+    }));
+    closeLoginBtn?.addEventListener('click', () => toggleModal(false));
+    loginModal.addEventListener('click', (e) => {
+      if (e.target === loginModal) toggleModal(false);
+    });
+
+    loginForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const studentId = document.getElementById('login-nim').value;
+      const password = document.getElementById('login-password').value;
+      const btn = loginForm.querySelector('button[type="submit"]');
+      
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<span class="inline-flex items-center space-x-2"><i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Loading...</span></span>`;
+      initIcons();
+
+      const success = await login(studentId, password);
+      
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+      initIcons();
+
+      if (success) {
+        window.location.href = '/pages/dashboard.html';
+      }
+    });
+  }
+
 });

@@ -9,58 +9,100 @@
     content="Portal Pendaftaran dan Seleksi Calon Anggota Baru KSM AIoT UPN 'Veteran' Jakarta." />
   <link rel="icon" type="image/png" href="/ksm-aiot-logo.png" />
 
+  <!-- Google Fonts: Geist, Poppins & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet">
 
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 
 <body
-  class="bg-[#150626] text-white font-sans min-h-screen flex flex-col antialiased selection:bg-[#9B5CE8] selection:text-white">
+  class="bg-mesh-continuous text-white font-sans min-h-screen flex flex-col antialiased selection:bg-[#9B5CE8] selection:text-white">
 
   <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none">
   </div>
 
-  <!-- Public Header Navigation (Primary Dark #1E0A38) -->
-  <header class="sticky top-0 z-40 w-full bg-[#1E0A38] border-b border-[#561F99] shadow-md">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2">
+  <!-- Institutional Public Navigation Bar (Primary Dark #0F051D) -->
+  <header id="main-header"
+    class="fixed top-0 z-50 w-full bg-[#0F051D]/90 backdrop-blur-md border-b border-[#561F99]/60 shadow-lg transition-transform duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
 
-      <!-- Brand Logo -->
-      <a href="/index.html" class="flex items-center space-x-2 sm:space-x-3 group min-w-0 flex-shrink">
-        <div class="flex items-center space-x-1.5">
+      <!-- Brand Logo with UPNVJ & KSM AIoT Logos -->
+      <a href="/index.html#" class="flex items-center space-x-3 group">
+        <div class="flex items-center space-x-2 flex-shrink-0">
           <img src="/ksm-aiot-logo.png" alt="KSM AIoT Logo"
-            class="w-7 h-7 sm:w-9 sm:h-9 object-contain flex-shrink-0" />
+            class="w-9 h-9 sm:w-10 sm:h-10 object-contain flex-shrink-0" />
         </div>
-        <div class="flex flex-col min-w-0">
-          <span class="font-extrabold text-sm sm:text-base text-white tracking-tight flex items-center space-x-1">
+        <div class="flex flex-col">
+          <span class="font-extrabold text-base sm:text-lg text-white tracking-tight flex items-center space-x-1">
             <span>KSM</span>
-            <span class="text-[#C9A4F6]">AIoT</span>
+            <span class="text-[#6D28D9]">AIoT</span>
           </span>
-          <span class="text-[9px] sm:text-[10px] text-purple-200/80 font-mono tracking-wider uppercase font-semibold truncate hidden sm:block">Portal
-            Penerimaan Anggota Baru</span>
+          <span class="text-[10px] text-gray-400 font-mono tracking-wider uppercase font-semibold">Empowering Nodes,
+            <span class="text-[#6D28D9]">Innovating Futures</span></span>
         </div>
       </a>
 
-      <!-- Right Actions (Responsive Icon + Text on Mobile) -->
-      <div class="flex items-center space-x-1.5 sm:space-x-2.5 flex-shrink-0">
-        <a href="/index.html" class="btn-secondary text-[11px] sm:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3.5 inline-flex items-center space-x-1.5 whitespace-nowrap">
-          <i data-lucide="arrow-left" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
-          <span class="hidden sm:inline">Kembali ke Beranda</span>
-          <span class="sm:hidden">Beranda</span>
+      <!-- Desktop Navigation Links -->
+      <nav class="hidden lg:flex items-center space-x-8 text-sm font-semibold text-gray-300">
+        <a href="/index.html#about" class="hover:text-white transition-colors">Profil</a>
+        <a href="/index.html#research" class="hover:text-white transition-colors">Bidang Riset</a>
+        <a href="/index.html#structure" class="hover:text-white transition-colors">Kepengurusan</a>
+        <a href="/index.html#showcase" class="hover:text-white transition-colors">Proyek</a>
+        <a href="/index.html#roadmap" class="hover:text-white transition-colors">Roadmap</a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="hidden md:flex items-center space-x-3">
+        <div id="desktop-login-area">
+          <button
+            class="open-login-modal text-xs font-semibold px-3.5 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 border border-[#561F99] transition-all flex items-center space-x-2">
+            <i data-lucide="log-in" class="w-4 h-4 text-gray-400"></i>
+            <span>Login Pengurus</span>
+          </button>
+        </div>
+        <a href="/pages/registration.html" class="btn-primary text-xs py-2 px-4 flex items-center space-x-2">
+          <i data-lucide="user-plus" class="w-4 h-4 text-white"></i>
+          <span>Daftar Anggota</span>
         </a>
-        <a href="/index.html?open_login=1" class="btn-primary text-[11px] sm:text-xs py-1.5 sm:py-2 px-2.5 sm:px-4 inline-flex items-center space-x-1.5 whitespace-nowrap">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-          <span class="hidden sm:inline">Login Pengurus</span>
-          <span class="sm:hidden">Login</span>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden flex items-center space-x-2">
+        <button id="mobile-menu-btn"
+          class="w-10 h-10 relative focus:outline-none bg-transparent flex flex-col items-center justify-center space-y-1.5 transition-all text-gray-300">
+          <span class="hamburger-line block w-6 h-0.5 bg-current transform transition duration-300 ease-in-out"></span>
+          <span class="hamburger-line block w-6 h-0.5 bg-current transform transition duration-300 ease-in-out"></span>
+          <span class="hamburger-line block w-6 h-0.5 bg-current transform transition duration-300 ease-in-out"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-[#561F99] bg-[#0F051D] px-4 py-5 space-y-3">
+      <a href="/index.html#about" class="block text-gray-300 hover:text-white font-medium text-sm">Profil</a>
+      <a href="/index.html#research" class="block text-gray-300 hover:text-white font-medium text-sm">Bidang Riset</a>
+      <a href="/index.html#structure" class="block text-gray-300 hover:text-white font-medium text-sm">Kepengurusan</a>
+      <a href="/index.html#showcase" class="block text-gray-300 hover:text-white font-medium text-sm">Proyek</a>
+      <a href="/index.html#roadmap" class="block text-gray-300 hover:text-white font-medium text-sm">Roadmap</a>
+      <div class="pt-3 border-t border-[#561F99] flex flex-col space-y-2">
+        <div id="mobile-login-area">
+          <button
+            class="open-login-modal w-full text-center py-2 rounded-lg bg-white/10 text-white border border-[#561F99] font-semibold text-xs">
+            Login Pengurus
+          </button>
+        </div>
+        <a href="/pages/registration.html" class="btn-primary w-full text-center py-2 text-xs font-bold block">
+          Daftar Anggota Baru
         </a>
       </div>
     </div>
   </header>
 
-  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 pt-24 pb-6 sm:pt-28 sm:pb-8 space-y-5 sm:space-y-6">
 
     <!-- Page Title Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#561F99]">
@@ -71,7 +113,7 @@
           <span>Penerimaan Anggota Baru Periode 2026</span>
         </div>
         <h1 class="text-lg sm:text-2xl font-bold text-white tracking-tight">Formulir Pendaftaran Calon Anggota</h1>
-        <p class="text-xs sm:text-sm text-[#D8B4FE] mt-1 max-w-2xl">
+        <p class="text-xs sm:text-sm text-gray-400 mt-1 max-w-2xl">
           Silakan lengkapi formulir di bawah ini dengan data akademik valid mahasiswa Fakultas Ilmu Komputer UPNVJ.
         </p>
       </div>
@@ -105,19 +147,19 @@
           <!-- Step 2 -->
           <div id="step-item-2" class="flex flex-col items-center text-center w-24 sm:w-28">
             <div id="step-icon-2"
-              class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#301057] text-[#D8B4FE] border border-[#561F99] flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#1E0A38]">
+              class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#301057] text-gray-400 border border-[#561F99] flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#1E0A38]">
               2
             </div>
-            <span class="text-[10px] sm:text-[11px] font-semibold text-[#D8B4FE] mt-2 font-mono leading-tight">Review & Seleksi</span>
+            <span class="text-[10px] sm:text-[11px] font-semibold text-gray-400 mt-2 font-mono leading-tight">Review & Seleksi</span>
           </div>
 
           <!-- Step 3 -->
           <div id="step-item-3" class="flex flex-col items-center text-center w-24 sm:w-28">
             <div id="step-icon-3"
-              class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#301057] text-[#D8B4FE] border border-[#561F99] flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#1E0A38]">
+              class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#301057] text-gray-400 border border-[#561F99] flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#1E0A38]">
               3
             </div>
-            <span class="text-[10px] sm:text-[11px] font-semibold text-[#D8B4FE] mt-2 font-mono leading-tight">Selesai & ID Card</span>
+            <span class="text-[10px] sm:text-[11px] font-semibold text-gray-400 mt-2 font-mono leading-tight">Selesai & ID Card</span>
           </div>
         </div>
 
@@ -138,7 +180,7 @@
             <i data-lucide="lock" class="w-6 h-6"></i>
           </div>
           <h3 class="text-base font-bold text-white">Pendaftaran Periode Ini Telah Ditutup</h3>
-          <p class="text-xs text-[#D8B4FE] max-w-md mx-auto leading-relaxed">
+          <p class="text-xs text-gray-400 max-w-md mx-auto leading-relaxed">
             Masa penerimaan berkas calon anggota KSM AIoT untuk periode saat ini telah selesai atau kuota telah
             terpenuhi. Pantau informasi pembukaan batch berikutnya melalui kanal resmi Instagram <a
               href="https://instagram.com/aiotupnvj" target="_blank"
@@ -148,7 +190,7 @@
 
         <div id="form-header-box" class="pb-3 border-b border-[#561F99]">
           <h2 class="text-base font-bold text-white">Data Pendaftar Mahasiswa</h2>
-          <p class="text-xs text-[#D8B4FE] mt-0.5">Pastikan NIM dan Nama Lengkap sesuai dengan data akademik resmi
+          <p class="text-xs text-gray-400 mt-0.5">Pastikan NIM dan Nama Lengkap sesuai dengan data akademik resmi
             UPNVJ.</p>
         </div>
 
@@ -156,13 +198,13 @@
           <!-- Two-column row: NIM & Nama -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">NIM Mahasiswa <span
+              <label class="block text-xs font-bold text-white mb-1">NIM Mahasiswa <span
                   class="text-rose-400">*</span></label>
               <input id="input-nim" type="text" required placeholder="Contoh: 2410511088"
                 class="input-institutional font-mono text-xs" />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">Nama Lengkap <span
+              <label class="block text-xs font-bold text-white mb-1">Nama Lengkap <span
                   class="text-rose-400">*</span></label>
               <input id="input-name" type="text" required placeholder="Nama lengkap Anda"
                 class="input-institutional text-xs" />
@@ -172,7 +214,7 @@
           <!-- Two-column row: Program Studi & Angkatan -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">Program Studi <span
+              <label class="block text-xs font-bold text-white mb-1">Program Studi <span
                   class="text-rose-400">*</span></label>
               <select id="input-prodi" required class="input-institutional text-xs">
                 <option value="" disabled selected class="bg-[#240d42] text-white">Pilih Program Studi</option>
@@ -183,7 +225,7 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">Tahun Angkatan <span
+              <label class="block text-xs font-bold text-white mb-1">Tahun Angkatan <span
                   class="text-rose-400">*</span></label>
               <select id="input-angkatan" required class="input-institutional text-xs">
                 <option value="2026" selected class="bg-[#240d42] text-white">2026</option>
@@ -197,13 +239,13 @@
           <!-- Two-column row: Email & WhatsApp -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">Email Mahasiswa (UPNVJ) <span
+              <label class="block text-xs font-bold text-white mb-1">Email Mahasiswa (UPNVJ) <span
                   class="text-rose-400">*</span></label>
               <input id="input-email" type="email" required placeholder="nama@mahasiswa.upnvj.ac.id"
                 class="input-institutional font-mono text-xs" />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">No. WhatsApp / Kontak <span
+              <label class="block text-xs font-bold text-white mb-1">No. WhatsApp / Kontak <span
                   class="text-rose-400">*</span></label>
               <input id="input-phone" type="tel" required placeholder="0812-3456-7890"
                 class="input-institutional font-mono text-xs" />
@@ -214,7 +256,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <!-- Upload Foto -->
             <div>
-              <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">Pasfoto Formal (Wajah) <span
+              <label class="block text-xs font-bold text-white mb-1">Pasfoto Formal (Wajah) <span
                   class="text-rose-400">*</span></label>
               <div class="relative">
                 <input id="input-photo-file" type="file" accept="image/png, image/jpeg, image/webp" class="hidden" />
@@ -222,7 +264,7 @@
                   class="flex items-center justify-between px-3.5 py-2.5 rounded-lg border border-[#561F99] bg-[#150626] hover:bg-[#301057] cursor-pointer transition-all text-xs">
                   <div class="flex items-center space-x-2 truncate">
                     <i data-lucide="image" class="w-4 h-4 text-[#C9A4F6] flex-shrink-0"></i>
-                    <span id="photo-filename-label" class="text-[#D8B4FE] truncate">Pilih Foto (.JPG, .PNG)</span>
+                    <span id="photo-filename-label" class="text-gray-400 truncate">Pilih Foto (.JPG, .PNG)</span>
                   </div>
                   <span
                     class="px-2 py-0.5 rounded bg-[#561F99] text-[10px] font-mono text-white font-semibold flex-shrink-0">Upload</span>
@@ -233,15 +275,15 @@
 
             <!-- Upload CV / Resume (Opsional) -->
             <div>
-              <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">Berkas CV / Resume (PDF) <span
-                  class="text-[#C9A4F6] text-[10px] font-normal">(Opsional)</span></label>
+              <label class="block text-xs font-bold text-white mb-1">Berkas CV / Resume (PDF) <span
+                  class="text-gray-400 text-[10px] font-normal">(Opsional)</span></label>
               <div class="relative">
                 <input id="input-cv-file" type="file" accept=".pdf,application/pdf" class="hidden" />
                 <label for="input-cv-file"
                   class="flex items-center justify-between px-3.5 py-2.5 rounded-lg border border-[#561F99] bg-[#150626] hover:bg-[#301057] cursor-pointer transition-all text-xs">
                   <div class="flex items-center space-x-2 truncate">
                     <i data-lucide="file-text" class="w-4 h-4 text-[#C9A4F6] flex-shrink-0"></i>
-                    <span id="cv-filename-label" class="text-[#D8B4FE] truncate">Upload CV (.PDF)</span>
+                    <span id="cv-filename-label" class="text-gray-400 truncate">Upload CV (.PDF)</span>
                   </div>
                   <span
                     class="px-2 py-0.5 rounded bg-[#561F99] text-[10px] font-mono text-white font-semibold flex-shrink-0">Pilih
@@ -254,7 +296,7 @@
 
           <!-- Peminatan Riset -->
           <div>
-            <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">Peminatan Bidang Riset <span
+            <label class="block text-xs font-bold text-white mb-1">Peminatan Bidang Riset <span
                 class="text-rose-400">*</span></label>
             <select id="input-track" required class="input-institutional text-xs">
               <option value="" disabled selected class="bg-[#240d42] text-white">Pilih Peminatan Riset</option>
@@ -269,7 +311,7 @@
 
           <!-- Motivasi -->
           <div>
-            <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">Motivasi & Pengalaman Riset <span
+            <label class="block text-xs font-bold text-white mb-1">Motivasi & Pengalaman Riset <span
                 class="text-rose-400">*</span></label>
             <textarea id="input-motivation" rows="3" required
               placeholder="Jelaskan ketertarikan Anda dalam riset AI & IoT..."
@@ -278,7 +320,7 @@
 
           <!-- Portofolio URL -->
           <div>
-            <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">Tautan Portofolio / GitHub / LinkedIn /
+            <label class="block text-xs font-bold text-white mb-1">Tautan Portofolio / GitHub / LinkedIn /
               GDrive CV (Opsional)</label>
             <input id="input-portfolio" type="url"
               placeholder="https://github.com/username atau https://linkedin.com/in/..."
@@ -340,12 +382,12 @@
             </div>
           </div>
 
-          <div class="p-3.5 rounded-xl bg-[#150626] border border-[#561F99] text-xs text-[#D8B4FE] space-y-1.5">
+          <div class="p-3.5 rounded-xl bg-[#150626] border border-[#561F99] text-xs text-gray-400 space-y-1.5">
             <p class="font-semibold text-white flex items-center space-x-1.5">
               <i data-lucide="info" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
               <span>Catatan Proses Seleksi:</span>
             </p>
-            <p class="text-[11px] leading-relaxed text-[#D8B4FE]">
+            <p class="text-[11px] leading-relaxed text-gray-400">
               Setelah submit, berkas formulir dan CV Anda akan dievaluasi oleh Tim BPH dan Divisi Riset KSM AIoT.
               Pengumuman seleksi akan diinformasikan via Email / WhatsApp terdaftar.
             </p>
@@ -358,6 +400,45 @@
   </main>
 
   <script type="module" src="/src/scripts/registration.js"></script>
+<!-- ============================================================
+       8. LOGIN MODAL (Clean Dark Modal)
+       ============================================================ -->
+  <div id="login-modal"
+    class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-md transition-opacity duration-300 opacity-0">
+    <div
+      class="bg-zinc-900 rounded-2xl max-w-sm w-full p-6 border border-zinc-800 shadow-2xl relative text-white transform transition-all duration-300 scale-95 opacity-0">
+      <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+
+      <div class="text-center pb-4 border-b border-[#561F99]">
+        <div
+          class="w-10 h-10 rounded-full bg-[#0F051D] text-gray-400 flex items-center justify-center mx-auto mb-2 border border-[#561F99]">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white">Login Management System</h3>
+        <p class="text-xs text-gray-400 mt-0.5">Akses Dashboard Pengurus KSM AIoT UPNVJ</p>
+      </div>
+
+      <form id="login-form" class="space-y-3.5 mt-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">NIM / Student ID</label>
+          <input id="login-nim" type="text" required placeholder="Contoh: 2310511001"
+            class="input-institutional text-xs font-mono" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">Password</label>
+          <input id="login-password" type="password" required placeholder="••••••••"
+            class="input-institutional text-xs" />
+        </div>
+
+        <button type="submit" class="btn-primary w-full py-2.5 text-xs font-bold mt-2">
+          Masuk Dashboard
+        </button>
+      </form>
+    </div>
+  </div>
 </body>
 
 </html>
