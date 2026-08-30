@@ -1,309 +1,302 @@
 <!DOCTYPE html>
-<html lang="id" class="dark scroll-smooth">
+<html lang="id" class="scroll-smooth">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KSM AIoT — Artificial Intelligence of Things Study Group</title>
+  <title>KSM AIoT — Artificial Intelligence of Things UPNVJ</title>
   <meta name="description"
-    content="Kelompok Studi Mahasiswa (KSM) AIoT — Wadah Riset, Pengembangan IoT, Artificial Intelligence, dan Management System Mahasiswa." />
-  <link rel="icon" type="image/png" href="./ksm-aiot-logo.png" />
+    content="Kelompok Studi Mahasiswa Riset & Rekayasa Artificial Intelligence of Things (AIoT) Fakultas Ilmu Komputer UPN 'Veteran' Jakarta." />
+  <link rel="icon" type="image/png" href="/ksm-aiot-logo.png" />
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet">
 
-  <!-- CSS Styles -->
-  <link rel="stylesheet" href="./src/style.css" />
+  <link rel="stylesheet" href="/src/style.css" />
 </head>
 
-<body class="bg-aiot-dark text-slate-200 font-sans bg-grid-pattern relative min-h-screen flex flex-col">
+<body
+  class="bg-mesh-continuous text-white font-sans min-h-screen flex flex-col antialiased selection:bg-[#9B5CE8] selection:text-white">
 
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none">
   </div>
 
-  <!-- Navigation Bar -->
-  <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+  <!-- Institutional Public Navigation Bar (Primary Dark #0F051D) -->
+  <header class="sticky top-0 z-50 w-full bg-[#0F051D]/90 backdrop-blur-md border-b border-[#561F99]/60 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
 
-      <!-- Brand Logo -->
+      <!-- Brand Logo with UPNVJ & KSM AIoT Logos -->
       <a href="#" class="flex items-center space-x-3 group">
-        <img src="./ksm-aiot-logo.png" alt="KSM AIoT Logo"
-          class="w-10 h-10 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_0_12px_rgba(0,242,254,0.4)]" />
+        <div class="flex items-center space-x-2 flex-shrink-0">
+          <img src="/ksm-aiot-logo.png" alt="KSM AIoT Logo"
+            class="w-9 h-9 sm:w-10 sm:h-10 object-contain flex-shrink-0" />
+        </div>
         <div class="flex flex-col">
-          <span class="font-extrabold text-lg text-white tracking-wider font-mono flex items-center space-x-1">
+          <span class="font-extrabold text-base sm:text-lg text-white tracking-tight flex items-center space-x-1">
             <span>KSM</span>
-            <span class="text-aiot-cyan">AIoT</span>
+            <span class="text-[#C9A4F6]">AIoT</span>
           </span>
-          <span class="text-[10px] text-slate-400 font-mono tracking-widest uppercase">Research & Management</span>
+          <span class="text-[10px] text-purple-200 font-mono tracking-wider uppercase font-semibold">Empowering Nodes,
+            Innovating Futures</span>
         </div>
       </a>
 
-      <!-- Navigation Links -->
-      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
-        <a href="#about" class="text-slate-300 hover:text-aiot-cyan transition-colors">Profil</a>
-        <a href="#stats" class="text-slate-300 hover:text-aiot-cyan transition-colors">Statistik</a>
-        <a href="#structure" class="text-slate-300 hover:text-aiot-cyan transition-colors">Kepengurusan</a>
-        <a href="#showcase" class="text-slate-300 hover:text-aiot-cyan transition-colors">Proyek</a>
-        <a href="#roadmap" class="text-slate-300 hover:text-aiot-cyan transition-colors">Roadmap</a>
+      <!-- Desktop Navigation Links -->
+      <nav class="hidden lg:flex items-center space-x-8 text-sm font-semibold text-purple-100">
+        <a href="#about" class="hover:text-white transition-colors">Profil</a>
+        <a href="#research" class="hover:text-white transition-colors">Bidang Riset</a>
+        <a href="#structure" class="hover:text-white transition-colors">Kepengurusan</a>
+        <a href="#showcase" class="hover:text-white transition-colors">Proyek</a>
+        <a href="#roadmap" class="hover:text-white transition-colors">Roadmap</a>
       </nav>
 
-      <!-- Action Buttons & Theme Switcher -->
+      <!-- Action Buttons -->
       <div class="hidden md:flex items-center space-x-3">
-        <!-- Theme Toggle (Dark / Light / System) -->
-        <div
-          class="flex items-center p-1 rounded-xl bg-slate-900/80 border border-slate-800 text-xs font-mono text-slate-400 space-x-1"
-          id="theme-switcher">
-          <button data-theme="dark" title="Dark Mode" class="theme-btn p-1.5 rounded-lg transition-all hover:text-white"
-            id="theme-btn-dark">
-            <i data-lucide="moon" class="w-3.5 h-3.5"></i>
-          </button>
-          <button data-theme="light" title="Light Mode"
-            class="theme-btn p-1.5 rounded-lg transition-all hover:text-white" id="theme-btn-light">
-            <i data-lucide="sun" class="w-3.5 h-3.5"></i>
-          </button>
-          <button data-theme="system" title="System Default"
-            class="theme-btn p-1.5 rounded-lg transition-all hover:text-white" id="theme-btn-system">
-            <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
-          </button>
-        </div>
-
-        <div id="desktop-login-area" class="flex items-center space-x-3">
+        <div id="desktop-login-area">
           <button
-            class="open-login-modal text-sm font-semibold px-4 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all flex items-center space-x-2">
-            <i data-lucide="log-in" class="w-4 h-4 text-slate-400"></i>
+            class="open-login-modal text-xs font-semibold px-3.5 py-2 rounded-lg text-purple-100 hover:text-white hover:bg-white/10 border border-[#561F99] transition-all flex items-center space-x-2">
+            <i data-lucide="log-in" class="w-4 h-4 text-[#C9A4F6]"></i>
             <span>Login Pengurus</span>
           </button>
         </div>
-        <a href="/pages/registration.html"
-          class="text-sm font-semibold px-5 py-2.5 rounded-xl bg-gradient-to-r from-aiot-cyan to-aiot-purple text-slate-950 glow-cyan hover:opacity-95 transition-all flex items-center space-x-2">
-          <i data-lucide="user-plus" class="w-4 h-4"></i>
+        <a href="/pages/registration.html" class="btn-primary text-xs py-2 px-4 flex items-center space-x-2">
+          <i data-lucide="user-plus" class="w-4 h-4 text-white"></i>
           <span>Daftar Anggota</span>
         </a>
       </div>
 
-      <!-- Mobile Menu Button & Mobile Theme Toggle -->
+      <!-- Mobile Menu Button -->
       <div class="md:hidden flex items-center space-x-2">
-        <div
-          class="flex items-center p-0.5 rounded-lg bg-slate-900/80 border border-slate-800 text-xs font-mono text-slate-400 space-x-0.5"
-          id="mobile-theme-switcher">
-          <button data-theme="dark" title="Dark" class="mobile-theme-btn p-1.5 rounded transition-all hover:text-white">
-            <i data-lucide="moon" class="w-3.5 h-3.5"></i>
-          </button>
-          <button data-theme="light" title="Light"
-            class="mobile-theme-btn p-1.5 rounded transition-all hover:text-white">
-            <i data-lucide="sun" class="w-3.5 h-3.5"></i>
-          </button>
-          <button data-theme="system" title="System"
-            class="mobile-theme-btn p-1.5 rounded transition-all hover:text-white">
-            <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
-          </button>
-        </div>
-        <button id="mobile-menu-btn" class="p-2 rounded-lg text-slate-300 hover:bg-slate-800">
+        <button id="mobile-menu-btn" class="p-2 rounded-lg text-purple-100 hover:bg-white/10">
           <i data-lucide="menu" class="w-6 h-6"></i>
         </button>
       </div>
     </div>
 
     <!-- Mobile Navigation Drawer -->
-    <div id="mobile-menu"
-      class="hidden md:hidden border-t border-slate-800 bg-aiot-dark/95 backdrop-blur-xl px-4 py-6 space-y-4">
-      <a href="#about" class="block text-slate-300 hover:text-aiot-cyan text-base">Profil</a>
-      <a href="#stats" class="block text-slate-300 hover:text-aiot-cyan text-base">Statistik</a>
-      <a href="#structure" class="block text-slate-300 hover:text-aiot-cyan text-base">Kepengurusan</a>
-      <a href="#showcase" class="block text-slate-300 hover:text-aiot-cyan text-base">Proyek</a>
-      <a href="#roadmap" class="block text-slate-300 hover:text-aiot-cyan text-base">Roadmap</a>
-      <div class="pt-4 border-t border-slate-800 flex flex-col space-y-3">
-        <div id="mobile-login-area" class="flex flex-col space-y-3">
-          <button class="open-login-modal w-full text-center py-2.5 rounded-xl bg-slate-800 text-slate-200">Login
-            Pengurus</button>
+    <div id="mobile-menu" class="hidden md:hidden border-t border-[#561F99] bg-[#0F051D] px-4 py-5 space-y-3">
+      <a href="#about" class="block text-purple-100 hover:text-white font-medium text-sm">Profil</a>
+      <a href="#research" class="block text-purple-100 hover:text-white font-medium text-sm">Bidang Riset</a>
+      <a href="#structure" class="block text-purple-100 hover:text-white font-medium text-sm">Kepengurusan</a>
+      <a href="#showcase" class="block text-purple-100 hover:text-white font-medium text-sm">Proyek</a>
+      <a href="#roadmap" class="block text-purple-100 hover:text-white font-medium text-sm">Roadmap</a>
+      <div class="pt-3 border-t border-[#561F99] flex flex-col space-y-2">
+        <div id="mobile-login-area">
+          <button
+            class="open-login-modal w-full text-center py-2 rounded-lg bg-white/10 text-white border border-[#561F99] font-semibold text-xs">
+            Login Pengurus
+          </button>
         </div>
-        <a href="/pages/registration.html"
-          class="w-full text-center py-2.5 rounded-xl bg-aiot-cyan text-slate-950 font-bold block">Daftar
-          Anggota</a>
+        <a href="/pages/registration.html" class="btn-primary w-full text-center py-2 text-xs font-bold block">
+          Daftar Anggota Baru
+        </a>
       </div>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="relative pt-20 pb-24 lg:pt-32 lg:pb-36 overflow-hidden">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+  <!-- ============================================================
+       1. HERO SECTION (Continuous Flow & Official Tagline)
+       ============================================================ -->
+  <section class="public-hero pt-24 pb-20 lg:pt-32 lg:pb-24 relative overflow-hidden">
 
-      <!-- Hero Content Centered -->
-      <div class="space-y-8 max-w-3xl mx-auto">
-        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.12]">
-          Empowering Innovation Through
-          <span class="block gradient-text-purple mt-3">AI & Internet of Things</span>
-        </h1>
+    <!-- Concentric Sonar Signal Rings (Matching KSM AIoT Official Brand Motif) -->
+    <div
+      class="absolute -top-24 -right-24 w-[520px] h-[520px] rounded-full border border-purple-500/10 pointer-events-none">
+    </div>
+    <div
+      class="absolute -top-12 -right-12 w-[390px] h-[390px] rounded-full border border-purple-500/15 pointer-events-none">
+    </div>
+    <div
+      class="absolute top-0 right-0 w-[260px] h-[260px] rounded-full border border-purple-500/20 pointer-events-none">
+    </div>
+    <div
+      class="absolute top-12 right-12 w-[130px] h-[130px] rounded-full border border-purple-500/25 pointer-events-none">
+    </div>
 
-        <p class="text-base sm:text-xl text-slate-400 leading-relaxed max-w-2xl mx-auto">
-          Portal resmi dan <strong>Sistem Manajemen KSM AIoT</strong>. Wadah kolaborasi riset hardware IoT, kecerdasan
-          buatan terapan, dan ekosistem otomasi operasional mahasiswa.
-        </p>
+    <!-- Ambient Luminous Glow Orbs -->
+    <div
+      class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-purple-600/30 via-[#9B5CE8]/20 to-transparent rounded-full blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute -top-10 -left-10 w-80 h-80 bg-purple-800/25 rounded-full blur-3xl pointer-events-none"></div>
 
-        <!-- CTAs -->
-        <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
-          <a href="/pages/registration.html"
-            class="px-8 py-4 rounded-xl bg-gradient-to-r from-aiot-cyan via-aiot-blue to-aiot-purple text-slate-950 font-bold text-base glow-cyan hover:scale-[1.03] transition-all flex items-center space-x-2">
-            <span>Daftar Anggota Baru</span>
-            <i data-lucide="arrow-right" class="w-5 h-5"></i>
-          </a>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
 
-          <a href="#showcase"
-            class="px-7 py-4 rounded-xl glass-panel text-slate-200 hover:text-aiot-cyan hover:border-aiot-cyan/40 transition-all font-semibold text-base flex items-center space-x-2">
-            <i data-lucide="folder-kanban" class="w-5 h-5 text-aiot-cyan"></i>
-            <span>Eksplorasi Proyek</span>
-          </a>
+      <!-- Main Headline (Solid White, Editorial Proportions) -->
+      <h1
+        class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.18] max-w-4xl mx-auto">
+        Researching Intelligent Systems for the Connected World.
+      </h1>
+
+      <!-- Subheadline -->
+      <p class="text-base sm:text-lg text-[#E9D8FD] leading-relaxed max-w-3xl mx-auto mt-6">
+        Portal resmi dan <strong>Sistem Manajemen KSM AIoT</strong>. Wadah kolaborasi riset rekayasa perangkat keras
+        IoT, kecerdasan buatan terapan, dan ekosistem otomasi operasional mahasiswa Fakultas Ilmu Komputer UPNVJ.
+      </p>
+
+      <!-- Action Buttons (High Contrast, Bold Text, Ambient Hover) -->
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-8">
+        <a href="/pages/registration.html"
+          class="px-7 py-3.5 rounded-xl bg-[#9B5CE8] text-white font-extrabold text-sm hover:bg-[#8A45DB] transition-all shadow-lg hover:shadow-[0_8px_30px_rgba(155,92,232,0.45)] hover:-translate-y-0.5 inline-flex items-center space-x-2">
+          <span>Daftar Anggota Baru</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-white"></i>
+        </a>
+
+        <a href="#showcase"
+          class="px-7 py-3.5 rounded-xl bg-[#1E0A38] text-white font-bold text-sm hover:bg-[#280E48] hover:border-[#C9A4F6] transition-all shadow-lg hover:shadow-[0_8px_30px_rgba(155,92,232,0.35)] hover:-translate-y-0.5 inline-flex items-center space-x-2 border border-[#561F99]">
+          <i data-lucide="folder-kanban" class="w-4 h-4 text-[#C9A4F6]"></i>
+          <span>Eksplorasi Proyek</span>
+        </a>
+      </div>
+
+      <!-- Quick Metrics Ribbon (High Contrast Dark Glass Card) -->
+      <div
+        class="bg-[#1E0A38]/90 backdrop-blur-md rounded-2xl p-6 sm:p-8 max-w-xl mx-auto mt-14 flex items-center justify-around border border-[#561F99] shadow-2xl">
+        <div class="text-center">
+          <div id="stat-member-counter" class="text-3xl sm:text-4xl font-extrabold text-white font-mono stat-counter"
+            data-target="34" data-suffix=" Anggota">34 Anggota</div>
+          <p class="text-xs text-[#C9A4F6] font-semibold mt-1">Anggota Aktif Terdaftar</p>
         </div>
-
-        <!-- Feature Highlights Flex -->
-        <div class="flex flex-wrap justify-center gap-6 pt-10 border-t border-slate-800/80 max-w-2xl mx-auto">
-          <div class="flex items-center space-x-3 text-left">
-            <div class="p-2.5 rounded-xl bg-slate-800/80 text-aiot-cyan">
-              <i data-lucide="cpu" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <h4 class="text-xs font-mono uppercase text-slate-400">Track Hardware</h4>
-              <p class="text-sm font-semibold text-slate-200">ESP32 & Sensors</p>
-            </div>
-          </div>
-          <div class="flex items-center space-x-3 text-left">
-            <div class="p-2.5 rounded-xl bg-slate-800/80 text-aiot-purple">
-              <i data-lucide="brain" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <h4 class="text-xs font-mono uppercase text-slate-400">Track Software</h4>
-              <p class="text-sm font-semibold text-slate-200">Python & Web AI</p>
-            </div>
-          </div>
-          <div class="flex items-center space-x-3 text-left">
-            <div class="p-2.5 rounded-xl bg-slate-800/80 text-aiot-neon">
-              <i data-lucide="bot" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <h4 class="text-xs font-mono uppercase text-slate-400">Discord Bot</h4>
-              <p class="text-sm font-semibold text-slate-200">Nexo Assistant</p>
-            </div>
-          </div>
+        <div class="w-px h-12 bg-[#561F99]"></div>
+        <div class="text-center">
+          <div class="text-3xl sm:text-4xl font-extrabold text-white font-mono stat-counter" data-target="3"
+            data-suffix=" Proyek">3 Proyek</div>
+          <p class="text-xs text-[#C9A4F6] font-semibold mt-1">Riset Unggulan Berjalan</p>
         </div>
-
       </div>
 
     </div>
   </section>
 
-  <!-- Live Statistics Section (Proportional Flex Layout) -->
-  <section id="stats" class="py-16 bg-slate-950/60 border-y border-slate-800/80 relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-wrap justify-center items-center gap-6 lg:gap-8">
+  <!-- ============================================================
+       2. ABOUT & INSTITUTIONAL PROFILE (Futuristic Glassmorphism)
+       ============================================================ -->
+  <section id="about" class="py-24 relative border-t border-[#561F99]/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
-        <!-- Stat 1 -->
-        <div
-          class="flex-1 min-w-[220px] max-w-xs glass-panel p-6 rounded-2xl border border-slate-800/80 text-center hover:border-aiot-cyan/30 transition-colors">
-          <div
-            class="w-12 h-12 mx-auto mb-4 rounded-xl bg-aiot-cyan/10 text-aiot-cyan flex items-center justify-center">
-            <i data-lucide="users" class="w-6 h-6"></i>
-          </div>
-          <div class="text-3xl sm:text-4xl font-extrabold text-white font-mono mb-1 stat-counter" data-target="30"
-            data-suffix="">0</div>
-          <div class="text-xs font-mono uppercase text-slate-400 tracking-wider">Anggota Aktif</div>
-        </div>
-
-        <!-- Stat 2 -->
-        <div
-          class="flex-1 min-w-[220px] max-w-xs glass-panel p-6 rounded-2xl border border-slate-800/80 text-center hover:border-aiot-neon/30 transition-colors">
-          <div
-            class="w-12 h-12 mx-auto mb-4 rounded-xl bg-aiot-neon/10 text-aiot-neon flex items-center justify-center">
-            <i data-lucide="folder-kanban" class="w-6 h-6"></i>
-          </div>
-          <div class="text-3xl sm:text-4xl font-extrabold text-white font-mono mb-1 stat-counter" data-target="2"
-            data-suffix=" Proyek">0</div>
-          <div class="text-xs font-mono uppercase text-slate-400 tracking-wider">Riset & Portofolio</div>
-        </div>
-
-        <!-- Stat 3 -->
-        <div
-          class="flex-1 min-w-[220px] max-w-xs glass-panel p-6 rounded-2xl border border-slate-800/80 text-center hover:border-aiot-pink/30 transition-colors">
-          <div
-            class="w-12 h-12 mx-auto mb-4 rounded-xl bg-aiot-pink/10 text-aiot-pink flex items-center justify-center">
-            <i data-lucide="file-text" class="w-6 h-6"></i>
-          </div>
-          <div class="text-3xl sm:text-4xl font-extrabold text-white font-mono mb-1 stat-counter" data-target="N/A"
-            data-suffix="+">0</div>
-          <div class="text-xs font-mono uppercase text-slate-400 tracking-wider">Kegiatan & Arsip Digital</div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- About & Focus Tracks Section -->
-  <section id="about" class="py-24 relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-      <!-- Section Title -->
-      <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
-        <h2 class="text-xs font-mono uppercase text-aiot-cyan tracking-widest">Tentang KSM AIoT</h2>
-        <h3 class="text-3xl sm:text-4xl font-extrabold text-white">Eksplorasi Riset & Pengembangan Berbasis Kolaborasi
-        </h3>
-        <p class="text-slate-400">
-          KSM AIoT dirancang sebagai ekosistem pembelajaran terbuka tempat mahasiswa mengasah keterampilan praktis
-          hardware IoT, kecerdasan buatan, hingga web development.
+      <div class="max-w-3xl mb-12">
+        <p class="text-xs font-mono uppercase text-[#C9A4F6] tracking-widest font-bold mb-2">Profil Organisasi</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          Pusat Kolaborasi Riset & Rekayasa IoT Mahasiswa
+        </h2>
+        <p class="text-[#E9D8FD] mt-3 text-sm sm:text-base leading-relaxed">
+          KSM AIoT (Kelompok Studi Mahasiswa Artificial Intelligence of Things) didirikan untuk menjembatani teori
+          komputasi akademis dengan penerapan rekayasa perangkat keras dan otomatisasi cerdas berstandar industri.
         </p>
       </div>
 
-      <!-- Tracks Grid / Flex -->
-      <div class="flex flex-wrap justify-center gap-8">
+      <!-- 3 Pillar Columns (Glassmorphism Cards) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl glass-panel-interactive space-y-3.5">
+          <div
+            class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#561F99] to-[#1E0A38] text-[#C9A4F6] flex items-center justify-center border border-[#561F99] shadow-md">
+            <i data-lucide="cpu" class="w-5 h-5"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">Riset Terapan Perangkat Keras</h3>
+          <p class="text-xs text-[#D8B4FE] leading-relaxed">
+            Eksplorasi sensor terdistribusi, komunikasi LoRaWAN & MQTT, serta integrasi mikrokontroler berdaya rendah
+            untuk monitoring lingkungan presisi.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl glass-panel-interactive space-y-3.5">
+          <div
+            class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#561F99] to-[#1E0A38] text-[#C9A4F6] flex items-center justify-center border border-[#561F99] shadow-md">
+            <i data-lucide="brain" class="w-5 h-5"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">Kecerdasan Buatan Terintegrasi</h3>
+          <p class="text-xs text-[#D8B4FE] leading-relaxed">
+            Penerapan Computer Vision pada Edge Device, model Machine Learning analitik, dan arsitektur RAG untuk
+            pengolahan repositori data kampus.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl glass-panel-interactive space-y-3.5">
+          <div
+            class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#561F99] to-[#1E0A38] text-[#C9A4F6] flex items-center justify-center border border-[#561F99] shadow-md">
+            <i data-lucide="server" class="w-5 h-5"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">Tata Kelola & Otomasi Kampus</h3>
+          <p class="text-xs text-[#D8B4FE] leading-relaxed">
+            Pengembangan sistem informasi terpadu, otomatisasi bot administrasi Discord, serta standardisasi arsip dan
+            inventaris laboratorium.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       3. RESEARCH TRACKS (Deep Accent Canvas)
+       ============================================================ -->
+  <section id="research" class="py-24 relative border-t border-[#561F99]/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <p class="text-xs font-mono uppercase text-[#C9A4F6] tracking-widest font-bold mb-2">Kurikulum & Peminatan</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          3 Bidang Riset & Pengembangan
+        </h2>
+        <p class="text-[#E9D8FD] text-sm mt-2">
+          Anggota KSM AIoT dibekali kurikulum terstruktur yang dipraktikkan langsung dalam proyek nyata.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
         <!-- Track 1 -->
         <div
-          class="flex-1 min-w-[280px] max-w-[380px] glass-panel glass-panel-hover p-8 rounded-2xl border border-slate-800 space-y-4">
-          <div class="w-12 h-12 rounded-xl bg-aiot-cyan/10 text-aiot-cyan flex items-center justify-center mb-6">
-            <i data-lucide="cpu" class="w-6 h-6"></i>
+          class="p-6 rounded-xl bg-[#1E0A38] border border-[#561F99] space-y-4 hover:border-[#C9A4F6] transition-all shadow-md">
+          <div
+            class="w-10 h-10 rounded-lg bg-[#0F051D] text-[#C9A4F6] flex items-center justify-center border border-[#561F99]">
+            <i data-lucide="cpu" class="w-5 h-5"></i>
           </div>
-          <h4 class="text-xl font-bold text-white">Hardware & Embedded</h4>
-          <p class="text-sm text-slate-400 leading-relaxed">
-            Perancangan sirkuit mikrokontroler (ESP32, STM32, Arduino), pemrosesan sinyal sensor, protokol komunikasi
-            MQTT, LoRaWAN, dan IoT Telemetry.
+          <h3 class="text-lg font-bold text-white">Hardware & Embedded</h3>
+          <p class="text-xs text-[#D8B4FE] leading-relaxed">
+            Perancangan sirkuit mikrokontroler (ESP32, STM32, Arduino), akuisisi data sensor real-time, protokol
+            transmisi MQTT, LoRaWAN, dan FreeRTOS.
           </p>
-          <div class="pt-4 border-t border-slate-800/60 text-xs font-mono text-aiot-cyan">
+          <div class="pt-3 border-t border-[#561F99] text-[11px] font-mono text-[#C9A4F6] font-medium">
             #ESP32 #SensorArray #MQTT #FreeRTOS
           </div>
         </div>
 
         <!-- Track 2 -->
         <div
-          class="flex-1 min-w-[280px] max-w-[380px] glass-panel glass-panel-hover p-8 rounded-2xl border border-slate-800 space-y-4">
-          <div class="w-12 h-12 rounded-xl bg-aiot-purple/10 text-aiot-purple flex items-center justify-center mb-6">
-            <i data-lucide="brain" class="w-6 h-6"></i>
+          class="p-6 rounded-xl bg-[#1E0A38] border border-[#561F99] space-y-4 hover:border-[#C9A4F6] transition-all shadow-md">
+          <div
+            class="w-10 h-10 rounded-lg bg-[#0F051D] text-[#C9A4F6] flex items-center justify-center border border-[#561F99]">
+            <i data-lucide="brain" class="w-5 h-5"></i>
           </div>
-          <h4 class="text-xl font-bold text-white">AI & Machine Learning</h4>
-          <p class="text-sm text-slate-400 leading-relaxed">
-            Implementasi Computer Vision di Edge Devices, Natural Language Processing, RAG Semantic Search (pgvector),
-            dan model machine learning terapan.
+          <h3 class="text-lg font-bold text-white">AI & Machine Learning</h3>
+          <p class="text-xs text-[#D8B4FE] leading-relaxed">
+            Implementasi Computer Vision di Edge Computing, model klasifikasi data sensor, RAG semantic search dengan
+            pgvector, dan analitik cerdas.
           </p>
-          <div class="pt-4 border-t border-slate-800/60 text-xs font-mono text-aiot-purple">
+          <div class="pt-3 border-t border-[#561F99] text-[11px] font-mono text-[#C9A4F6] font-medium">
             #PyTorch #YOLOv8 #LangChain #RAG
           </div>
         </div>
 
         <!-- Track 3 -->
         <div
-          class="flex-1 min-w-[280px] max-w-[380px] glass-panel glass-panel-hover p-8 rounded-2xl border border-slate-800 space-y-4">
-          <div class="w-12 h-12 rounded-xl bg-aiot-neon/10 text-aiot-neon flex items-center justify-center mb-6">
-            <i data-lucide="globe" class="w-6 h-6"></i>
+          class="p-6 rounded-xl bg-[#1E0A38] border border-[#561F99] space-y-4 hover:border-[#C9A4F6] transition-all shadow-md">
+          <div
+            class="w-10 h-10 rounded-lg bg-[#0F051D] text-[#C9A4F6] flex items-center justify-center border border-[#561F99]">
+            <i data-lucide="globe" class="w-5 h-5"></i>
           </div>
-          <h4 class="text-xl font-bold text-white">Web & Cloud Systems</h4>
-          <p class="text-sm text-slate-400 leading-relaxed">
-            Pengembangan Management Platform (Vue.js, FastAPI, PostgreSQL), RESTful API, bot otomatisasi Discord (Nexo
-            Bot), dan infrastruktur Docker.
+          <h3 class="text-lg font-bold text-white">Web & Cloud Systems</h3>
+          <p class="text-xs text-[#D8B4FE] leading-relaxed">
+            Pengembangan platform manajemen terpadu (FastAPI, PostgreSQL, Vue.js), integrasi REST API, otomatisasi bot
+            administrasi, dan kontainerisasi Docker.
           </p>
-          <div class="pt-4 border-t border-slate-800/60 text-xs font-mono text-aiot-neon">
-            #VueJS #FastAPI #PostgreSQL #Docker
+          <div class="pt-3 border-t border-[#561F99] text-[11px] font-mono text-[#C9A4F6] font-medium">
+            #FastAPI #PostgreSQL #VueJS #Docker
           </div>
         </div>
 
@@ -312,373 +305,212 @@
     </div>
   </section>
 
-  <!-- Organization Structure Section (Full Hierarchy Tree with Flex) -->
-  <section id="structure" class="py-24 bg-slate-950/60 border-y border-slate-800/80 relative">
+  <!-- ============================================================
+       4. LEADERSHIP & ORGANIZATION HIERARCHY
+       ============================================================ -->
+  <section id="structure" class="py-24 relative border-t border-[#561F99]/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
-        <h2 class="text-xs font-mono uppercase text-aiot-purple tracking-widest">Struktur Kepengurusan</h2>
-        <h3 class="text-3xl sm:text-4xl font-extrabold text-white">Hierarki Pengurus KSM AIoT</h3>
-        <p class="text-slate-400">
-          Struktur kepengurusan terpadu mencakup BPH Inti, Pimpinan Divisi, dan Tim Staff divisi.
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <p class="text-xs font-mono uppercase text-[#C9A4F6] tracking-widest font-bold mb-2">Struktur Kepengurusan</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          Hierarki Pengurus KSM AIoT Periode 2025/2026
+        </h2>
+        <p class="text-[#E9D8FD] text-sm mt-2">
+          Struktur terpadu terdiri dari Badan Pengurus Harian (BPH) dan Tim Divisi fungsional.
         </p>
 
         <!-- Structure Filter Tabs -->
-        <div class="flex flex-wrap justify-center items-center gap-2 pt-4">
+        <div class="flex flex-wrap justify-center items-center gap-2 pt-6">
           <button data-target="all"
-            class="struct-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-aiot-purple text-slate-950 font-bold glow-purple transition-all border border-aiot-purple">Semua
+            class="struct-tab-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#9B5CE8] text-white font-bold border border-[#9B5CE8] transition-all shadow-sm">Semua
             Struktur</button>
           <button data-target="bph"
-            class="struct-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-slate-900/80 text-slate-400 hover:text-white transition-all border border-slate-800/80">BPH
+            class="struct-tab-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#0F051D] border border-[#561F99] transition-all">BPH
             Inti</button>
           <button data-target="riset"
-            class="struct-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-slate-900/80 text-slate-400 hover:text-white transition-all border border-slate-800/80">Akademik
+            class="struct-tab-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#0F051D] border border-[#561F99] transition-all">Akademik
             & Riset</button>
           <button data-target="psdm"
-            class="struct-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-slate-900/80 text-slate-400 hover:text-white transition-all border border-slate-800/80">PSDM</button>
+            class="struct-tab-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#0F051D] border border-[#561F99] transition-all">PSDM</button>
           <button data-target="humas"
-            class="struct-tab-btn px-4 py-2 rounded-lg text-xs font-mono bg-slate-900/80 text-slate-400 hover:text-white transition-all border border-slate-800/80">Humas
+            class="struct-tab-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#0F051D] border border-[#561F99] transition-all">Humas
             & Multimedia</button>
         </div>
       </div>
 
-      <!-- Structure Container (Flex) -->
-      <div class="flex flex-col gap-14">
+      <!-- Structure Container -->
+      <div class="space-y-12">
 
-        <!-- LEVEL 1: BPH Inti (Ketua, Wakil, Sekretaris, Bendahara) -->
-        <div id="panel-bph" class="struct-panel flex flex-col gap-8">
-          <div class="flex items-center justify-center space-x-4">
-            <span class="h-px w-12 bg-gradient-to-r from-transparent to-slate-700"></span>
-            <span class="text-xs font-mono text-slate-400 uppercase tracking-widest font-semibold">Badan Pengurus Harian
-              (BPH)</span>
-            <span class="h-px w-12 bg-gradient-to-l from-transparent to-slate-700"></span>
+        <!-- LEVEL 1: BPH Inti -->
+        <div id="panel-bph" class="struct-panel space-y-6">
+          <div class="text-center">
+            <span
+              class="text-xs font-mono uppercase tracking-wider text-white font-bold px-3 py-1 bg-[#0F051D] border border-[#561F99] rounded">Badan
+              Pengurus Harian (BPH)</span>
           </div>
 
-          <!-- Ketua & Wakil Ketua (Tier 1) -->
-          <div class="flex flex-wrap justify-center items-stretch gap-8">
+          <!-- Ketua & Wakil -->
+          <div class="flex flex-wrap justify-center gap-6">
             <!-- Ketua -->
             <div
-              class="w-[300px] sm:w-[340px] glass-panel p-6 rounded-2xl border border-slate-800 hover:border-aiot-cyan/50 relative shadow-xl text-center group hover:-translate-y-1 transition-all flex flex-col justify-between items-center">
-              <div class="w-full flex flex-col items-center">
-                <div
-                  class="w-28 h-28 mx-auto mb-4 rounded-xl overflow-hidden border border-slate-800 shadow-lg relative bg-slate-900 flex-shrink-0 group-hover:border-aiot-cyan/50 transition-colors">
-                  <img
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop"
-                    alt="Foto Ketua KSM AIoT - Dzulfikri Adjmal"
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                </div>
-                <div class="min-h-[44px] flex items-center justify-center w-full mt-1">
-                  <h4 class="text-lg font-bold text-white break-words leading-snug px-1 tracking-tight">Dzulfikri Adjmal
-                  </h4>
-                </div>
+              class="w-72 rounded-xl bg-[#1E0A38] border border-[#561F99] p-5 text-center flex flex-col items-center hover:border-[#C9A4F6] transition-all shadow-md">
+              <div class="w-24 h-24 rounded-lg overflow-hidden border border-[#561F99] mb-3 bg-[#090312]">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop"
+                  alt="Ketua KSM AIoT" class="w-full h-full object-cover" />
               </div>
-              <p
-                class="text-xs text-aiot-cyan font-mono mt-3 pt-3 border-t border-slate-800/80 w-full text-center font-medium">
-                Ketua KSM AIoT</p>
+              <h4 class="text-sm font-bold text-white">Dzulfikri Adjmal</h4>
+              <p class="text-xs text-[#C9A4F6] font-mono font-semibold mt-1">Ketua KSM AIoT</p>
             </div>
 
             <!-- Wakil Ketua -->
             <div
-              class="w-[300px] sm:w-[340px] glass-panel p-6 rounded-2xl border border-slate-800 hover:border-aiot-purple/50 relative shadow-xl text-center group hover:-translate-y-1 transition-all flex flex-col justify-between items-center">
-              <div class="w-full flex flex-col items-center">
-                <div
-                  class="w-28 h-28 mx-auto mb-4 rounded-xl overflow-hidden border border-slate-800 shadow-lg relative bg-slate-900 flex-shrink-0 group-hover:border-aiot-purple/50 transition-colors">
-                  <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop"
-                    alt="Foto Wakil Ketua KSM AIoT - Adinda Rizki Sya'bana Diva"
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                </div>
-                <div class="min-h-[44px] flex items-center justify-center w-full mt-1">
-                  <h4 class="text-lg font-bold text-white break-words leading-snug px-1 tracking-tight">Adinda Rizki
-                    Sya'bana Diva</h4>
-                </div>
+              class="w-72 rounded-xl bg-[#1E0A38] border border-[#561F99] p-5 text-center flex flex-col items-center hover:border-[#C9A4F6] transition-all shadow-md">
+              <div class="w-24 h-24 rounded-lg overflow-hidden border border-[#561F99] mb-3 bg-[#090312]">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop"
+                  alt="Wakil Ketua KSM AIoT" class="w-full h-full object-cover" />
               </div>
-              <p
-                class="text-xs text-aiot-purple font-mono mt-3 pt-3 border-t border-slate-800/80 w-full text-center font-medium">
-                Wakil Ketua KSM AIoT</p>
+              <h4 class="text-sm font-bold text-white">Adinda Rizki Sya'bana Diva</h4>
+              <p class="text-xs text-[#C9A4F6] font-mono font-semibold mt-1">Wakil Ketua KSM AIoT</p>
             </div>
           </div>
 
-          <!-- Sekretaris & Bendahara (Tier 2) -->
-          <div class="flex flex-wrap justify-center items-stretch gap-8">
-            <!-- Sekretaris -->
+          <!-- Sekretaris & Bendahara -->
+          <div class="flex flex-wrap justify-center gap-6">
             <div
-              class="w-[300px] sm:w-[340px] glass-panel p-5 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between items-center group text-center">
-              <div class="w-full flex flex-col items-center">
-                <div
-                  class="w-24 h-24 mx-auto mb-3 rounded-xl overflow-hidden border border-slate-800 shadow-md bg-slate-900 flex-shrink-0 group-hover:border-slate-700 transition-colors">
-                  <img
-                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop"
-                    alt="Foto Sekretaris" class="w-full h-full object-cover" />
-                </div>
-                <div class="min-h-[44px] flex items-center justify-center w-full mt-1">
-                  <h4 class="text-base font-bold text-white break-words leading-snug px-1 tracking-tight">Syahla Nada
-                    Afifah</h4>
-                </div>
+              class="w-64 rounded-xl bg-[#1E0A38] border border-[#561F99] p-4 text-center flex flex-col items-center hover:border-[#C9A4F6] transition-all shadow-md">
+              <div class="w-20 h-20 rounded-lg overflow-hidden border border-[#561F99] mb-2.5 bg-[#090312]">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop"
+                  alt="Sekretaris" class="w-full h-full object-cover" />
               </div>
-              <p class="text-xs text-slate-400 font-mono mt-2 pt-2 border-t border-slate-800/80 w-full text-center">
-                Sekretaris</p>
+              <h4 class="text-xs font-bold text-white">Syahla Nada Afifah</h4>
+              <p class="text-[11px] text-[#D8B4FE] font-mono mt-0.5">Sekretaris</p>
             </div>
 
-            <!-- Bendahara -->
             <div
-              class="w-[300px] sm:w-[340px] glass-panel p-5 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between items-center group text-center">
-              <div class="w-full flex flex-col items-center">
-                <div
-                  class="w-24 h-24 mx-auto mb-3 rounded-xl overflow-hidden border border-slate-800 shadow-md bg-slate-900 flex-shrink-0 group-hover:border-slate-700 transition-colors">
-                  <img
-                    src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=600&auto=format&fit=crop"
-                    alt="Foto Bendahara" class="w-full h-full object-cover" />
-                </div>
-                <div class="min-h-[44px] flex items-center justify-center w-full mt-1">
-                  <h4 class="text-base font-bold text-white break-words leading-snug px-1 tracking-tight">Aniqah Raniah
-                    Ramadhani Lakare</h4>
-                </div>
+              class="w-64 rounded-xl bg-[#1E0A38] border border-[#561F99] p-4 text-center flex flex-col items-center hover:border-[#C9A4F6] transition-all shadow-md">
+              <div class="w-20 h-20 rounded-lg overflow-hidden border border-[#561F99] mb-2.5 bg-[#090312]">
+                <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop"
+                  alt="Bendahara" class="w-full h-full object-cover" />
               </div>
-              <p class="text-xs text-slate-400 font-mono mt-2 pt-2 border-t border-slate-800/80 w-full text-center">
-                Bendahara</p>
+              <h4 class="text-xs font-bold text-white">Aniqah Raniah Ramadhani Lakare</h4>
+              <p class="text-[11px] text-[#D8B4FE] font-mono mt-0.5">Bendahara</p>
             </div>
           </div>
         </div>
 
-        <!-- LEVEL 2: DIVISI (Container Kadiv & Container Staff per Divisi) -->
-        <div class="flex flex-col gap-12">
-
-          <!-- DIVISI 1: Akademik & Riset -->
-          <div id="panel-riset" class="struct-panel flex flex-col gap-6">
-            <div class="flex items-center space-x-3 pb-3 border-b border-slate-800/80">
-              <div class="p-2 rounded-lg bg-aiot-cyan/10 text-aiot-cyan">
-                <i data-lucide="book-open" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h4 class="text-lg font-bold text-white tracking-tight">Divisi Akademik & Riset</h4>
-                <p class="text-xs text-slate-400 font-mono">Eksplorasi penelitian Artificial Intelligence & Embedded IoT
-                </p>
-              </div>
+        <!-- DIVISI 1: Akademik & Riset -->
+        <div id="panel-riset" class="struct-panel rounded-xl bg-[#1E0A38] border border-[#561F99] p-6 shadow-md">
+          <div class="flex items-center space-x-2.5 pb-4 mb-4 border-b border-[#561F99]">
+            <div
+              class="w-8 h-8 rounded-lg bg-[#0F051D] text-[#C9A4F6] flex items-center justify-center border border-[#561F99]">
+              <i data-lucide="book-open" class="w-4 h-4"></i>
             </div>
-
-            <!-- 2 Container (Kadiv & Staff) Flex -->
-            <div class="flex flex-wrap gap-8 justify-center items-stretch">
-              <!-- Container Kadiv -->
-              <div
-                class="w-[300px] sm:w-[340px] glass-panel p-6 rounded-2xl border border-slate-800 hover:border-aiot-cyan/40 text-center flex flex-col justify-between items-center transition-all group">
-                <div class="w-full flex flex-col items-center">
-                  <div
-                    class="w-28 h-28 mx-auto mb-4 rounded-xl overflow-hidden border border-slate-800 shadow-md bg-slate-900 flex-shrink-0 group-hover:border-aiot-cyan/40 transition-colors">
-                    <img
-                      src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600&auto=format&fit=crop"
-                      alt="Foto Kadiv Akademik & Riset" class="w-full h-full object-cover" />
-                  </div>
-                  <div class="text-xs font-mono uppercase text-aiot-cyan font-semibold">Kepala Divisi</div>
-                  <div class="min-h-[44px] flex items-center justify-center w-full mt-1">
-                    <h4 class="text-lg font-bold text-white break-words leading-snug px-1 tracking-tight">Rahman Ilyas
-                      Al-Kahfi</h4>
-                  </div>
-                </div>
-                <div class="pt-4 mt-3 border-t border-slate-800/80 text-xs text-slate-400 font-mono w-full text-center">
-                  Koordinator Riset & Inovasi Teknologi
-                </div>
-              </div>
-
-              <!-- Container Staff -->
-              <div
-                class="w-full max-w-[480px] glass-panel p-6 rounded-2xl border border-slate-800 flex flex-col justify-between">
-                <div>
-                  <div
-                    class="h-40 w-full rounded-xl overflow-hidden border border-slate-800 shadow-md mb-4 bg-slate-900 relative">
-                    <img
-                      src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&auto=format&fit=crop"
-                      alt="Foto Tim Staff Akademik & Riset" class="w-full h-full object-cover" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
-                  </div>
-                  <div class="text-xs font-mono uppercase text-aiot-cyan font-semibold mb-3">Tim Staff Divisi</div>
-
-                  <!-- Staff Name List -->
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-slate-300">
-                    <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-aiot-cyan flex-shrink-0"></i>
-                      <span class="truncate">Bima Saputra</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-aiot-cyan flex-shrink-0"></i>
-                      <span class="truncate">Hanif Naundra Arsantyo</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-aiot-cyan flex-shrink-0"></i>
-                      <span class="truncate">Ihsan Naufal</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-aiot-cyan flex-shrink-0"></i>
-                      <span class="truncate">Naufal Alif</span>
-                    </div>
-                    <div
-                      class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2 sm:col-span-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-aiot-cyan flex-shrink-0"></i>
-                      <span class="truncate">Stenly Christian</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div>
+              <h4 class="text-sm font-bold text-white">Divisi Akademik & Riset</h4>
+              <p class="text-xs text-[#D8B4FE]">Eksplorasi penelitian Artificial Intelligence & Embedded IoT</p>
             </div>
           </div>
 
-          <!-- DIVISI 2: PSDM -->
-          <div id="panel-psdm" class="struct-panel flex flex-col gap-6">
-            <div class="flex items-center space-x-3 pb-3 border-b border-slate-800/80">
-              <div class="p-2 rounded-lg bg-aiot-purple/10 text-purple-300">
-                <i data-lucide="heart-handshake" class="w-5 h-5"></i>
-              </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+            <!-- Kadiv -->
+            <div class="p-4 rounded-lg bg-[#090312] border border-[#561F99] flex items-center space-x-3">
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop"
+                alt="Kadiv Riset" class="w-12 h-12 rounded-lg object-cover border border-[#561F99]" />
               <div>
-                <h4 class="text-lg font-bold text-white tracking-tight">Divisi Pengembangan Sumber Daya Manusia (PSDM)
-                </h4>
-                <p class="text-xs text-slate-400 font-mono">Kaderisasi, pengembangan kapasitas & keharmonisan anggota
-                </p>
+                <p class="text-[10px] font-mono uppercase text-[#C9A4F6] font-bold">Kepala Divisi</p>
+                <h5 class="text-xs font-bold text-white">Rahman Ilyas Al-Kahfi</h5>
               </div>
             </div>
 
-            <!-- 2 Container (Kadiv & Staff) Flex -->
-            <div class="flex flex-wrap gap-8 justify-center items-stretch">
-              <!-- Container Kadiv -->
-              <div
-                class="w-[300px] sm:w-[340px] glass-panel p-6 rounded-2xl border border-slate-800 hover:border-purple-500/40 text-center flex flex-col justify-between items-center transition-all group">
-                <div class="w-full flex flex-col items-center">
-                  <div
-                    class="w-28 h-28 mx-auto mb-4 rounded-xl overflow-hidden border border-slate-800 shadow-md bg-slate-900 flex-shrink-0 group-hover:border-purple-500/40 transition-colors">
-                    <img
-                      src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=600&auto=format&fit=crop"
-                      alt="Foto Kadiv PSDM" class="w-full h-full object-cover" />
-                  </div>
-                  <div class="text-xs font-mono uppercase text-purple-300 font-semibold">Kepala Divisi</div>
-                  <div class="min-h-[44px] flex items-center justify-center w-full mt-1">
-                    <h4 class="text-lg font-bold text-white break-words leading-snug px-1 tracking-tight">Nicolas
-                      Debrito</h4>
-                  </div>
-                </div>
-                <div class="pt-4 mt-3 border-t border-slate-800/80 text-xs text-slate-400 font-mono w-full text-center">
-                  Koordinator Kaderisasi & SDM
-                </div>
-              </div>
-
-              <!-- Container Staff -->
-              <div
-                class="w-full max-w-[480px] glass-panel p-6 rounded-2xl border border-slate-800 flex flex-col justify-between">
-                <div>
-                  <div
-                    class="h-40 w-full rounded-xl overflow-hidden border border-slate-800 shadow-md mb-4 bg-slate-900 relative">
-                    <img
-                      src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop"
-                      alt="Foto Tim Staff PSDM" class="w-full h-full object-cover" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
-                  </div>
-                  <div class="text-xs font-mono uppercase text-purple-300 font-semibold mb-3">Tim Staff Divisi</div>
-
-                  <!-- Staff Name List -->
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-slate-300">
-                    <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-purple-300 flex-shrink-0"></i>
-                      <span class="truncate">Farel</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-purple-300 flex-shrink-0"></i>
-                      <span class="truncate">Farrel</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-purple-300 flex-shrink-0"></i>
-                      <span class="truncate">Levianto</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-purple-300 flex-shrink-0"></i>
-                      <span class="truncate">Ramadhania</span>
-                    </div>
-                    <div
-                      class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2 sm:col-span-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-purple-300 flex-shrink-0"></i>
-                      <span class="truncate">Septi</span>
-                    </div>
-                  </div>
-                </div>
+            <!-- Staff -->
+            <div class="md:col-span-2 p-4 rounded-lg bg-[#090312] border border-[#561F99]">
+              <p class="text-[10px] font-mono uppercase text-[#D8B4FE] font-bold mb-2">Tim Staff Riset</p>
+              <div class="flex flex-wrap gap-2 text-xs font-medium text-white">
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Bima Saputra</span>
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Hanif Naundra Arsantyo</span>
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Ihsan Naufal</span>
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Naufal Alif</span>
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Stenly Christian</span>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- DIVISI 3: Humas & Multimedia -->
-          <div id="panel-humas" class="struct-panel flex flex-col gap-6">
-            <div class="flex items-center space-x-3 pb-3 border-b border-slate-800/80">
-              <div class="p-2 rounded-lg bg-aiot-pink/10 text-aiot-pink">
-                <i data-lucide="megaphone" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h4 class="text-lg font-bold text-white tracking-tight">Divisi Humas & Multimedia</h4>
-                <p class="text-xs text-slate-400 font-mono">Media publikasi, desain kreatif, & hubungan kemitraan
-                  eksternal</p>
-              </div>
+        <!-- DIVISI 2: PSDM -->
+        <div id="panel-psdm" class="struct-panel rounded-xl bg-[#1E0A38] border border-[#561F99] p-6 shadow-md">
+          <div class="flex items-center space-x-2.5 pb-4 mb-4 border-b border-[#561F99]">
+            <div
+              class="w-8 h-8 rounded-lg bg-[#0F051D] text-[#C9A4F6] flex items-center justify-center border border-[#561F99]">
+              <i data-lucide="heart-handshake" class="w-4 h-4"></i>
             </div>
-
-            <!-- 2 Container (Kadiv & Staff) Flex -->
-            <div class="flex flex-wrap gap-8 justify-center items-stretch">
-              <!-- Container Kadiv -->
-              <div
-                class="w-[300px] sm:w-[340px] glass-panel p-6 rounded-2xl border border-slate-800 hover:border-pink-500/40 text-center flex flex-col justify-between items-center transition-all group">
-                <div class="w-full flex flex-col items-center">
-                  <div
-                    class="w-28 h-28 mx-auto mb-4 rounded-xl overflow-hidden border border-slate-800 shadow-md bg-slate-900 flex-shrink-0 group-hover:border-pink-500/40 transition-colors">
-                    <img
-                      src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=600&auto=format&fit=crop"
-                      alt="Foto Kadiv Humas & Multimedia" class="w-full h-full object-cover" />
-                  </div>
-                  <div class="text-xs font-mono uppercase text-aiot-pink font-semibold">Kepala Divisi</div>
-                  <div class="min-h-[44px] flex items-center justify-center w-full mt-1">
-                    <h4 class="text-lg font-bold text-white break-words leading-snug px-1 tracking-tight">Yusuf Martinus
-                      Arief</h4>
-                  </div>
-                </div>
-                <div class="pt-4 mt-3 border-t border-slate-800/80 text-xs text-slate-400 font-mono w-full text-center">
-                  Koordinator Branding & Komunikasi
-                </div>
-              </div>
-
-              <!-- Container Staff -->
-              <div
-                class="w-full max-w-[480px] glass-panel p-6 rounded-2xl border border-slate-800 flex flex-col justify-between">
-                <div>
-                  <div
-                    class="h-40 w-full rounded-xl overflow-hidden border border-slate-800 shadow-md mb-4 bg-slate-900 relative">
-                    <img
-                      src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&auto=format&fit=crop"
-                      alt="Foto Tim Staff Humas" class="w-full h-full object-cover" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
-                  </div>
-                  <div class="text-xs font-mono uppercase text-aiot-pink font-semibold mb-3">Tim Staff Divisi</div>
-
-                  <!-- Staff Name List -->
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-slate-300">
-                    <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-aiot-pink flex-shrink-0"></i>
-                      <span class="truncate">Raya</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-aiot-pink flex-shrink-0"></i>
-                      <span class="truncate">Yoram</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-aiot-pink flex-shrink-0"></i>
-                      <span class="truncate">Alfred</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-aiot-pink flex-shrink-0"></i>
-                      <span class="truncate">Jane Doe</span>
-                    </div>
-                    <div
-                      class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 flex items-center space-x-2 sm:col-span-2">
-                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-aiot-pink flex-shrink-0"></i>
-                      <span class="truncate">John Doe</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div>
+              <h4 class="text-sm font-bold text-white">Divisi Pengembangan Sumber Daya Manusia (PSDM)</h4>
+              <p class="text-xs text-[#D8B4FE]">Kaderisasi, pengembangan kapasitas & keharmonisan anggota</p>
             </div>
           </div>
 
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+            <!-- Kadiv -->
+            <div class="p-4 rounded-lg bg-[#090312] border border-[#561F99] flex items-center space-x-3">
+              <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=300&auto=format&fit=crop"
+                alt="Kadiv PSDM" class="w-12 h-12 rounded-lg object-cover border border-[#561F99]" />
+              <div>
+                <p class="text-[10px] font-mono uppercase text-[#C9A4F6] font-bold">Kepala Divisi</p>
+                <h5 class="text-xs font-bold text-white">Nicolas Debrito</h5>
+              </div>
+            </div>
+
+            <!-- Staff -->
+            <div class="md:col-span-2 p-4 rounded-lg bg-[#090312] border border-[#561F99]">
+              <p class="text-[10px] font-mono uppercase text-[#D8B4FE] font-bold mb-2">Tim Staff PSDM</p>
+              <div class="flex flex-wrap gap-2 text-xs font-medium text-white">
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Farel</span>
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Farrel</span>
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Levianto</span>
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Ramadhania</span>
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Septi</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIVISI 3: Humas & Multimedia -->
+        <div id="panel-humas" class="struct-panel rounded-xl bg-[#1E0A38] border border-[#561F99] p-6 shadow-md">
+          <div class="flex items-center space-x-2.5 pb-4 mb-4 border-b border-[#561F99]">
+            <div
+              class="w-8 h-8 rounded-lg bg-[#0F051D] text-[#C9A4F6] flex items-center justify-center border border-[#561F99]">
+              <i data-lucide="megaphone" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-white">Divisi Humas & Multimedia</h4>
+              <p class="text-xs text-[#D8B4FE]">Media publikasi, branding visual, dan kemitraan eksternal</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+            <!-- Kadiv -->
+            <div class="p-4 rounded-lg bg-[#090312] border border-[#561F99] flex items-center space-x-3">
+              <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=300&auto=format&fit=crop"
+                alt="Kadiv Humas" class="w-12 h-12 rounded-lg object-cover border border-[#561F99]" />
+              <div>
+                <p class="text-[10px] font-mono uppercase text-[#C9A4F6] font-bold">Kepala Divisi</p>
+                <h5 class="text-xs font-bold text-white">Yusuf Martinus Arief</h5>
+              </div>
+            </div>
+
+            <!-- Staff -->
+            <div class="md:col-span-2 p-4 rounded-lg bg-[#090312] border border-[#561F99]">
+              <p class="text-[10px] font-mono uppercase text-[#D8B4FE] font-bold mb-2">Tim Staff Humas</p>
+              <div class="flex flex-wrap gap-2 text-xs font-medium text-white">
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Raya</span>
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Yoram</span>
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Alfred</span>
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Jane Doe</span>
+                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">John Doe</span>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -686,213 +518,377 @@
     </div>
   </section>
 
-  <!-- Project Showcase Section (Fluid Flex Layout) -->
-  <section id="showcase" class="py-24 relative">
+  <!-- ============================================================
+       5. PROJECTS SHOWCASE
+       ============================================================ -->
+  <section id="showcase" class="py-24 relative border-t border-[#561F99]/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <!-- Showcase Header -->
-      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
         <div>
-          <h2 class="text-xs font-mono uppercase text-aiot-cyan tracking-widest mb-2">Proyek</h2>
-          <h3 class="text-3xl sm:text-4xl font-extrabold text-white">Showcase Riset & Inovasi AIoT</h3>
-          <p class="text-slate-400 mt-2 max-w-xl">
-            Hasil karya riset, hardware cerdas, dan inovasi yang dikembangkan di lingkungan KSM AIoT.
+          <p class="text-xs font-mono uppercase text-[#C9A4F6] tracking-widest font-bold mb-2">Proyek & Inovasi</p>
+          <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Showcase Riset Terapan AIoT</h2>
+          <p class="text-[#E9D8FD] text-sm mt-1">Karya riset hardware, kecerdasan buatan, dan otomasi KSM AIoT UPNVJ.
           </p>
         </div>
 
         <!-- Search Bar -->
         <div class="relative w-full md:w-72">
-          <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5"></i>
+          <i data-lucide="search" class="w-4 h-4 text-[#C9A4F6] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
           <input id="project-search" type="text" placeholder="Cari proyek atau stack..."
-            class="w-full bg-slate-900/90 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-aiot-cyan font-mono" />
+            class="input-institutional pl-11 py-2 text-xs" />
         </div>
       </div>
 
       <!-- Filter Tabs -->
-      <div class="flex flex-wrap items-center gap-2 mb-10">
+      <div class="flex flex-wrap items-center gap-2 mb-8">
         <button data-filter="all"
-          class="project-filter-btn px-4 py-2 rounded-xl text-xs font-mono bg-aiot-cyan text-slate-950 font-semibold glow-cyan transition-all">Semua
+          class="project-filter-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#9B5CE8] text-white font-bold border border-[#9B5CE8] transition-all shadow-sm">Semua
           Proyek</button>
         <button data-filter="iot"
-          class="project-filter-btn px-4 py-2 rounded-xl text-xs font-mono bg-slate-800/80 text-slate-300 hover:text-white transition-all">IoT
+          class="project-filter-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#0F051D] border border-[#561F99] transition-all">IoT
           & Embedded</button>
         <button data-filter="bot"
-          class="project-filter-btn px-4 py-2 rounded-xl text-xs font-mono bg-slate-800/80 text-slate-300 hover:text-white transition-all">Bot
+          class="project-filter-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#0F051D] border border-[#561F99] transition-all">Bot
           & AI Agent</button>
       </div>
 
-      <!-- Projects Grid (Fluid Flex Container) -->
-      <div id="projects-grid" class="flex flex-wrap justify-center gap-8">
-        <!-- Rendered dynamically by main.js -->
+      <!-- Projects Grid (Dynamically Rendered by main.js) -->
+      <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Rendered by main.js -->
       </div>
 
     </div>
   </section>
 
-  <!-- Roadmap Timeline Section -->
-  <section id="roadmap" class="py-24 bg-slate-950/60 border-y border-slate-800/80 relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- ============================================================
+       6. ROADMAP STEP PROCESS
+       ============================================================ -->
+  <section id="roadmap" class="py-24 relative border-t border-[#561F99]/50">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
-        <h2 class="text-xs font-mono uppercase text-aiot-neon tracking-widest">Milestone & Timeline</h2>
-        <h3 class="text-3xl sm:text-4xl font-extrabold text-white">Rencana Pengembangan Management System</h3>
-        <p class="text-slate-400">
-          Target pengerjaan bertahap (Fase 0 – Fase 5) untuk mengakomodasi proses belajar Web Development.
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <p class="text-xs font-mono uppercase text-[#C9A4F6] tracking-widest font-bold mb-2">Milestone & Timeline</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Tahapan Pengembangan Sistem Manajemen</h2>
+        <p class="text-[#E9D8FD] text-sm mt-2">Alur roadmap bertahap (Fase 0 s/d Fase 5) pengembangan platform terpadu
+          KSM AIoT.</p>
+      </div>
+
+      <!-- Step Process Timeline -->
+      <div class="relative">
+        <!-- Connecting Vertical Line (Desktop & Mobile) -->
+        <div class="absolute left-4 sm:left-1/2 top-4 bottom-4 w-0.5 bg-[#561F99] -translate-x-1/2 hidden sm:block">
+        </div>
+        <div class="absolute left-4 top-4 bottom-4 w-0.5 bg-[#561F99] sm:hidden"></div>
+
+        <div class="space-y-10 sm:space-y-12">
+
+          <!-- Step 1: Fase 0 -->
+          <div class="relative flex flex-col sm:flex-row items-start sm:items-center group">
+            <!-- Content Left (Desktop) -->
+            <div class="sm:w-1/2 sm:pr-10 sm:text-right pl-12 sm:pl-0 order-2 sm:order-1">
+              <div class="inline-flex items-center space-x-2 mb-1">
+                <span class="text-[11px] font-mono text-[#C9A4F6] font-semibold">Bulan 1 • Prototyping</span>
+                <span class="badge-status badge-approved text-[10px]">Sedang Berjalan</span>
+              </div>
+              <h4 class="text-base font-bold text-white">Fase 0: Scaffold & Landing</h4>
+              <p class="text-xs text-[#D8B4FE] leading-relaxed mt-1">
+                Prototyping landing page interaktif, routing dasar Vue.js, integrasi Git/GitHub, dan endpoint statis
+                FastAPI.
+              </p>
+            </div>
+
+            <!-- Center Node Circle -->
+            <div
+              class="absolute left-0 sm:left-1/2 -translate-x-0 sm:-translate-x-1/2 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#9B5CE8] text-white font-bold text-xs shadow-md ring-4 ring-[#561F99]/50 border border-[#C9A4F6] z-10 order-1 sm:order-2">
+              01
+            </div>
+
+            <!-- Empty Right Column for Balance -->
+            <div class="sm:w-1/2 sm:pl-10 hidden sm:block order-3"></div>
+          </div>
+
+          <!-- Step 2: Fase 1 -->
+          <div class="relative flex flex-col sm:flex-row items-start sm:items-center group">
+            <!-- Empty Left Column -->
+            <div class="sm:w-1/2 sm:pr-10 hidden sm:block order-1"></div>
+
+            <!-- Center Node Circle -->
+            <div
+              class="absolute left-0 sm:left-1/2 -translate-x-0 sm:-translate-x-1/2 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#1E0A38] border-2 border-[#561F99] text-[#C9A4F6] font-bold text-xs shadow-sm z-10 order-1 sm:order-2">
+              02
+            </div>
+
+            <!-- Content Right (Desktop) -->
+            <div class="sm:w-1/2 sm:pl-10 pl-12 sm:pl-0 order-2 sm:order-3">
+              <div class="inline-flex items-center space-x-2 mb-1">
+                <span class="text-[11px] font-mono text-[#D8B4FE] font-semibold">Bulan 2 • Foundation</span>
+                <span class="badge-status badge-neutral text-[10px]">Rencana Q2</span>
+              </div>
+              <h4 class="text-base font-bold text-white">Fase 1: Database & JWT Auth</h4>
+              <p class="text-xs text-[#D8B4FE] leading-relaxed mt-1">
+                Setup skema database relasional PostgreSQL, scaffold dashboard ERP, otentikasi JWT login NIM pengurus.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 3: Fase 2 -->
+          <div class="relative flex flex-col sm:flex-row items-start sm:items-center group">
+            <!-- Content Left (Desktop) -->
+            <div class="sm:w-1/2 sm:pr-10 sm:text-right pl-12 sm:pl-0 order-2 sm:order-1">
+              <div class="inline-flex items-center space-x-2 mb-1">
+                <span class="text-[11px] font-mono text-[#D8B4FE] font-semibold">Bulan 3 • Core Features</span>
+                <span class="badge-status badge-neutral text-[10px]">Rencana Q2</span>
+              </div>
+              <h4 class="text-base font-bold text-white">Fase 2: Registrasi & Presensi</h4>
+              <p class="text-xs text-[#D8B4FE] leading-relaxed mt-1">
+                Sistem seleksi penerimaan calon anggota baru, linking akun Discord via bot Nexo, modul presensi
+                pertemuan lab.
+              </p>
+            </div>
+
+            <!-- Center Node Circle -->
+            <div
+              class="absolute left-0 sm:left-1/2 -translate-x-0 sm:-translate-x-1/2 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#1E0A38] border-2 border-[#561F99] text-[#C9A4F6] font-bold text-xs shadow-sm z-10 order-1 sm:order-2">
+              03
+            </div>
+
+            <!-- Empty Right Column -->
+            <div class="sm:w-1/2 sm:pl-10 hidden sm:block order-3"></div>
+          </div>
+
+          <!-- Step 4: Fase 3 -->
+          <div class="relative flex flex-col sm:flex-row items-start sm:items-center group">
+            <!-- Empty Left Column -->
+            <div class="sm:w-1/2 sm:pr-10 hidden sm:block order-1"></div>
+
+            <!-- Center Node Circle -->
+            <div
+              class="absolute left-0 sm:left-1/2 -translate-x-0 sm:-translate-x-1/2 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#1E0A38] border-2 border-[#561F99] text-[#C9A4F6] font-bold text-xs shadow-sm z-10 order-1 sm:order-2">
+              04
+            </div>
+
+            <!-- Content Right (Desktop) -->
+            <div class="sm:w-1/2 sm:pl-10 pl-12 sm:pl-0 order-2 sm:order-3">
+              <div class="inline-flex items-center space-x-2 mb-1">
+                <span class="text-[11px] font-mono text-[#D8B4FE] font-semibold">Bulan 4-5 • Operational</span>
+                <span class="badge-status badge-neutral text-[10px]">Rencana Q3</span>
+              </div>
+              <h4 class="text-base font-bold text-white">Fase 3: Arsip & Inventaris</h4>
+              <p class="text-xs text-[#D8B4FE] leading-relaxed mt-1">
+                Pemberkasan surat resmi berstandar baku universitas, notifikasi webhook Discord, dan pencatatan
+                sirkulasi inventaris alat lab.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 5: Fase 4 -->
+          <div class="relative flex flex-col sm:flex-row items-start sm:items-center group">
+            <!-- Content Left (Desktop) -->
+            <div class="sm:w-1/2 sm:pr-10 sm:text-right pl-12 sm:pl-0 order-2 sm:order-1">
+              <div class="inline-flex items-center space-x-2 mb-1">
+                <span class="text-[11px] font-mono text-[#D8B4FE] font-semibold">Bulan 6-7 • Financial</span>
+                <span class="badge-status badge-neutral text-[10px]">Rencana Q3</span>
+              </div>
+              <h4 class="text-base font-bold text-white">Fase 4: Finansial & Audit</h4>
+              <p class="text-xs text-[#D8B4FE] leading-relaxed mt-1">
+                Sistem pembukuan kas organisasi, alur approval pencairan dana hibah, serta audit log berbasis level hak
+                akses.
+              </p>
+            </div>
+
+            <!-- Center Node Circle -->
+            <div
+              class="absolute left-0 sm:left-1/2 -translate-x-0 sm:-translate-x-1/2 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#1E0A38] border-2 border-[#561F99] text-[#C9A4F6] font-bold text-xs shadow-sm z-10 order-1 sm:order-2">
+              05
+            </div>
+
+            <!-- Empty Right Column -->
+            <div class="sm:w-1/2 sm:pl-10 hidden sm:block order-3"></div>
+          </div>
+
+          <!-- Step 6: Fase 5 -->
+          <div class="relative flex flex-col sm:flex-row items-start sm:items-center group">
+            <!-- Empty Left Column -->
+            <div class="sm:w-1/2 sm:pr-10 hidden sm:block order-1"></div>
+
+            <!-- Center Node Circle -->
+            <div
+              class="absolute left-0 sm:left-1/2 -translate-x-0 sm:-translate-x-1/2 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#1E0A38] border-2 border-[#561F99] text-[#C9A4F6] font-bold text-xs shadow-sm z-10 order-1 sm:order-2">
+              06
+            </div>
+
+            <!-- Content Right (Desktop) -->
+            <div class="sm:w-1/2 sm:pl-10 pl-12 sm:pl-0 order-2 sm:order-3">
+              <div class="inline-flex items-center space-x-2 mb-1">
+                <span class="text-[11px] font-mono text-[#D8B4FE] font-semibold">Ongoing • AI Integration</span>
+                <span class="badge-status badge-neutral text-[10px]">Roadmap Lanjutan</span>
+              </div>
+              <h4 class="text-base font-bold text-white">Fase 5: RAG & Analytics</h4>
+              <p class="text-xs text-[#D8B4FE] leading-relaxed mt-1">
+                Pencarian semantik dokumen arsip berbasis RAG via AI Agent Nexo dan analitik visualisasi keterlibatan
+                riset anggota.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       7. CALL TO ACTION - AIO JOIN (Empowering Nodes, Innovating Futures)
+       ============================================================ -->
+  <section id="aio-join" class="py-24 relative border-t border-[#561F99]/50 overflow-hidden">
+    <!-- Ambient Glow Orbs -->
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-[#9B5CE8]/20 via-[#561F99]/25 to-transparent rounded-full blur-3xl pointer-events-none">
+    </div>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div
+        class="rounded-3xl bg-gradient-to-b from-[#1E0A38]/90 to-[#0F051D]/95 border border-[#561F99] p-8 sm:p-14 text-center shadow-2xl backdrop-blur-md relative overflow-hidden">
+
+        <!-- Decorative Sonar Waves in Card -->
+        <div
+          class="absolute -bottom-16 -right-16 w-64 h-64 rounded-full border border-purple-500/15 pointer-events-none">
+        </div>
+        <div class="absolute -bottom-8 -right-8 w-44 h-44 rounded-full border border-purple-500/20 pointer-events-none">
+        </div>
+        <!-- Headline with Visual Wordplay Accent -->
+        <h2
+          class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight max-w-3xl mx-auto">
+          <span class="text-[#9B5CE8] font-black tracking-wide drop-shadow-[0_0_24px_rgba(155,92,232,0.6)]">AIO</span>
+          Join.
+          <span class="block mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Ayo, Jadi Bagian dari Inovasi
+            Ini!</span>
+        </h2>
+
+        <!-- Hook Text for Freshmen & Beginners -->
+        <p class="text-sm sm:text-base text-[#E9D8FD] leading-relaxed max-w-2xl mx-auto mt-6">
+          Belum pernah pegang sensor atau nulis kode AI sebelumnya? Tidak masalah. Di <strong>KSM AIoT UPNVJ</strong>,
+          kamu belajar langsung lewat workshop hands-on dan didampingi mentor riset, sampai proyekmu siap dipamerin.
         </p>
-      </div>
 
-      <!-- Timeline Grid / Flex -->
-      <div class="flex flex-wrap justify-center gap-6">
-
-        <!-- Fase 0 -->
-        <div class="flex-1 min-w-[280px] max-w-[380px] glass-panel p-6 rounded-2xl border border-slate-800 relative">
-          <div class="text-xs font-mono text-aiot-cyan mb-2">Bulan 1 • Prototyping</div>
-          <h4 class="text-lg font-bold text-white mb-2">Fase 0: Scaffold & Landing</h4>
-          <p class="text-xs text-slate-400 leading-relaxed mb-4">
-            Prototyping landing page, routing dasar Vue.js, integrasi Git/GitHub, dan endpoint statis FastAPI tanpa
-            login.
-          </p>
-          <span
-            class="inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">Done
-            / Ongoing</span>
+        <!-- 4 Key Highlights -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-8 max-w-3xl mx-auto text-left">
+          <div class="p-3.5 rounded-xl bg-[#090312]/60 border border-[#561F99]/70 flex items-start space-x-2.5">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-[#9B5CE8] flex-shrink-0 mt-0.5"></i>
+            <span class="text-xs font-semibold text-white">100% Terbuka untuk Pemula</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#090312]/60 border border-[#561F99]/70 flex items-start space-x-2.5">
+            <i data-lucide="users" class="w-4 h-4 text-[#9B5CE8] flex-shrink-0 mt-0.5"></i>
+            <span class="text-xs font-semibold text-white">Mentorship & Peer Learning</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#090312]/60 border border-[#561F99]/70 flex items-start space-x-2.5">
+            <i data-lucide="cpu" class="w-4 h-4 text-[#9B5CE8] flex-shrink-0 mt-0.5"></i>
+            <span class="text-xs font-semibold text-white">Fasilitas Hardware & Lab</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#090312]/60 border border-[#561F99]/70 flex items-start space-x-2.5">
+            <i data-lucide="trophy" class="w-4 h-4 text-[#9B5CE8] flex-shrink-0 mt-0.5"></i>
+            <span class="text-xs font-semibold text-white">Portofolio Riset Riil</span>
+          </div>
         </div>
 
-        <!-- Fase 1 -->
-        <div class="flex-1 min-w-[280px] max-w-[380px] glass-panel p-6 rounded-2xl border border-slate-800 relative">
-          <div class="text-xs font-mono text-aiot-cyan mb-2">Bulan 2 • Foundation</div>
-          <h4 class="text-lg font-bold text-white mb-2">Fase 1: Database & JWT Auth</h4>
-          <p class="text-xs text-slate-400 leading-relaxed mb-4">
-            Setup Database schema <code class="text-aiot-cyan">management</code>, UI Scaffold dashboard, JWT Auth
-            terpasang (login NIM).
-          </p>
-          <span
-            class="inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">Planned</span>
-        </div>
-
-        <!-- Fase 2 -->
-        <div class="flex-1 min-w-[280px] max-w-[380px] glass-panel p-6 rounded-2xl border border-slate-800 relative">
-          <div class="text-xs font-mono text-aiot-cyan mb-2">Bulan 3 • Core Features</div>
-          <h4 class="text-lg font-bold text-white mb-2">Fase 2: Registrasi & Presensi</h4>
-          <p class="text-xs text-slate-400 leading-relaxed mb-4">
-            Sistem Registrasi berjalan, Linking Discord via Nexo Bot, dan Modul Presensi via Web/Voice Channel.
-          </p>
-          <span
-            class="inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">Planned</span>
-        </div>
-
-        <!-- Fase 3 -->
-        <div class="flex-1 min-w-[280px] max-w-[380px] glass-panel p-6 rounded-2xl border border-slate-800 relative">
-          <div class="text-xs font-mono text-aiot-cyan mb-2">Bulan 4-5 • Operational</div>
-          <h4 class="text-lg font-bold text-white mb-2">Fase 3: Arsip & Inventaris</h4>
-          <p class="text-xs text-slate-400 leading-relaxed mb-4">
-            Sistem Arsip (Upload PDF, nomor otomatis, status approval) + Notifikasi webhook Discord & Inventaris
-            hardware.
-          </p>
-          <span
-            class="inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">Planned</span>
-        </div>
-
-        <!-- Fase 4 -->
-        <div class="flex-1 min-w-[280px] max-w-[380px] glass-panel p-6 rounded-2xl border border-slate-800 relative">
-          <div class="text-xs font-mono text-aiot-cyan mb-2">Bulan 6-7 • Financial</div>
-          <h4 class="text-lg font-bold text-white mb-2">Fase 4: Finansial & Audit</h4>
-          <p class="text-xs text-slate-400 leading-relaxed mb-4">
-            Sistem Finansial (Approval flow kas & pemasukan), Audit keamanan role (Admin, Sekretaris, Bendahara,
-            Anggota).
-          </p>
-          <span
-            class="inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">Planned</span>
-        </div>
-
-        <!-- Fase 5 -->
-        <div class="flex-1 min-w-[280px] max-w-[380px] glass-panel p-6 rounded-2xl border border-slate-800 relative">
-          <div class="text-xs font-mono text-aiot-cyan mb-2">Ongoing • Enhancement</div>
-          <h4 class="text-lg font-bold text-white mb-2">Fase 5: RAG & Analytics</h4>
-          <p class="text-xs text-slate-400 leading-relaxed mb-4">
-            Integrasi RAG semantic search (Arsip dapat dicari via Nexo Chatbot) & Analytics Dashboard lanjutan.
-          </p>
-          <span
-            class="inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">Planned</span>
+        <!-- CTA Action Buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+          <a href="/pages/registration.html"
+            class="px-8 py-4 rounded-xl bg-[#9B5CE8] text-white font-extrabold text-sm sm:text-base hover:bg-[#8A45DB] transition-all shadow-xl hover:shadow-[0_8px_30px_rgba(155,92,232,0.5)] hover:-translate-y-0.5 inline-flex items-center space-x-2.5">
+            <span>Buka Portal Pendaftaran</span>
+            <i data-lucide="arrow-right" class="w-5 h-5 text-white"></i>
+          </a>
+          <a href="#about"
+            class="px-7 py-4 rounded-xl bg-[#1E0A38] text-white font-bold text-sm hover:bg-[#280E48] hover:border-[#C9A4F6] transition-all shadow-lg border border-[#561F99] inline-flex items-center space-x-2">
+            <i data-lucide="info" class="w-4 h-4 text-[#C9A4F6]"></i>
+            <span>Pelajari Selengkapnya</span>
+          </a>
         </div>
 
       </div>
-
     </div>
   </section>
 
-  <!-- Login Modal -->
-  <div id="login-modal"
-    class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-    <div class="glass-panel rounded-2xl max-w-sm w-full p-8 border border-slate-800 shadow-2xl relative">
-      <button id="close-login-modal" class="absolute top-5 right-5 text-slate-400 hover:text-white">
-        <i data-lucide="x" class="w-5 h-5"></i>
+  <!-- ============================================================
+       8. LOGIN MODAL (Clean Dark Modal)
+       ============================================================ -->
+  <div id="login-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+    <div class="bg-[#1E0A38] rounded-2xl max-w-sm w-full p-6 border border-[#561F99] shadow-2xl relative text-white">
+      <button id="close-login-modal" class="absolute top-4 right-4 text-[#C9A4F6] hover:text-white">
+        <i data-lucide="x" class="w-4 h-4"></i>
       </button>
 
-      <div class="mb-6 text-center">
-        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-aiot-cyan/10 text-aiot-cyan flex items-center justify-center">
-          <i data-lucide="lock" class="w-6 h-6"></i>
+      <div class="text-center pb-4 border-b border-[#561F99]">
+        <div
+          class="w-10 h-10 rounded-full bg-[#0F051D] text-[#C9A4F6] flex items-center justify-center mx-auto mb-2 border border-[#561F99]">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
         </div>
-        <h3 class="text-xl font-bold text-white">Login Management System</h3>
-        <p class="text-xs text-slate-400 mt-1">Akses penuh Dashboard KSM AIoT UPNVJ</p>
+        <h3 class="text-lg font-bold text-white">Login Management System</h3>
+        <p class="text-xs text-[#D8B4FE] mt-0.5">Akses Dashboard Pengurus KSM AIoT UPNVJ</p>
       </div>
 
-      <form id="login-form" class="space-y-4">
+      <form id="login-form" class="space-y-3.5 mt-4">
         <div>
-          <label class="block text-xs font-mono text-slate-300 mb-1">NIM / Student ID</label>
+          <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">NIM / Student ID</label>
           <input id="login-nim" type="text" required placeholder="Contoh: 2310511001"
-            class="form-input-aiot w-full rounded-xl px-4 py-2.5 text-sm font-mono" />
+            class="input-institutional text-xs font-mono" />
         </div>
 
         <div>
-          <label class="block text-xs font-mono text-slate-300 mb-1">Password</label>
+          <label class="block text-xs font-semibold text-[#E9D8FD] mb-1">Password</label>
           <input id="login-password" type="password" required placeholder="••••••••"
-            class="form-input-aiot w-full rounded-xl px-4 py-2.5 text-sm" />
+            class="input-institutional text-xs" />
         </div>
 
-        <button type="submit"
-          class="w-full py-3 rounded-xl bg-aiot-cyan text-slate-950 font-bold text-sm glow-cyan hover:opacity-90 transition-opacity">
+        <button type="submit" class="btn-primary w-full py-2.5 text-xs font-bold mt-2">
           Masuk Dashboard
         </button>
       </form>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="mt-auto border-t border-slate-800/80 bg-slate-950 py-12">
+  <!-- ============================================================
+       9. PUBLIC FOOTER (Primary Dark #0F051D)
+       ============================================================ -->
+  <footer class="public-footer mt-auto py-12 bg-[#0F051D]/90 backdrop-blur-md border-t border-[#561F99]/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
 
-      <!-- Brand Info -->
-      <div class="flex items-center space-x-3 text-center md:text-left">
-        <img src="./ksm-aiot-logo.png" alt="KSM AIoT Logo"
-          class="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(0,242,254,0.3)] flex-shrink-0" />
+      <!-- Brand Info with UPNVJ & KSM AIoT Logos -->
+      <div class="flex items-center space-x-3.5 text-center md:text-left">
+        <div class="flex items-center space-x-2 flex-shrink-0">
+          <img src="/Logo_UPNVJ.png" alt="Logo UPN 'Veteran' Jakarta" class="w-9 h-9 object-contain" />
+          <img src="/ksm-aiot-logo.png" alt="KSM AIoT Logo" class="w-10 h-10 object-contain" />
+        </div>
         <div>
-          <span class="font-bold text-white font-mono text-sm">KSM AIoT System</span>
-          <p class="text-xs text-slate-400 font-medium mt-0.5">Fakultas Ilmu Komputer</p>
-          <p class="text-xs text-slate-500 font-mono">Universitas Pembangunan Nasional "Veteran" Jakarta</p>
+          <span class="font-bold text-white text-sm">KSM AIoT UPNVJ</span>
+          <p class="text-xs text-purple-200 mt-0.5">Fakultas Ilmu Komputer, Universitas Pembangunan Nasional
+            "Veteran" Jakarta</p>
+          <p class="text-[11px] text-[#C9A4F6] font-mono italic mt-0.5">"Empowering Nodes, Innovating Futures"</p>
         </div>
       </div>
 
-      <!-- Social Media Links -->
-      <div class="flex items-center space-x-3">
+      <!-- Social Media & Links -->
+      <div class="flex flex-wrap items-center justify-center space-x-3">
         <a href="https://www.instagram.com/aiotupnvj/" target="_blank" rel="noopener noreferrer"
-          class="px-3.5 py-2 rounded-xl glass-panel text-slate-300 hover:text-aiot-pink hover:border-aiot-pink/50 transition-all flex items-center space-x-2 text-xs font-mono group"
+          class="px-3 py-1.5 rounded-md bg-white/10 text-purple-100 hover:text-white hover:bg-white/20 border border-[#561F99] transition-all flex items-center space-x-2 text-xs font-mono"
           title="Instagram @aiotupnvj">
-          <i data-lucide="instagram" class="w-4 h-4 text-slate-400 group-hover:text-aiot-pink transition-colors"></i>
+          <i data-lucide="instagram" class="w-3.5 h-3.5"></i>
           <span>@aiotupnvj</span>
         </a>
 
         <a href="https://github.com/ksm-aiot-upnvj" target="_blank" rel="noopener noreferrer"
-          class="px-3.5 py-2 rounded-xl glass-panel text-slate-300 hover:text-aiot-cyan hover:border-aiot-cyan/50 transition-all flex items-center space-x-2 text-xs font-mono group"
+          class="px-3 py-1.5 rounded-md bg-white/10 text-purple-100 hover:text-white hover:bg-white/20 border border-[#561F99] transition-all flex items-center space-x-2 text-xs font-mono"
           title="GitHub ksm-aiot-upnvj">
-          <i data-lucide="github" class="w-4 h-4 text-slate-400 group-hover:text-aiot-cyan transition-colors"></i>
+          <i data-lucide="github" class="w-3.5 h-3.5"></i>
           <span>ksm-aiot-upnvj</span>
         </a>
       </div>
 
-      <!-- Copyright & Info -->
-      <div class="text-xs text-slate-500 font-mono text-center md:text-right">
+      <!-- Copyright -->
+      <div class="text-xs text-purple-200 font-mono text-center md:text-right">
         <p>&copy; 2026 KSM AIoT. All rights reserved.</p>
-        <p class="mt-1">Inovasi Riset & Sistem Manajemen Terpadu</p>
+        <p class="text-[11px] mt-0.5 text-[#C9A4F6]">Portal Riset & Sistem Manajemen Terpadu</p>
       </div>
 
     </div>
