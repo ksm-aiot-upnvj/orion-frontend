@@ -2,34 +2,91 @@ import { animateCounters, initIcons, initThemeEngine, showToast } from '../modul
 import { getAuthUser, login, logout } from '../modules/auth.js';
 import { initialProjectsData } from '../modules/data.js';
 
-// Organizational Structure Tab Switcher
+// Organizational Structure Interactive Hierarchy Tree & Branch Highlighting
 function initStructureTabs() {
   const tabs = document.querySelectorAll('.struct-tab-btn');
-  const panels = document.querySelectorAll('.struct-panel');
+  const branchGroups = document.querySelectorAll('.tree-branch-group');
+  const busHighlight = document.getElementById('tree-bus-highlight');
+  const treeContainer = document.getElementById('tree-canvas-container');
 
   if (!tabs.length) return;
 
+  // Auto center tree canvas horizontally on load
+  if (treeContainer) {
+    setTimeout(() => {
+      const scrollMax = treeContainer.scrollWidth - treeContainer.clientWidth;
+      if (scrollMax > 0) {
+        treeContainer.scrollLeft = scrollMax / 2;
+      }
+    }, 150);
+
+    // Mouse drag-to-scroll functionality for desktop users
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+
+    treeContainer.addEventListener('mousedown', (e) => {
+      isDown = true;
+      treeContainer.classList.add('cursor-grabbing');
+      startX = e.pageX - treeContainer.offsetLeft;
+      scrollLeft = treeContainer.scrollLeft;
+    });
+
+    treeContainer.addEventListener('mouseleave', () => {
+      isDown = false;
+      treeContainer.classList.remove('cursor-grabbing');
+    });
+
+    treeContainer.addEventListener('mouseup', () => {
+      isDown = false;
+      treeContainer.classList.remove('cursor-grabbing');
+    });
+
+    treeContainer.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - treeContainer.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      treeContainer.scrollLeft = scrollLeft - walk;
+    });
+  }
+
+  // Branch Highlighting Engine
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const target = tab.getAttribute('data-target');
 
       // Update active tab button style
       tabs.forEach(t => {
-        t.className = 'struct-tab-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#0F051D] border border-[#561F99] transition-all';
+        t.className = 'struct-tab-btn px-4 py-2 rounded-xl text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#280E48] hover:text-white border border-[#561F99] transition-all shadow-sm';
       });
 
-      tab.className = 'struct-tab-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#9B5CE8] text-white font-bold border border-[#9B5CE8] transition-all shadow-sm';
+      tab.className = 'struct-tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-[#9B5CE8] text-white border border-[#9B5CE8] transition-all shadow-md';
 
-      // Show/Hide Panels
-      panels.forEach(panel => {
+      // Apply branch highlighting and muting
+      branchGroups.forEach(group => {
+        const branchName = group.getAttribute('data-branch');
         if (target === 'all') {
-          panel.classList.remove('hidden');
-        } else if (panel.id === `panel-${target}`) {
-          panel.classList.remove('hidden');
+          group.classList.remove('branch-muted');
+          group.classList.add('branch-active');
+        } else if (branchName === 'root' || branchName === target) {
+          group.classList.remove('branch-muted');
+          group.classList.add('branch-active');
         } else {
-          panel.classList.add('hidden');
+          group.classList.remove('branch-active');
+          group.classList.add('branch-muted');
         }
       });
+
+      // Update Bus Rail line appearance
+      if (busHighlight) {
+        if (target === 'all') {
+          busHighlight.classList.remove('branch-muted');
+          busHighlight.classList.add('branch-active');
+        } else {
+          busHighlight.classList.add('branch-active');
+        }
+      }
 
       initIcons();
     });

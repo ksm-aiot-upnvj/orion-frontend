@@ -563,6 +563,81 @@ body {
   pointer-events: none;
 }
 
+/* ============================================================
+   ORGANIZATIONAL HIERARCHY TREE SYSTEM (TREKKER THEME)
+   ============================================================ */
+.tree-node-card {
+  background: linear-gradient(180deg, #1E0A38 0%, #0F051D 100%);
+  border: 1px solid var(--deep-accent);
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(86, 31, 153, 0.2);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+.tree-node-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 35px -5px rgba(0, 0, 0, 0.75), 0 0 25px rgba(155, 92, 232, 0.4);
+}
+
+.tree-avatar-bubble {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  max-width: 44px;
+  max-height: 44px;
+  border-radius: 9999px;
+  overflow: hidden;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Division Accent Borders */
+.border-accent-presidium {
+  border-top: 3.5px solid #9B5CE8;
+}
+.border-accent-bph {
+  border-top: 3.5px solid #C084FC;
+}
+.border-accent-riset {
+  border-top: 3.5px solid #38BDF8;
+}
+.border-accent-psdm {
+  border-top: 3.5px solid #4ADE80;
+}
+.border-accent-humas {
+  border-top: 3.5px solid #FB923C;
+}
+
+/* Tree Connector Lines & Branch Highlighting */
+.tree-branch-group,
+.tree-connector-group {
+  transition: opacity 0.35s ease-in-out, filter 0.35s ease-in-out;
+}
+
+.tree-branch-group.branch-muted,
+.tree-connector-group.branch-muted {
+  opacity: 0.20 !important;
+  filter: grayscale(100%) contrast(65%) !important;
+  pointer-events: auto;
+}
+
+.tree-branch-group.branch-active,
+.tree-connector-group.branch-active {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.tree-branch-group.branch-active .tree-node-card {
+  box-shadow: 0 14px 32px -5px rgba(155, 92, 232, 0.4), 0 0 20px rgba(155, 92, 232, 0.25);
+}
+
+.tree-line-active {
+  background-color: #9B5CE8 !important;
+  box-shadow: 0 0 10px rgba(155, 92, 232, 0.8) !important;
+}
+
 /* Hide scrollbars for clean mobile touch navigation ribbons */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

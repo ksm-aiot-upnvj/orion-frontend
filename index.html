@@ -306,213 +306,452 @@
   </section>
 
   <!-- ============================================================
-       4. LEADERSHIP & ORGANIZATION HIERARCHY
+       4. ORGANIZATIONAL STRUCTURE - INTERACTIVE HIERARCHY TREE
        ============================================================ -->
-  <section id="structure" class="py-24 relative border-t border-[#561F99]/50">
+  <section id="structure" class="py-24 relative border-t border-[#561F99]/50 overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div class="text-center max-w-3xl mx-auto mb-12">
-        <p class="text-xs font-mono uppercase text-gray-400 tracking-widest font-bold mb-2">Struktur Kepengurusan</p>
-        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          Hierarki Pengurus KSM AIoT Periode 2025/2026
+      <div class="text-center max-w-3xl mx-auto mb-8">
+        <p class="text-xs font-mono uppercase text-[#C9A4F6] tracking-widest font-bold mb-2">Bagan Organisasi</p>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
+          Struktur Kepengurusan KSM AIoT
         </h2>
-        <p class="text-gray-300 text-sm mt-2">
-          Struktur terpadu terdiri dari Badan Pengurus Harian (BPH) dan Tim Divisi fungsional.
+        <p class="text-[#E9D8FD] text-xs sm:text-sm mt-2 max-w-2xl mx-auto">
+          Bagan komando dan koordinasi pengurus KSM AIoT UPNVJ Periode 2025/2026. Klik filter jabatan untuk menyorot <em>(highlight)</em> alur cabang tertentu.
         </p>
 
         <!-- Structure Filter Tabs -->
         <div class="flex flex-wrap justify-center items-center gap-2 pt-6">
           <button data-target="all"
-            class="struct-tab-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#9B5CE8] text-white font-bold border border-[#9B5CE8] transition-all shadow-sm">Semua
-            Struktur</button>
+            class="struct-tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-[#9B5CE8] text-white border border-[#9B5CE8] transition-all shadow-md">
+            Semua Struktur
+          </button>
           <button data-target="bph"
-            class="struct-tab-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#1E0A38] text-gray-400 hover:bg-[#0F051D] border border-[#561F99] transition-all">BPH
-            Inti</button>
+            class="struct-tab-btn px-4 py-2 rounded-xl text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#280E48] hover:text-white border border-[#561F99] transition-all shadow-sm">
+            BPH Inti
+          </button>
           <button data-target="riset"
-            class="struct-tab-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#1E0A38] text-gray-400 hover:bg-[#0F051D] border border-[#561F99] transition-all">Akademik
-            & Riset</button>
+            class="struct-tab-btn px-4 py-2 rounded-xl text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#280E48] hover:text-white border border-[#561F99] transition-all shadow-sm">
+            Divisi Akademik & Riset
+          </button>
           <button data-target="psdm"
-            class="struct-tab-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#1E0A38] text-gray-400 hover:bg-[#0F051D] border border-[#561F99] transition-all">PSDM</button>
+            class="struct-tab-btn px-4 py-2 rounded-xl text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#280E48] hover:text-white border border-[#561F99] transition-all shadow-sm">
+            Divisi PSDM
+          </button>
           <button data-target="humas"
-            class="struct-tab-btn px-3.5 py-1.5 rounded-md text-xs font-medium bg-[#1E0A38] text-gray-400 hover:bg-[#0F051D] border border-[#561F99] transition-all">Humas
-            & Multimedia</button>
+            class="struct-tab-btn px-4 py-2 rounded-xl text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#280E48] hover:text-white border border-[#561F99] transition-all shadow-sm">
+            Divisi Humas & Multimedia
+          </button>
         </div>
       </div>
 
-      <!-- Structure Container -->
-      <div class="space-y-12">
+      <!-- Mobile Drag & Pan Helper Pill -->
+      <div class="flex items-center justify-center space-x-2 text-xs font-mono text-[#C9A4F6] bg-[#1E0A38]/90 border border-[#561F99] rounded-full px-4 py-1.5 mx-auto w-fit mb-6 shadow-sm">
+        <i data-lucide="move-horizontal" class="w-3.5 h-3.5 text-[#9B5CE8] animate-pulse"></i>
+        <span>Geser / Drag kanvas untuk menjelajah seluruh bagan hierarki</span>
+      </div>
 
-        <!-- LEVEL 1: BPH Inti -->
-        <div id="panel-bph" class="struct-panel space-y-6">
-          <div class="text-center">
-            <span
-              class="text-xs font-mono uppercase tracking-wider text-white font-bold px-3 py-1 bg-[#0F051D] border border-[#561F99] rounded">Badan
-              Pengurus Harian (BPH)</span>
+      <!-- Tree Canvas Container (Pan/Scroll on Mobile & Desktop) -->
+      <div id="tree-canvas-container"
+        class="w-full overflow-x-auto pb-12 pt-6 no-scrollbar cursor-grab active:cursor-grabbing select-none touch-pan-x rounded-2xl bg-[#090312]/60 border border-[#561F99]/40 p-4 sm:p-8 backdrop-blur-xs">
+        
+        <div id="tree-canvas" class="min-w-[1100px] max-w-6xl mx-auto flex flex-col items-center">
+
+          <!-- 1. KETUA & WAKIL KETUA (PRESIDIUM STACK) -->
+          <div class="tree-branch-group relative flex flex-col items-center z-20" data-branch="root">
+            <!-- Ketua Card -->
+            <div class="tree-node-card border-accent-presidium w-64 pt-6 pb-4 px-5 text-center relative group">
+              <div class="tree-avatar-bubble mx-auto -mt-10 mb-2 border-2 border-[#9B5CE8] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop"
+                  alt="Ketua" class="w-full h-full object-cover" />
+              </div>
+              <div class="absolute top-2.5 left-3 text-[10px] font-mono text-purple-300 bg-[#301057] px-2 py-0.5 rounded border border-[#561F99] font-bold">
+                01
+              </div>
+              <h4 class="text-sm font-bold text-white tracking-tight group-hover:text-[#C9A4F6] transition-colors">
+                Dzulfikri Adjmal
+              </h4>
+              <p class="text-xs font-semibold text-[#E9D8FD] mt-0.5">Ketua KSM AIoT</p>
+              <p class="text-[10px] font-mono text-purple-300/70 mt-1">Informatika UPNVJ 🇮🇩</p>
+            </div>
+
+            <!-- Vertical Connector to Wakil Ketua -->
+            <div class="w-0.5 h-6 bg-[#561F99] my-0.5"></div>
+
+            <!-- Wakil Ketua Card -->
+            <div class="tree-node-card border-accent-presidium w-64 pt-6 pb-4 px-5 text-center relative group">
+              <div class="tree-avatar-bubble mx-auto -mt-10 mb-2 border-2 border-[#9B5CE8] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop"
+                  alt="Wakil Ketua" class="w-full h-full object-cover" />
+              </div>
+              <div class="absolute top-2.5 left-3 text-[10px] font-mono text-purple-300 bg-[#301057] px-2 py-0.5 rounded border border-[#561F99] font-bold">
+                02
+              </div>
+              <h4 class="text-sm font-bold text-white tracking-tight group-hover:text-[#C9A4F6] transition-colors">
+                Adinda Rizki Sya'bana Diva
+              </h4>
+              <p class="text-xs font-semibold text-[#E9D8FD] mt-0.5">Wakil Ketua KSM AIoT</p>
+              <p class="text-[10px] font-mono text-purple-300/70 mt-1">Sistem Informasi UPNVJ 🇮🇩</p>
+            </div>
+
+            <!-- Vertical Connector down from Wakil Ketua to BPH Fork -->
+            <div class="w-0.5 h-8 bg-[#561F99] mt-0.5"></div>
           </div>
 
-          <!-- Ketua & Wakil -->
-          <div class="flex flex-wrap justify-center gap-6">
-            <!-- Ketua -->
-            <div
-              class="w-72 rounded-xl card-glowing p-5 text-center flex flex-col items-center hover:border-[#C9A4F6] transition-all shadow-md">
-              <div class="w-24 h-24 rounded-lg overflow-hidden border border-[#561F99] mb-3 bg-[#090312]">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop"
-                  alt="Ketua KSM AIoT" class="w-full h-full object-cover" />
+          <!-- 2. BPH INTI FORK (SEKRETARIS & BENDAHARA WINGS) -->
+          <div class="w-full max-w-4xl relative z-10 my-0">
+            
+            <!-- Horizontal Fork Bar to Sekretaris & Bendahara -->
+            <div class="relative flex items-center justify-between px-16">
+              <!-- Horizontal line spanning left to right -->
+              <div class="absolute left-28 right-28 top-0 h-0.5 bg-[#561F99] z-0"></div>
+
+              <!-- Left Branch: Sekretaris -->
+              <div class="tree-branch-group flex flex-col items-center relative z-10" data-branch="bph">
+                <div class="w-0.5 h-5 bg-[#561F99]"></div>
+                <div class="tree-node-card border-accent-bph w-60 pt-6 pb-3.5 px-4 text-center relative group">
+                  <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#C084FC] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop"
+                      alt="Sekretaris" class="w-full h-full object-cover" />
+                  </div>
+                  <div class="absolute top-2 left-2 text-[9px] font-mono text-purple-300 bg-[#301057] px-1.5 py-0.5 rounded border border-[#561F99] font-bold">
+                    BPH
+                  </div>
+                  <h5 class="text-xs font-bold text-white group-hover:text-[#C084FC] transition-colors">Syahla Nada Afifah</h5>
+                  <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Sekretaris Umum</p>
+                  <p class="text-[9px] font-mono text-purple-300/70 mt-0.5">Informatika UPNVJ</p>
+                </div>
               </div>
-              <h4 class="text-sm font-bold text-white">Dzulfikri Adjmal</h4>
-              <p class="text-xs text-gray-400 font-mono font-semibold mt-1">Ketua KSM AIoT</p>
+
+              <!-- Central Trunk Continuing Down -->
+              <div class="w-0.5 h-28 bg-[#561F99] self-stretch mx-auto absolute left-1/2 -translate-x-1/2 top-0 z-0"></div>
+
+              <!-- Right Branch: Bendahara -->
+              <div class="tree-branch-group flex flex-col items-center relative z-10" data-branch="bph">
+                <div class="w-0.5 h-5 bg-[#561F99]"></div>
+                <div class="tree-node-card border-accent-bph w-60 pt-6 pb-3.5 px-4 text-center relative group">
+                  <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#C084FC] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=300&auto=format&fit=crop"
+                      alt="Bendahara" class="w-full h-full object-cover" />
+                  </div>
+                  <div class="absolute top-2 left-2 text-[9px] font-mono text-purple-300 bg-[#301057] px-1.5 py-0.5 rounded border border-[#561F99] font-bold">
+                    BPH
+                  </div>
+                  <h5 class="text-xs font-bold text-white group-hover:text-[#C084FC] transition-colors">Aniqah Raniah R.L.</h5>
+                  <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Bendahara Umum</p>
+                  <p class="text-[9px] font-mono text-purple-300/70 mt-0.5">Sistem Informasi UPNVJ</p>
+                </div>
+              </div>
             </div>
 
-            <!-- Wakil Ketua -->
-            <div
-              class="w-72 rounded-xl card-glowing p-5 text-center flex flex-col items-center hover:border-[#C9A4F6] transition-all shadow-md">
-              <div class="w-24 h-24 rounded-lg overflow-hidden border border-[#561F99] mb-3 bg-[#090312]">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop"
-                  alt="Wakil Ketua KSM AIoT" class="w-full h-full object-cover" />
-              </div>
-              <h4 class="text-sm font-bold text-white">Adinda Rizki Sya'bana Diva</h4>
-              <p class="text-xs text-gray-400 font-mono font-semibold mt-1">Wakil Ketua KSM AIoT</p>
+          </div>
+
+          <!-- 3. MAIN HORIZONTAL RAIL TO 3 DIVISIONS -->
+          <div class="w-full max-w-5xl relative px-16 z-10 mt-6">
+            <!-- Horizontal Bus Line connecting 3 division columns -->
+            <div class="w-full h-0.5 bg-[#561F99] relative">
+              <div id="tree-bus-highlight" class="w-full h-full bg-[#9B5CE8] transition-all duration-300"></div>
             </div>
           </div>
 
-          <!-- Sekretaris & Bendahara -->
-          <div class="flex flex-wrap justify-center gap-6">
-            <div
-              class="w-64 rounded-xl card-glowing p-4 text-center flex flex-col items-center hover:border-[#C9A4F6] transition-all shadow-md">
-              <div class="w-20 h-20 rounded-lg overflow-hidden border border-[#561F99] mb-2.5 bg-[#090312]">
-                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop"
-                  alt="Sekretaris" class="w-full h-full object-cover" />
+          <!-- 4. 3 MAIN DIVISION COLUMNS (RISSET, PSDM, HUMAS) -->
+          <div class="grid grid-cols-3 gap-8 w-full max-w-5xl pt-0 relative z-20">
+
+            <!-- =========================================
+                 COLUMN 1: DIVISI AKADEMIK & RISET
+                 ========================================= -->
+            <div class="tree-branch-group flex flex-col items-center" data-branch="riset">
+              <div class="w-0.5 h-6 bg-[#561F99]"></div>
+              
+              <!-- Division Pill Badge -->
+              <div class="px-3.5 py-1 rounded-full bg-[#0284C7]/20 border border-[#38BDF8]/50 text-[11px] font-mono font-bold text-[#38BDF8] mb-5 shadow-sm">
+                Divisi Akademik & Riset &bull; 6
               </div>
-              <h4 class="text-xs font-bold text-white">Syahla Nada Afifah</h4>
-              <p class="text-[11px] text-gray-400 font-mono mt-0.5">Sekretaris</p>
+
+              <!-- Kadiv Card -->
+              <div class="tree-node-card border-accent-riset w-full pt-6 pb-3.5 px-4 text-center relative group mb-4">
+                <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#38BDF8] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                  <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop"
+                    alt="Kadiv Riset" class="w-full h-full object-cover" />
+                </div>
+                <div class="absolute top-2 left-2 text-[9px] font-mono text-[#38BDF8] bg-[#0c243c] px-1.5 py-0.5 rounded border border-[#38BDF8]/40 font-bold">
+                  Kadiv
+                </div>
+                <h5 class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Rahman Ilyas Al Kahfi</h5>
+                <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Kepala Divisi Riset</p>
+                <p class="text-[9px] font-mono text-purple-300/70 mt-0.5">Informatika UPNVJ</p>
+              </div>
+
+              <!-- Connector Line to Staff -->
+              <div class="w-0.5 h-4 bg-[#561F99] mb-3"></div>
+
+              <!-- Staff Stack (5 Members) -->
+              <div class="w-full space-y-2">
+                <!-- Staff 1 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
+                      1
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Bima Saputra</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff Riset</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">AIoT</span>
+                </div>
+
+                <!-- Staff 2 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
+                      2
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Stenly Christian</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff Riset</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Embedded</span>
+                </div>
+
+                <!-- Staff 3 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
+                      3
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Ihsan Naufal Ikhwansyah</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff Riset</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">AIoT</span>
+                </div>
+
+                <!-- Staff 4 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
+                      4
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">M. Naufal Alif Athallah</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff Riset</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">AIoT</span>
+                </div>
+
+                <!-- Staff 5 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
+                      5
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Hanif Naundra Arsantyo</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff Riset</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">AIoT</span>
+                </div>
+              </div>
             </div>
 
-            <div
-              class="w-64 rounded-xl card-glowing p-4 text-center flex flex-col items-center hover:border-[#C9A4F6] transition-all shadow-md">
-              <div class="w-20 h-20 rounded-lg overflow-hidden border border-[#561F99] mb-2.5 bg-[#090312]">
-                <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop"
-                  alt="Bendahara" class="w-full h-full object-cover" />
+            <!-- =========================================
+                 COLUMN 2: DIVISI PSDM
+                 ========================================= -->
+            <div class="tree-branch-group flex flex-col items-center" data-branch="psdm">
+              <div class="w-0.5 h-6 bg-[#561F99]"></div>
+              
+              <!-- Division Pill Badge -->
+              <div class="px-3.5 py-1 rounded-full bg-[#166534]/20 border border-[#4ADE80]/50 text-[11px] font-mono font-bold text-[#4ADE80] mb-5 shadow-sm">
+                Divisi PSDM &bull; 6
               </div>
-              <h4 class="text-xs font-bold text-white">Aniqah Raniah Ramadhani Lakare</h4>
-              <p class="text-[11px] text-gray-400 font-mono mt-0.5">Bendahara</p>
+
+              <!-- Kadiv Card -->
+              <div class="tree-node-card border-accent-psdm w-full pt-6 pb-3.5 px-4 text-center relative group mb-4">
+                <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#4ADE80] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                  <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=300&auto=format&fit=crop"
+                    alt="Kadiv PSDM" class="w-full h-full object-cover" />
+                </div>
+                <div class="absolute top-2 left-2 text-[9px] font-mono text-[#4ADE80] bg-[#0e301d] px-1.5 py-0.5 rounded border border-[#4ADE80]/40 font-bold">
+                  Kadiv
+                </div>
+                <h5 class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Nicolas Debrito</h5>
+                <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Kepala Divisi PSDM</p>
+                <p class="text-[9px] font-mono text-purple-300/70 mt-0.5">Informatika UPNVJ</p>
+              </div>
+
+              <!-- Connector Line to Staff -->
+              <div class="w-0.5 h-4 bg-[#561F99] mb-3"></div>
+
+              <!-- Staff Stack (5 Members) -->
+              <div class="w-full space-y-2">
+                <!-- Staff 1 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
+                      1
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Septi Astuti</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff PSDM</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
+                </div>
+
+                <!-- Staff 2 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
+                      2
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Ramadhania</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff PSDM</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
+                </div>
+
+                <!-- Staff 3 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
+                      3
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Farrel Shanrui Fikri</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff PSDM</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
+                </div>
+
+                <!-- Staff 4 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
+                      4
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Farel Muhammad Nelwan</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff PSDM</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
+                </div>
+
+                <!-- Staff 5 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
+                      5
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Levianto Adhigana Putra</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff PSDM</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
+                </div>
+              </div>
             </div>
+
+            <!-- =========================================
+                 COLUMN 3: DIVISI HUMAS DAN MULTIMEDIA
+                 ========================================= -->
+            <div class="tree-branch-group flex flex-col items-center" data-branch="humas">
+              <div class="w-0.5 h-6 bg-[#561F99]"></div>
+              
+              <!-- Division Pill Badge -->
+              <div class="px-3.5 py-1 rounded-full bg-[#9A3412]/20 border border-[#FB923C]/50 text-[11px] font-mono font-bold text-[#FB923C] mb-5 shadow-sm">
+                Divisi Humas & Multimedia &bull; 5
+              </div>
+
+              <!-- Kadiv Card -->
+              <div class="tree-node-card border-accent-humas w-full pt-6 pb-3.5 px-4 text-center relative group mb-4">
+                <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#FB923C] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                  <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=300&auto=format&fit=crop"
+                    alt="Kadiv Humas" class="w-full h-full object-cover" />
+                </div>
+                <div class="absolute top-2 left-2 text-[9px] font-mono text-[#FB923C] bg-[#3a1d0d] px-1.5 py-0.5 rounded border border-[#FB923C]/40 font-bold">
+                  Kadiv
+                </div>
+                <h5 class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Yusuf Martinus Arief</h5>
+                <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Kepala Divisi Humas</p>
+                <p class="text-[9px] font-mono text-purple-300/70 mt-0.5">Sistem Informasi UPNVJ</p>
+              </div>
+
+              <!-- Connector Line to Staff -->
+              <div class="w-0.5 h-4 bg-[#561F99] mb-3"></div>
+
+              <!-- Staff Stack (4 Members) -->
+              <div class="w-full space-y-2">
+                <!-- Staff 1 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#FB923C]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#FB923C]/50 flex items-center justify-center text-[10px] font-bold text-[#FB923C]">
+                      1
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Alfred Yosua</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff Humas</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Media</span>
+                </div>
+
+                <!-- Staff 2 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#FB923C]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#FB923C]/50 flex items-center justify-center text-[10px] font-bold text-[#FB923C]">
+                      2
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Muhammad Farid</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff Humas</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Desain</span>
+                </div>
+
+                <!-- Staff 3 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#FB923C]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#FB923C]/50 flex items-center justify-center text-[10px] font-bold text-[#FB923C]">
+                      3
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Raya Destrya Inamori</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff Humas</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kemitraan</span>
+                </div>
+
+                <!-- Staff 4 -->
+                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#FB923C]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#FB923C]/50 flex items-center justify-center text-[10px] font-bold text-[#FB923C]">
+                      4
+                    </div>
+                    <div class="text-left">
+                      <p class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Yoram Messiah Kaliey</p>
+                      <p class="text-[10px] text-purple-200/70 font-mono">Staff Humas</p>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Dokumentasi</span>
+                </div>
+              </div>
+            </div>
+
           </div>
+
         </div>
-
-        <!-- DIVISI 1: Akademik & Riset -->
-        <div id="panel-riset" class="struct-panel rounded-xl card-glowing p-6 shadow-md">
-          <div class="flex items-center space-x-2.5 pb-4 mb-4 border-b border-[#561F99]">
-            <div
-              class="w-8 h-8 rounded-lg bg-[#0F051D] text-gray-400 flex items-center justify-center border border-[#561F99]">
-              <i data-lucide="book-open" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <h4 class="text-sm font-bold text-white">Divisi Akademik & Riset</h4>
-              <p class="text-xs text-gray-400">Eksplorasi penelitian Artificial Intelligence & Embedded IoT</p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-            <!-- Kadiv -->
-            <div class="p-4 rounded-lg bg-[#090312] border border-[#561F99] flex items-center space-x-3">
-              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop"
-                alt="Kadiv Riset" class="w-12 h-12 rounded-lg object-cover border border-[#561F99]" />
-              <div>
-                <p class="text-[10px] font-mono uppercase text-gray-400 font-bold">Kepala Divisi</p>
-                <h5 class="text-xs font-bold text-white">Rahman Ilyas Al-Kahfi</h5>
-              </div>
-            </div>
-
-            <!-- Staff -->
-            <div class="md:col-span-2 p-4 rounded-lg bg-[#090312] border border-[#561F99]">
-              <p class="text-[10px] font-mono uppercase text-gray-400 font-bold mb-2">Tim Staff Riset</p>
-              <div class="flex flex-wrap gap-2 text-xs font-medium text-white">
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Bima Saputra</span>
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Hanif Naundra Arsantyo</span>
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Ihsan Naufal</span>
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Naufal Alif</span>
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Stenly Christian</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- DIVISI 2: PSDM -->
-        <div id="panel-psdm" class="struct-panel rounded-xl card-glowing p-6 shadow-md">
-          <div class="flex items-center space-x-2.5 pb-4 mb-4 border-b border-[#561F99]">
-            <div
-              class="w-8 h-8 rounded-lg bg-[#0F051D] text-gray-400 flex items-center justify-center border border-[#561F99]">
-              <i data-lucide="heart-handshake" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <h4 class="text-sm font-bold text-white">Divisi Pengembangan Sumber Daya Manusia (PSDM)</h4>
-              <p class="text-xs text-gray-400">Kaderisasi, pengembangan kapasitas & keharmonisan anggota</p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-            <!-- Kadiv -->
-            <div class="p-4 rounded-lg bg-[#090312] border border-[#561F99] flex items-center space-x-3">
-              <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=300&auto=format&fit=crop"
-                alt="Kadiv PSDM" class="w-12 h-12 rounded-lg object-cover border border-[#561F99]" />
-              <div>
-                <p class="text-[10px] font-mono uppercase text-gray-400 font-bold">Kepala Divisi</p>
-                <h5 class="text-xs font-bold text-white">Nicolas Debrito</h5>
-              </div>
-            </div>
-
-            <!-- Staff -->
-            <div class="md:col-span-2 p-4 rounded-lg bg-[#090312] border border-[#561F99]">
-              <p class="text-[10px] font-mono uppercase text-gray-400 font-bold mb-2">Tim Staff PSDM</p>
-              <div class="flex flex-wrap gap-2 text-xs font-medium text-white">
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Farel</span>
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Farrel</span>
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Levianto</span>
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Ramadhania</span>
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Septi</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- DIVISI 3: Humas & Multimedia -->
-        <div id="panel-humas" class="struct-panel rounded-xl card-glowing p-6 shadow-md">
-          <div class="flex items-center space-x-2.5 pb-4 mb-4 border-b border-[#561F99]">
-            <div
-              class="w-8 h-8 rounded-lg bg-[#0F051D] text-gray-400 flex items-center justify-center border border-[#561F99]">
-              <i data-lucide="megaphone" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <h4 class="text-sm font-bold text-white">Divisi Humas & Multimedia</h4>
-              <p class="text-xs text-gray-400">Media publikasi, branding visual, dan kemitraan eksternal</p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-            <!-- Kadiv -->
-            <div class="p-4 rounded-lg bg-[#090312] border border-[#561F99] flex items-center space-x-3">
-              <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=300&auto=format&fit=crop"
-                alt="Kadiv Humas" class="w-12 h-12 rounded-lg object-cover border border-[#561F99]" />
-              <div>
-                <p class="text-[10px] font-mono uppercase text-gray-400 font-bold">Kepala Divisi</p>
-                <h5 class="text-xs font-bold text-white">Yusuf Martinus Arief</h5>
-              </div>
-            </div>
-
-            <!-- Staff -->
-            <div class="md:col-span-2 p-4 rounded-lg bg-[#090312] border border-[#561F99]">
-              <p class="text-[10px] font-mono uppercase text-gray-400 font-bold mb-2">Tim Staff Humas</p>
-              <div class="flex flex-wrap gap-2 text-xs font-medium text-white">
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Raya</span>
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Yoram</span>
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Alfred</span>
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">Jane Doe</span>
-                <span class="px-2.5 py-1 bg-[#1E0A38] rounded border border-[#561F99]">John Doe</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
     </div>
