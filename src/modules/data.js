@@ -90,6 +90,16 @@ export const initialProjectsData = [
     techStack: ['ESP32', 'FastAPI', 'TimescaleDB', 'Vue.js', 'CoAP', 'Docker']
   },
   {
+    id: 'smart-greenhouse',
+    title: 'Smart Greenhouse',
+    category: 'iot',
+    categoryLabel: 'IoT & Precision Agriculture',
+    description: 'Solusi mikroklimat cerdas berbasis Wireless Sensor Networks (WSN) dan logika Fuzzy untuk otomasi presisi penyiraman tanaman berdasarkan kelembapan tanah, suhu, dan intensitas cahaya matahari.',
+    image: '/greenhouse.jpeg',
+    repoUrl: 'https://github.com/ksm-aiot-upnvj/smart-greenhouse',
+    techStack: ['ESP32', 'WSN', 'Fuzzy Logic', 'Web Dashboard', 'LoRaWAN', 'Actuators']
+  },
+  {
     id: 'nexo',
     title: 'Nexo Assistant',
     category: 'bot',

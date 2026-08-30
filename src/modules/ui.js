@@ -1,120 +1,12 @@
-import {
-  createIcons,
-  Users,
-  Cpu,
-  FileText,
-  Search,
-  Download,
-  Plus,
-  Send,
-  Printer,
-  Code,
-  Copy,
-  X,
-  ArrowLeft,
-  ArrowRight,
-  Moon,
-  Sun,
-  Monitor,
-  CheckCircle2,
-  Check,
-  Clock,
-  Archive,
-  Award,
-  BookOpen,
-  Briefcase,
-  ExternalLink,
-  ShieldCheck,
-  Zap,
-  TrendingUp,
-  TrendingDown,
-  Menu,
-  UserPlus,
-  DollarSign,
-  AlertCircle,
-  LogIn,
-  LogOut,
-  Lock,
-  Eye,
-  Inbox,
-  FileCheck,
-  Camera,
-  Upload,
-  Trash2,
-  UserCheck,
-  LayoutDashboard,
-  User,
-  Brain,
-  Bot,
-  FolderKanban,
-  Globe,
-  HeartHandshake,
-  Instagram,
-  Github,
-  ClipboardList,
-  Megaphone
-} from 'lucide';
+import { createIcons, icons } from 'lucide';
+import * as allLucideIcons from 'lucide';
 
 // ==========================================
 // LUCIDE ICON INITIALIZER
 // ==========================================
 export function initIcons() {
   createIcons({
-    icons: {
-      Users,
-      Cpu,
-      FileText,
-      Search,
-      Download,
-      Plus,
-      Send,
-      Printer,
-      Code,
-      Copy,
-      X,
-      ArrowLeft,
-      ArrowRight,
-      Moon,
-      Sun,
-      Monitor,
-      CheckCircle2,
-      Check,
-      Clock,
-      Archive,
-      Award,
-      BookOpen,
-      Briefcase,
-      ExternalLink,
-      ShieldCheck,
-      Zap,
-      TrendingUp,
-      TrendingDown,
-      Menu,
-      UserPlus,
-      DollarSign,
-      AlertCircle,
-      LogIn,
-      LogOut,
-      Lock,
-      Eye,
-      Inbox,
-      FileCheck,
-      Camera,
-      Upload,
-      Trash2,
-      UserCheck,
-      LayoutDashboard,
-      User,
-      Brain,
-      Bot,
-      FolderKanban,
-      Globe,
-      HeartHandshake,
-      Instagram,
-      Github,
-      ClipboardList,
-      Megaphone
-    }
+    icons: icons || allLucideIcons
   });
 }
 
@@ -137,26 +29,26 @@ export function showToast(message, type = 'info') {
     info: 'cpu'
   };
 
-  const colors = {
-    success: 'bg-slate-900/95 border-emerald-500/50 text-emerald-300 shadow-emerald-950/40',
-    error: 'bg-slate-900/95 border-red-500/50 text-red-300 shadow-red-950/40',
-    warning: 'bg-slate-900/95 border-amber-500/50 text-amber-300 shadow-amber-950/40',
-    info: 'bg-slate-900/95 border-aiot-cyan/50 text-aiot-cyan shadow-cyan-950/40'
+  const toastColors = {
+    success: 'border-l-4 border-l-emerald-500 text-gray-800',
+    error: 'border-l-4 border-l-red-500 text-gray-800',
+    warning: 'border-l-4 border-l-amber-500 text-gray-800',
+    info: 'border-l-4 border-l-[#301057] text-gray-800'
   };
 
   const toast = document.createElement('div');
   const iconName = icons[type] || icons.info;
-  const iconColor = type === 'success' ? 'text-emerald-400' : type === 'error' ? 'text-red-400' : type === 'warning' ? 'text-amber-400' : 'text-aiot-cyan';
+  const iconColor = type === 'success' ? 'text-emerald-600' : type === 'error' ? 'text-red-600' : type === 'warning' ? 'text-amber-600' : 'text-[#301057]';
 
-  toast.className = `glass-panel pointer-events-auto flex items-center p-4 rounded-xl border backdrop-blur-xl shadow-2xl transition-all duration-300 transform translate-y-[-10px] opacity-0 ${colors[type] || colors.info}`;
+  toast.className = `pointer-events-auto flex items-center p-3.5 rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-200 transform translate-y-[-8px] opacity-0 ${toastColors[type] || toastColors.info}`;
   toast.innerHTML = `
     <div class="flex-shrink-0 mr-3">
       <i data-lucide="${iconName}" class="w-4 h-4 ${iconColor}"></i>
     </div>
-    <div class="text-xs font-mono font-medium text-slate-200 flex-1 leading-relaxed">
+    <div class="text-xs font-medium text-gray-800 flex-1 leading-relaxed">
       ${message}
     </div>
-    <button class="ml-3 text-slate-400 hover:text-slate-200 transition-colors p-1" onclick="this.parentElement.remove()">
+    <button class="ml-3 text-gray-400 hover:text-gray-600 transition-colors p-1" onclick="this.parentElement.remove()">
       <i data-lucide="x" class="w-3.5 h-3.5"></i>
     </button>
   `;
@@ -166,13 +58,13 @@ export function showToast(message, type = 'info') {
 
   // Trigger animation
   requestAnimationFrame(() => {
-    toast.classList.remove('translate-y-[-10px]', 'opacity-0');
+    toast.classList.remove('translate-y-[-8px]', 'opacity-0');
   });
 
   // Auto remove after 3.5s
   setTimeout(() => {
     toast.classList.add('opacity-0', 'scale-95');
-    setTimeout(() => toast.remove(), 300);
+    setTimeout(() => toast.remove(), 200);
   }, 3500);
 }
 
@@ -254,10 +146,10 @@ export function initThemeEngine() {
     toggles.forEach(btn => {
       const val = btn.getAttribute('data-theme-value');
       if (val === currentTheme) {
-        btn.classList.add('bg-aiot-cyan/20', 'text-aiot-cyan', 'border-aiot-cyan/40');
+        btn.classList.add('bg-aiot-primary/20', 'text-aiot-lavender', 'border-aiot-primary/40');
         btn.classList.remove('text-slate-400');
       } else {
-        btn.classList.remove('bg-aiot-cyan/20', 'text-aiot-cyan', 'border-aiot-cyan/40');
+        btn.classList.remove('bg-aiot-primary/20', 'text-aiot-lavender', 'border-aiot-primary/40');
         btn.classList.add('text-slate-400');
       }
     });

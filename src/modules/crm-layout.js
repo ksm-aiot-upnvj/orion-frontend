@@ -1,10 +1,8 @@
-import { initIcons, initThemeEngine } from './ui.js';
+import { initIcons } from './ui.js';
 import { getAuthUser, logout, requireAuth } from './auth.js';
 
 /**
- * Unified CRM Layout Renderer (Sidebar + Burger Menu + Topbar)
- * Provides 100% visual consistency with index.html navbar, including h-20 height,
- * brand layout, navigation links, and theme toggle.
+ * Institutional ERP/CRM Layout Renderer with Flowbite-style Rounded Account Dropdown
  * 
  * @param {string} activePage - 'selection' | 'members' | 'inventory' | 'finance' | 'archive'
  * @param {string} pageTitle - Title for the page
@@ -30,13 +28,12 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
     .join('')
     .toUpperCase();
 
-  const roleLabel = currentUser.role === 'SUPERADMIN' 
-    ? 'Super Admin (BPH)' 
-    : currentUser.role === 'ADMIN_BPH' 
-      ? 'Admin BPH' 
+  const roleLabel = currentUser.role === 'SUPERADMIN'
+    ? 'Super Admin (BPH)'
+    : currentUser.role === 'ADMIN_BPH'
+      ? 'Admin BPH'
       : 'Pengurus KSM';
 
-  const sidebarContainer = document.getElementById('crm-sidebar');
   const topbarContainer = document.getElementById('crm-topbar');
 
   const navItems = [
@@ -45,9 +42,9 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       label: 'Seleksi Calon Anggota',
       shortLabel: 'Seleksi',
       href: '/pages/selection.html',
-      icon: 'shield-check',
+      icon: 'user-check',
       badge: 'Admin',
-      badgeColor: 'bg-amber-950 text-amber-300 border-amber-800'
+      badgeClass: 'badge-pending'
     },
     {
       id: 'members',
@@ -56,7 +53,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       href: '/pages/members.html',
       icon: 'users',
       badge: '11',
-      badgeColor: 'bg-cyan-950 text-aiot-cyan border-cyan-800'
+      badgeClass: 'badge-neutral'
     },
     {
       id: 'inventory',
@@ -65,16 +62,16 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       href: '/pages/inventory.html',
       icon: 'cpu',
       badge: '62 Unit',
-      badgeColor: 'bg-purple-950 text-purple-300 border-purple-800'
+      badgeClass: 'badge-neutral'
     },
     {
       id: 'finance',
       label: 'Kas & Keuangan',
-      shortLabel: 'Kas Keuangan',
+      shortLabel: 'Kas & Keuangan',
       href: '/pages/finance.html',
-      icon: 'trending-up',
+      icon: 'wallet',
       badge: 'Rp 12.4M',
-      badgeColor: 'bg-emerald-950 text-emerald-400 border-emerald-800'
+      badgeClass: 'badge-approved'
     },
     {
       id: 'archive',
@@ -83,207 +80,177 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       href: '/pages/archive.html',
       icon: 'file-text',
       badge: 'Baku',
-      badgeColor: 'bg-slate-800 text-slate-300 border-slate-700'
+      badgeClass: 'badge-neutral'
     }
   ];
 
-  // Render Sidebar (Slide-Over Drawer)
-  if (sidebarContainer) {
-    const navLinksHtml = navItems.map(item => {
-      const isActive = item.id === activePage;
-      return `
-        <a href="${item.href}" class="crm-nav-link flex items-center justify-between px-3.5 py-3 rounded-2xl text-xs font-mono transition-all duration-200 group ${
-          isActive
-            ? 'bg-aiot-cyan/15 text-aiot-cyan border border-aiot-cyan/30 font-bold shadow-[0_0_20px_rgba(0,242,254,0.15)]'
-            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent font-medium'
-        }">
-          <div class="flex items-center space-x-3 min-w-0">
-            <i data-lucide="${item.icon}" class="w-4 h-4 flex-shrink-0 ${isActive ? 'text-aiot-cyan' : 'text-slate-400 group-hover:text-slate-200'}"></i>
-            <span class="truncate">${item.label}</span>
-          </div>
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded-md border flex-shrink-0 ml-2 ${item.badgeColor}">
-            ${item.badge}
-          </span>
-        </a>
-      `;
-    }).join('');
-
-    sidebarContainer.innerHTML = `
-      <div class="h-full flex flex-col justify-between p-5">
-        <!-- Top: Brand Header -->
-        <div class="space-y-6">
-          <div class="flex items-center justify-between pb-5 border-b border-slate-800/80">
-            <a href="/index.html" class="flex items-center space-x-3 group">
-              <img src="/ksm-aiot-logo.png" alt="Logo KSM AIoT" width="38" height="38" style="width:38px; height:38px; max-width:38px; max-height:38px;" class="w-9 h-9 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_0_12px_rgba(0,242,254,0.4)] flex-shrink-0" />
-              <div class="flex flex-col">
-                <span class="font-extrabold text-base text-white tracking-wider font-mono flex items-center space-x-1">
-                  <span>KSM</span>
-                  <span class="text-aiot-cyan">AIoT</span>
-                </span>
-                <span class="text-[9px] text-slate-400 font-mono tracking-widest uppercase">CRM Management</span>
-              </div>
-            </a>
-            
-            <!-- Mobile Close Button -->
-            <button id="close-sidebar-mobile-btn" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800">
-              <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-          </div>
-
-          <!-- Navigation Links -->
-          <div class="space-y-1.5">
-            <span class="text-[10px] font-mono text-slate-500 uppercase tracking-wider px-3 font-semibold">Modul Manajemen</span>
-            ${navLinksHtml}
-          </div>
-        </div>
-
-        <!-- Bottom: User Card & Logout -->
-        <div class="pt-5 border-t border-slate-800/80 space-y-2.5">
-          <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
-            <div class="flex items-center space-x-3 min-w-0">
-              <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-aiot-cyan to-aiot-purple flex items-center justify-center text-slate-950 font-bold text-xs shadow-md flex-shrink-0">
-                ${initials}
-              </div>
-              <div class="min-w-0 flex-1">
-                <p class="text-xs font-bold text-white truncate leading-tight">${currentUser.full_name}</p>
-                <p class="text-[10px] text-aiot-cyan font-mono leading-tight mt-0.5">${roleLabel}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <a href="/index.html" class="py-2.5 px-3 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white text-[11px] font-mono font-medium flex items-center justify-center space-x-1.5 border border-slate-700 transition-all">
-              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-              <span>Beranda</span>
-            </a>
-            <button type="button" id="sidebar-logout-btn" class="py-2.5 px-3 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-300 hover:text-red-100 text-[11px] font-mono font-bold flex items-center justify-center space-x-1.5 border border-red-800/80 transition-all">
-              <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-              <span>Logout</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  // Render Topbar - Identical in height (h-20) and structure to index.html
+  // Render Topbar - Clean Header with Direct Navigation and Rounded Account Dropdown
   if (topbarContainer) {
-    topbarContainer.className = 'sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80';
+    topbarContainer.className = 'sticky top-0 z-40 w-full bg-[#0F051D] border-b border-[#561F99] shadow-md min-h-[64px]';
 
     const desktopNavLinksHtml = navItems.map(item => {
       const isActive = item.id === activePage;
       return `
-        <a href="${item.href}" class="transition-colors ${
-          isActive 
-            ? 'text-aiot-cyan font-bold border-b-2 border-aiot-cyan pb-1' 
-            : 'text-slate-300 hover:text-aiot-cyan'
-        }">${item.shortLabel}</a>
+        <a href="${item.href}" class="text-xs font-semibold py-1.5 px-3 rounded-md transition-colors flex items-center space-x-1.5 ${isActive
+          ? 'bg-[#9B5CE8] text-white font-bold border border-[#9B5CE8] shadow-xs'
+          : 'text-purple-100 hover:text-white hover:bg-[#1E0A38]'
+        }">
+          <i data-lucide="${item.icon}" class="w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-[#C9A4F6]'}"></i>
+          <span>${item.shortLabel}</span>
+        </a>
+      `;
+    }).join('');
+
+    const mobileNavLinksHtml = navItems.map(item => {
+      const isActive = item.id === activePage;
+      return `
+        <a href="${item.href}" class="text-[11px] font-semibold py-1 px-2.5 rounded-lg whitespace-nowrap transition-colors flex items-center space-x-1.5 flex-shrink-0 ${isActive
+          ? 'bg-[#9B5CE8] text-white font-bold border border-[#9B5CE8] shadow-xs'
+          : 'text-[#D8B4FE] hover:text-white bg-[#1E0A38] border border-[#561F99]'
+        }">
+          <i data-lucide="${item.icon}" class="w-3 h-3 ${isActive ? 'text-white' : 'text-[#C9A4F6]'}"></i>
+          <span>${item.shortLabel}</span>
+        </a>
       `;
     }).join('');
 
     topbarContainer.innerHTML = `
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between relative gap-2">
         
-        <!-- Left: Brand Logo -->
-        <div class="flex items-center space-x-4">
-          <a href="/index.html" class="flex items-center space-x-3 group">
-            <img src="/ksm-aiot-logo.png" alt="KSM AIoT Logo"
-              class="w-10 h-10 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_0_12px_rgba(0,242,254,0.4)]" />
-            <div class="flex flex-col">
-              <span class="font-extrabold text-lg text-white tracking-wider font-mono flex items-center space-x-1">
+        <!-- Left: Brand / Title context -->
+        <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+          <a href="/index.html" class="flex items-center space-x-2 group min-w-0 flex-shrink">
+            <div class="flex items-center space-x-1 flex-shrink-0">
+              <img src="/Logo_UPNVJ.png" alt="Logo UPNVJ" class="w-6 h-6 sm:w-7 sm:h-7 object-contain flex-shrink-0" />
+              <img src="/ksm-aiot-logo.png" alt="KSM AIoT Logo" class="w-7 h-7 sm:w-8 sm:h-8 object-contain flex-shrink-0" />
+            </div>
+            <div class="flex flex-col min-w-0">
+              <span class="font-bold text-xs sm:text-sm text-white tracking-tight leading-tight flex items-center space-x-1">
                 <span>KSM</span>
-                <span class="text-aiot-cyan">AIoT</span>
+                <span class="text-[#C9A4F6]">AIoT</span>
               </span>
-              <span class="text-[10px] text-slate-400 font-mono tracking-widest uppercase">CRM Management</span>
+              <span class="text-[8px] sm:text-[9px] text-purple-200 font-mono uppercase font-semibold leading-tight truncate">ERP Management</span>
             </div>
           </a>
+          <span class="hidden md:inline text-[#561F99]">/</span>
+          <span class="hidden md:inline text-xs font-semibold text-purple-200 bg-[#090312] px-2 py-0.5 rounded border border-[#561F99]">${pageTitle}</span>
         </div>
 
-        <!-- Center: Desktop Navigation Links -->
-        <nav class="hidden lg:flex items-center space-x-7 text-sm font-medium">
+        <!-- Center: Quick Nav Modules (Primary Navigation on Navbar - Desktop) -->
+        <nav class="hidden md:flex items-center space-x-1.5 overflow-x-auto py-1">
           ${desktopNavLinksHtml}
         </nav>
 
-        <!-- Right: Actions (Theme Toggle, User Profile Pill, Logout, Mobile Burger) -->
-        <div class="flex items-center space-x-3">
-          
-          <!-- Theme Toggle (Dark / Light / System) -->
-          <div class="flex items-center p-1 rounded-xl bg-slate-900/80 border border-slate-800 text-xs font-mono text-slate-400 space-x-1" id="theme-switcher">
-            <button data-theme="dark" title="Dark Mode" class="theme-btn p-1.5 rounded-lg transition-all hover:text-white" id="theme-btn-dark">
-              <i data-lucide="moon" class="w-3.5 h-3.5"></i>
-            </button>
-            <button data-theme="light" title="Light Mode" class="theme-btn p-1.5 rounded-lg transition-all hover:text-white" id="theme-btn-light">
-              <i data-lucide="sun" class="w-3.5 h-3.5"></i>
-            </button>
-            <button data-theme="system" title="System Default" class="theme-btn p-1.5 rounded-lg transition-all hover:text-white" id="theme-btn-system">
-              <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-
-          <!-- Super Admin Badge Pill -->
-          <div class="hidden sm:flex items-center space-x-2.5 px-3.5 py-2 rounded-xl bg-slate-900/90 border border-slate-800">
-            <div class="w-6 h-6 rounded-lg bg-gradient-to-tr from-aiot-cyan to-aiot-purple flex items-center justify-center text-slate-950 font-bold text-[10px]">
-              ${initials}
+        <!-- Right: Rounded Account Avatar with Flowbite-style Dropdown -->
+        <div class="relative flex items-center flex-shrink-0">
+          <button type="button" id="user-menu-btn" aria-expanded="false" title="Akun Pengurus"
+            class="flex items-center text-sm rounded-full p-0.5 focus:ring-4 focus:ring-purple-900/50 focus:outline-none transition-all hover:ring-2 hover:ring-[#9B5CE8]">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border border-[#561F99] bg-[#1E0A38] flex items-center justify-center">
+              ${currentUser.avatar
+        ? `<img src="${currentUser.avatar}" alt="${currentUser.full_name}" class="w-full h-full object-cover" />`
+        : `<span class="text-xs font-bold text-[#C9A4F6] font-mono">${initials}</span>`
+      }
             </div>
-            <div class="flex flex-col text-left">
-              <span class="text-xs font-bold text-white leading-tight">${currentUser.full_name}</span>
-              <span class="text-[9px] text-aiot-cyan font-mono leading-tight">${roleLabel}</span>
-            </div>
-          </div>
-
-          <!-- Topbar Logout Button -->
-          <button type="button" id="topbar-logout-btn" title="Keluar / Logout" class="hidden sm:flex p-2 rounded-xl bg-red-950/40 hover:bg-red-900/80 text-red-400 hover:text-red-200 border border-red-800/60 transition-all items-center space-x-1.5 text-xs font-mono">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
-            <span class="hidden md:inline font-bold">Logout</span>
           </button>
 
-          <!-- Burger Menu Button (For Mobile & Quick Drawer) -->
-          <button id="toggle-sidebar-btn" class="p-2 rounded-lg text-slate-300 hover:bg-slate-800 transition-all flex items-center space-x-1">
-            <i data-lucide="menu" class="w-6 h-6"></i>
-          </button>
+          <!-- Flowbite-style Rounded Dropdown Menu -->
+          <div id="user-dropdown"
+            class="hidden z-50 absolute right-0 top-12 my-2 text-base list-none bg-[#1E0A38] divide-y divide-[#561F99] rounded-xl shadow-2xl border border-[#561F99] w-56 sm:w-60 transform transition-all duration-150 text-white">
+            
+            <!-- User Info Header -->
+            <div class="px-4 py-3 bg-[#0F051D] rounded-t-xl">
+              <span class="block text-xs font-bold text-white truncate leading-tight">${currentUser.full_name}</span>
+              <span class="block text-[10px] text-[#C9A4F6] font-mono font-semibold truncate mt-0.5">${roleLabel}</span>
+              <span class="block text-[10px] text-purple-200 font-mono truncate mt-0.5">NIM: ${currentUser.student_id || '2310511001'}</span>
+            </div>
+
+            <!-- Navigation Links Inside Dropdown -->
+            <ul class="py-1.5 text-xs text-purple-100">
+              <li>
+                <a href="/index.html" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#280E48] hover:text-white transition-colors">
+                  <i data-lucide="home" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
+                  <span>Laman Utama</span>
+                </a>
+              </li>
+              <li>
+                <a href="/pages/registration.html" target="_blank" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#301057] hover:text-white transition-colors">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
+                  <span>Portal Pendaftaran</span>
+                </a>
+              </li>
+            </ul>
+
+            <!-- Mobile Navigation Fallback list -->
+            <div class="md:hidden py-1 border-t border-[#561F99]">
+              <span class="block text-[9px] font-mono text-[#C9A4F6] uppercase tracking-wider px-4 py-1 font-semibold">Modul ERP</span>
+              <ul class="text-xs text-purple-100">
+                ${navItems.map(i => `
+                  <li>
+                    <a href="${i.href}" class="flex items-center justify-between px-4 py-1.5 hover:bg-[#301057] hover:text-white transition-colors ${i.id === activePage ? 'font-bold text-white bg-[#9B5CE8]' : ''}">
+                      <span>${i.label}</span>
+                    </a>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+
+            <!-- Logout Action -->
+            <div class="py-1 rounded-b-xl">
+              <button type="button" id="dropdown-logout-btn"
+                class="w-full flex items-center space-x-2.5 text-left px-4 py-2.5 text-xs text-red-400 hover:bg-red-950/50 hover:text-red-300 transition-colors font-medium rounded-b-xl">
+                <i data-lucide="log-out" class="w-3.5 h-3.5 text-red-400"></i>
+                <span>Keluar (Logout)</span>
+              </button>
+            </div>
+
+          </div>
         </div>
+
+      </div>
+
+      <!-- Mobile Sub-Navigation Bar (Touch-Scrollable Ribbon) -->
+      <div class="md:hidden flex items-center space-x-1.5 overflow-x-auto px-3 py-1.5 border-t border-[#561F99] bg-[#0F051D] no-scrollbar shadow-inner touch-pan-x">
+        ${mobileNavLinksHtml}
       </div>
     `;
+
+    // Dropdown toggle logic
+    const userBtn = document.getElementById('user-menu-btn');
+    const userDropdown = document.getElementById('user-dropdown');
+    const dropdownLogoutBtn = document.getElementById('dropdown-logout-btn');
+
+    const toggleDropdown = (e) => {
+      e.stopPropagation();
+      userDropdown?.classList.toggle('hidden');
+    };
+
+    const closeDropdown = () => {
+      userDropdown?.classList.add('hidden');
+    };
+
+    userBtn?.addEventListener('click', toggleDropdown);
+
+    // Close when clicking outside or pressing Escape
+    document.addEventListener('click', (e) => {
+      if (!userDropdown?.contains(e.target) && !userBtn?.contains(e.target)) {
+        closeDropdown();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDropdown();
+    });
+
+    // Logout Handler
+    dropdownLogoutBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('Apakah Anda yakin ingin keluar dari Management System KSM AIoT?')) {
+        logout();
+        window.location.href = '/index.html';
+      }
+    });
   }
 
-  // Bind Sidebar Drawer Toggle Events
-  const sidebar = document.getElementById('crm-sidebar');
-  const backdrop = document.getElementById('crm-sidebar-backdrop');
-  const toggleBtn = document.getElementById('toggle-sidebar-btn');
-  const closeBtn = document.getElementById('close-sidebar-mobile-btn');
-  const sidebarLogoutBtn = document.getElementById('sidebar-logout-btn');
-  const topbarLogoutBtn = document.getElementById('topbar-logout-btn');
-
-  function openSidebar() {
-    if (!sidebar || !backdrop) return;
-    sidebar.classList.remove('-translate-x-full');
-    backdrop.classList.remove('hidden');
-    document.body.classList.add('overflow-hidden');
-  }
-
-  function closeSidebar() {
-    if (!sidebar || !backdrop) return;
-    sidebar.classList.add('-translate-x-full');
-    backdrop.classList.add('hidden');
-    document.body.classList.remove('overflow-hidden');
-  }
-
-  toggleBtn?.addEventListener('click', () => {
-    if (sidebar?.classList.contains('-translate-x-full')) {
-      openSidebar();
-    } else {
-      closeSidebar();
-    }
-  });
-
-  closeBtn?.addEventListener('click', closeSidebar);
-  backdrop?.addEventListener('click', closeSidebar);
-
-  // Logout Listeners
-  sidebarLogoutBtn?.addEventListener('click', logout);
-  topbarLogoutBtn?.addEventListener('click', logout);
-
-  // Initialize Icons and Theme Engine
+  // Reinitialize Lucide Icons
   initIcons();
-  initThemeEngine();
 }
