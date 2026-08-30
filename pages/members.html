@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="id" class="dark scroll-smooth">
+<html lang="id" class="scroll-smooth">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manajemen Anggota & Alumni — KSM AIoT UPNVJ</title>
-  <meta name="description"
-    content="Direktori database resmi anggota aktif dan jaringan alumni Kelompok Studi Mahasiswa AIoT FIK UPN Veteran Jakarta." />
+  <title>Direktori Anggota & Alumni — KSM AIoT ERP</title>
+  <meta name="description" content="Manajemen Anggota Aktif dan Jejaring Alumni KSM AIoT Fasilkom UPNVJ." />
   <link rel="icon" type="image/png" href="/ksm-aiot-logo.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,84 +17,75 @@
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 
-<body class="bg-aiot-dark text-slate-200 font-sans bg-grid-pattern relative min-h-screen flex flex-col antialiased">
+<body class="bg-[#150626] text-white font-sans min-h-screen flex flex-col antialiased selection:bg-[#9B5CE8] selection:text-white">
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="fixed top-6 right-6 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none"></div>
+  <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none"></div>
 
-  <!-- CRM Collapsible Sidebar -->
-  <aside id="crm-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-aiot-dark/95 backdrop-blur-2xl border-r border-slate-800/90 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl"></aside>
-  <div id="crm-sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm hidden transition-opacity"></div>
-  <header id="crm-topbar"></header>
+  <!-- Topbar Header with Direct Navigation & Flowbite-style Account Dropdown -->
+  <header id="crm-topbar" class="sticky top-0 z-40 w-full bg-[#301057] border-b border-[#561F99] shadow-md min-h-[64px]"></header>
 
-  <!-- ============================================================== -->
-  <!-- MAIN CONTENT CONTAINER (Spacious, Clean CRM Layout)             -->
-  <!-- ============================================================== -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6">
 
     <!-- Page Header & Tab Controls -->
-    <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-6">
-      <div class="space-y-2">
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Manajemen Anggota & Alumni KSM AIoT</h1>
-        <p class="text-xs sm:text-sm text-slate-400 font-mono max-w-2xl leading-relaxed">
-          Basis data anggota aktif lintas divisi (BPH, Riset, PSDM, Humas) dan tracking jejak karir alumni.
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#561F99]">
+      <div>
+        <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Manajemen Anggota & Alumni KSM AIoT</h1>
+        <p class="text-xs text-[#D8B4FE] mt-1">
+          Basis data anggota aktif lintas divisi (BPH, Riset, PSDM, Humas) dan pelacakan jejaring alumni.
         </p>
       </div>
 
-      <!-- Tab Switcher (Anggota Aktif vs Alumni) -->
-      <div class="flex items-center p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex-shrink-0 self-start md:self-auto">
-        <button data-tab="active" id="tab-active-btn" class="tab-toggle-btn px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all bg-aiot-cyan text-slate-950 shadow-[0_0_15px_rgba(0,242,254,0.3)] whitespace-nowrap">
+      <!-- Tab Switcher (Aktif vs Alumni) -->
+      <div class="flex items-center p-1 rounded-lg bg-[#301057] border border-[#561F99] flex-shrink-0 self-start sm:self-auto">
+        <button data-tab="active" id="tab-active-btn" class="tab-toggle-btn px-4 py-1.5 rounded-md text-xs font-semibold bg-[#9B5CE8] text-white shadow-sm transition-all">
           <span id="active-members-tab-label">Anggota Aktif</span>
         </button>
-        <button data-tab="alumni" class="tab-toggle-btn px-5 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all text-slate-400 hover:text-white whitespace-nowrap">
+        <button data-tab="alumni" class="tab-toggle-btn px-4 py-1.5 rounded-md text-xs font-semibold text-[#D8B4FE] hover:text-white transition-all">
           Direktori Alumni
         </button>
       </div>
     </div>
 
     <!-- TAB PANEL 1: ANGGOTA AKTIF -->
-    <div id="tab-active" class="tab-panel space-y-6">
+    <div id="tab-active" class="tab-panel space-y-5">
       
-      <!-- Filter & Search Bar (Responsive CSS Grid) -->
-      <div class="glass-panel p-6 rounded-3xl border border-slate-800/80">
-        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+      <!-- Filter & Search Toolbar -->
+      <div class="card-institutional p-4">
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
           
           <!-- Search by Name/NIM -->
           <div class="sm:col-span-5 relative">
-            <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#C9A4F6]"></i>
             <input type="text" id="search-member-input" placeholder="Cari nama, NIM, atau divisi..."
-              class="w-full bg-slate-900/90 border border-slate-800 focus:border-aiot-cyan focus:ring-1 focus:ring-aiot-cyan rounded-2xl pl-11 pr-4 py-3 text-xs font-mono text-white placeholder-slate-500 transition-all" />
+              class="input-institutional pl-11 py-2 text-xs" />
           </div>
 
           <!-- Filter Divisi -->
           <div class="sm:col-span-3">
-            <select id="filter-member-divisi"
-              class="w-full bg-slate-900/90 border border-slate-800 focus:border-aiot-cyan rounded-2xl px-4 py-3 text-xs font-mono text-slate-200 transition-all">
-              <option value="all">Semua Divisi</option>
-              <option value="BPH">BPH (Badan Pengurus Harian)</option>
-              <option value="Akademik & Riset">Akademik & Riset</option>
-              <option value="Pengembangan SDM">Pengembangan SDM</option>
-              <option value="Humas & Multimedia">Humas & Multimedia</option>
+            <select id="filter-member-divisi" class="input-institutional py-2 px-3 text-xs">
+              <option value="all" class="bg-[#240d42] text-white">Semua Divisi</option>
+              <option value="BPH" class="bg-[#240d42] text-white">BPH (Badan Pengurus Harian)</option>
+              <option value="Akademik & Riset" class="bg-[#240d42] text-white">Akademik & Riset</option>
+              <option value="Pengembangan SDM" class="bg-[#240d42] text-white">Pengembangan SDM</option>
+              <option value="Humas & Multimedia" class="bg-[#240d42] text-white">Humas & Multimedia</option>
             </select>
           </div>
 
           <!-- Filter Angkatan -->
           <div class="sm:col-span-2">
-            <select id="filter-member-angkatan"
-              class="w-full bg-slate-900/90 border border-slate-800 focus:border-aiot-cyan rounded-2xl px-4 py-3 text-xs font-mono text-slate-200 transition-all">
-              <option value="all">Semua Angkatan</option>
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
+            <select id="filter-member-angkatan" class="input-institutional py-2 px-3 text-xs">
+              <option value="all" class="bg-[#240d42] text-white">Semua Angkatan</option>
+              <option value="2026" class="bg-[#240d42] text-white">2026</option>
+              <option value="2025" class="bg-[#240d42] text-white">2025</option>
+              <option value="2024" class="bg-[#240d42] text-white">2024</option>
+              <option value="2023" class="bg-[#240d42] text-white">2023</option>
             </select>
           </div>
 
           <!-- Export CSV Button -->
           <div class="sm:col-span-2 flex justify-end">
-            <button id="btn-export-member"
-              class="w-full py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white text-xs font-mono font-semibold transition-all flex items-center justify-center space-x-2">
-              <i data-lucide="download" class="w-4 h-4 text-aiot-cyan"></i>
+            <button id="btn-export-member" class="btn-outline-neutral w-full justify-center text-xs py-2">
+              <i data-lucide="download" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
               <span>Export CSV</span>
             </button>
           </div>
@@ -104,35 +94,35 @@
       </div>
 
       <!-- Members Table Container -->
-      <div class="glass-panel rounded-3xl border border-slate-800/80 overflow-hidden shadow-2xl">
-        <div class="p-6 border-b border-slate-800/80 flex items-center justify-between">
-          <div class="flex items-center space-x-2.5">
-            <i data-lucide="users" class="w-4 h-4 text-aiot-cyan"></i>
-            <h3 class="text-sm font-bold text-white font-mono tracking-wider uppercase">Daftar Anggota Aktif Terdaftar</h3>
+      <div class="card-institutional overflow-hidden">
+        <div class="p-4 border-b border-[#561F99] bg-[#301057]/60 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="users" class="w-4 h-4 text-[#C9A4F6]"></i>
+            <h3 class="text-xs font-bold text-white tracking-wider uppercase">Daftar Anggota Aktif Terdaftar</h3>
           </div>
-          <span id="member-count-badge" class="px-3 py-1 rounded-full text-xs font-mono bg-cyan-950/80 text-aiot-cyan border border-cyan-800 font-bold">
+          <span id="member-count-badge" class="badge-status badge-pending text-xs">
             Memuat...
           </span>
         </div>
 
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs font-mono">
-            <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800 whitespace-nowrap">
+          <table class="table-institutional">
+            <thead>
               <tr>
-                <th class="py-4 px-5">Nama Lengkap</th>
-                <th class="py-4 px-5">NIM Mahasiswa</th>
-                <th class="py-4 px-5">Email UPNVJ</th>
-                <th class="py-4 px-5">Divisi & Role</th>
-                <th class="py-4 px-5">Angkatan</th>
-                <th class="py-4 px-5">Tanggal Masuk</th>
-                <th class="py-4 px-5">Status</th>
-                <th class="py-4 px-5 text-center">Aksi</th>
+                <th>Nama Lengkap</th>
+                <th>NIM Mahasiswa</th>
+                <th>Email UPNVJ</th>
+                <th>Divisi & Role</th>
+                <th>Angkatan</th>
+                <th>Tanggal Masuk</th>
+                <th>Status</th>
+                <th class="text-center">Aksi</th>
               </tr>
             </thead>
-            <tbody id="active-members-tbody" class="divide-y divide-slate-800/60 text-slate-300">
+            <tbody id="active-members-tbody" class="divide-y divide-[#561F99]/40">
               <tr>
-                <td colspan="8" class="text-center py-10 text-slate-500 font-mono">
-                  Memuat data dari PostgreSQL backend...
+                <td colspan="8" class="text-center py-10 text-[#D8B4FE] font-mono text-xs">
+                  Memuat data anggota dari database...
                 </td>
               </tr>
             </tbody>
@@ -143,128 +133,74 @@
     </div>
 
     <!-- TAB PANEL 2: DIREKTORI ALUMNI -->
-    <div id="tab-alumni" class="tab-panel hidden space-y-6">
+    <div id="tab-alumni" class="tab-panel hidden space-y-5">
       
       <!-- Alumni Filter -->
-      <div class="glass-panel p-6 rounded-3xl border border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="card-institutional p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div>
-          <h3 class="text-base font-bold text-white font-mono">Jejak Karir Alumni KSM AIoT</h3>
-          <p class="text-xs text-slate-400 font-mono">Alumni yang berkarir di industri AI, Robotics, Embedded System, dan Big Tech Company.</p>
+          <h3 class="text-sm font-bold text-white">Jejaring Alumni KSM AIoT</h3>
+          <p class="text-xs text-[#D8B4FE]">Daftar lulusan dan persebaran karir di industri teknologi.</p>
         </div>
-        <select id="filter-alumni-career"
-          class="bg-slate-900 border border-slate-800 focus:border-aiot-cyan rounded-2xl px-4 py-2.5 text-xs font-mono text-slate-200">
-          <option value="all">Semua Sektor Industri</option>
-          <option value="AI / ML">AI / Machine Learning Engineer</option>
-          <option value="IoT">IoT & Embedded Systems</option>
-          <option value="Software">Software & Cloud Infrastructure</option>
-        </select>
+
+        <div class="relative w-full sm:w-64">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#C9A4F6]"></i>
+          <input type="text" id="search-alumni-input" placeholder="Cari nama alumni, instansi..."
+            class="input-institutional pl-11 py-2 text-xs" />
+        </div>
       </div>
 
       <!-- Alumni Grid -->
-      <div id="alumni-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Rendered dynamically -->
+      <div id="alumni-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered dynamically by members.js -->
       </div>
+
     </div>
+
   </main>
 
   <!-- Member Detail Modal -->
-  <div id="member-detail-modal" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6 relative">
-      <div class="flex items-center justify-between pb-4 border-b border-slate-800/80 sticky top-0 bg-slate-950/90 backdrop-blur-md -mt-2 pt-2 z-10">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-2xl bg-aiot-cyan/15 text-aiot-cyan border border-aiot-cyan/30 flex items-center justify-center">
-            <i data-lucide="user-check" class="w-5 h-5"></i>
+  <div id="member-detail-modal"
+    class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[#240d42] w-full max-w-lg p-6 rounded-2xl border border-[#561F99] shadow-2xl space-y-4 relative text-white">
+      <div class="flex items-center justify-between pb-3 border-b border-[#561F99]">
+        <h3 class="text-sm font-bold text-white">Profil Anggota KSM AIoT</h3>
+        <button id="close-detail-modal" class="p-1 rounded text-[#C9A4F6] hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3.5 text-xs">
+        <div class="flex items-center space-x-3 p-3 bg-[#150626] rounded-xl border border-[#561F99]">
+          <div class="w-12 h-12 rounded-lg overflow-hidden bg-[#240d42] border border-[#561F99] flex-shrink-0">
+            <img id="detail-member-photo" src="" alt="Foto" class="w-full h-full object-cover" />
           </div>
           <div>
-            <h3 class="text-base font-bold text-white font-mono">Profil Lengkap Anggota</h3>
-            <p class="text-xs text-slate-400 font-mono" id="modal-member-id-tag">Basis Data Resmi PostgreSQL KSM AIoT</p>
-          </div>
-        </div>
-        <button id="close-member-modal" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <div class="space-y-4 text-xs font-mono">
-        <!-- Top Profile Card -->
-        <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 flex items-center space-x-4">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-aiot-cyan to-aiot-purple flex items-center justify-center text-slate-950 font-black text-lg flex-shrink-0 shadow-md" id="modal-member-avatar">
-            AI
-          </div>
-          <div class="min-w-0 flex-1">
-            <h4 class="text-base font-bold text-white truncate" id="modal-member-name">-</h4>
-            <div class="flex items-center space-x-2 mt-0.5">
-              <span class="text-xs text-aiot-cyan font-bold" id="modal-member-nim">-</span>
-              <span class="text-slate-500">•</span>
-              <span class="text-xs text-slate-400" id="modal-member-prodi">-</span>
-            </div>
-            <div class="mt-2 flex items-center space-x-2">
-              <span class="inline-block px-2.5 py-0.5 rounded-lg text-[10px] font-bold" id="modal-member-role-badge">-</span>
-              <span class="inline-block px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700" id="modal-member-id-badge">-</span>
-            </div>
+            <h4 class="text-sm font-bold text-white" id="detail-member-name">-</h4>
+            <p class="text-xs font-mono text-[#C9A4F6] font-semibold" id="detail-member-nim">-</p>
+            <span class="badge-status badge-approved text-[10px] mt-1" id="detail-member-status">AKTIF</span>
           </div>
         </div>
 
-        <!-- Details Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
-            <span class="text-slate-500 block text-[10px] uppercase">Divisi Organisasi</span>
-            <span class="text-slate-200 font-bold mt-0.5 block text-xs" id="modal-member-division">-</span>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="p-2.5 bg-[#150626] rounded-lg border border-[#561F99]">
+            <span class="text-[#D8B4FE] text-[10px] block font-semibold">Divisi & Peran</span>
+            <span class="text-white font-bold block mt-0.5" id="detail-member-divisi">-</span>
           </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
-            <span class="text-slate-500 block text-[10px] uppercase">Tahun Masuk / Angkatan</span>
-            <span class="text-slate-200 font-bold mt-0.5 block text-xs" id="modal-member-angkatan">-</span>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
-            <span class="text-slate-500 block text-[10px] uppercase">Semester & Domisili</span>
-            <span class="text-slate-200 font-bold mt-0.5 block text-xs" id="modal-member-domisili">-</span>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
-            <span class="text-slate-500 block text-[10px] uppercase">No WhatsApp / Kontak</span>
-            <span class="text-slate-200 font-bold mt-0.5 block text-xs" id="modal-member-contact">-</span>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60 col-span-1 sm:col-span-2">
-            <span class="text-slate-500 block text-[10px] uppercase">Email UPNVJ / Pribadi</span>
-            <span class="text-slate-200 font-bold mt-0.5 block text-xs break-all" id="modal-member-email">-</span>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60 col-span-1 sm:col-span-2">
-            <span class="text-slate-500 block text-[10px] uppercase">Keahlian & Bidang Eksplorasi</span>
-            <span class="text-slate-200 font-bold mt-0.5 block text-xs" id="modal-member-expertise">-</span>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60 col-span-1 sm:col-span-2">
-            <span class="text-slate-500 block text-[10px] uppercase">Bahasa & Tools / Framework</span>
-            <span class="text-slate-200 font-bold mt-0.5 block text-xs" id="modal-member-tools">-</span>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60 col-span-1 sm:col-span-2">
-            <span class="text-slate-500 block text-[10px] uppercase">Pengalaman Project / Riset</span>
-            <p class="text-slate-300 text-xs mt-1 leading-relaxed" id="modal-member-project">-</p>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
-            <span class="text-slate-500 block text-[10px] uppercase">Akun Discord</span>
-            <span class="text-slate-200 font-bold mt-0.5 block text-xs" id="modal-member-discord">-</span>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
-            <span class="text-slate-500 block text-[10px] uppercase">Status Keanggotaan</span>
-            <span class="text-emerald-400 font-bold mt-0.5 block text-xs" id="modal-member-status">-</span>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60 col-span-1 sm:col-span-2" id="modal-member-portfolio-box">
-            <span class="text-slate-500 block text-[10px] uppercase">Tautan Portofolio / GitHub / LinkedIn</span>
-            <a href="#" target="_blank" id="modal-member-portfolio" class="text-aiot-cyan hover:underline font-bold mt-0.5 inline-flex items-center space-x-1 text-xs break-all">
-              <span id="modal-member-portfolio-text">-</span>
-              <i data-lucide="external-link" class="w-3.5 h-3.5 ml-1"></i>
-            </a>
+          <div class="p-2.5 bg-[#150626] rounded-lg border border-[#561F99]">
+            <span class="text-[#D8B4FE] text-[10px] block font-semibold">Tahun Angkatan</span>
+            <span class="text-white font-bold block mt-0.5" id="detail-member-angkatan">-</span>
           </div>
         </div>
-      </div>
 
-      <div class="pt-2 flex justify-end sticky bottom-0 bg-slate-950/90 backdrop-blur-md pb-2 z-10 border-t border-slate-800/80 -mb-2">
-        <button id="btn-close-member-modal-footer" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono font-semibold transition-colors border border-slate-700">
-          Tutup
-        </button>
+        <div class="p-2.5 bg-[#150626] rounded-lg border border-[#561F99]">
+          <span class="text-[#D8B4FE] text-[10px] block font-semibold">Email UPNVJ</span>
+          <span class="text-white font-mono block mt-0.5" id="detail-member-email">-</span>
+        </div>
       </div>
     </div>
   </div>
 
   <script type="module" src="/src/scripts/members.js"></script>
 </body>
+
 </html>

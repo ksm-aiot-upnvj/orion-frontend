@@ -1,6 +1,6 @@
 import { initIcons, showToast } from '../modules/ui.js';
 import { initCRMLayout } from '../modules/crm-layout.js';
-import { getAuthToken } from '../modules/auth.js';
+import { getAuthToken, getAuthUser } from '../modules/auth.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
 
@@ -10,6 +10,82 @@ let selectedReg = null;
 document.addEventListener('DOMContentLoaded', () => {
   // Initialize Unified CRM Layout (with Auth Route Guard)
   initCRMLayout('selection', 'Seleksi Calon Anggota');
+
+  // RBAC Check for BPH Intake Control Button
+  const currentUser = getAuthUser() || { role: 'SUPERADMIN' };
+  const isBPH = currentUser.role === 'SUPERADMIN' || currentUser.role === 'ADMIN_BPH';
+
+  const intakeBtn = document.getElementById('open-intake-control-btn');
+  const intakeModal = document.getElementById('intake-control-modal');
+  const closeIntakeModalBtn = document.getElementById('close-intake-modal');
+  const intakeForm = document.getElementById('intake-control-form');
+  const intakeStatusSelect = document.getElementById('intake-status-select');
+  const intakeBatchInput = document.getElementById('intake-batch-name');
+  const intakeDeadlineInput = document.getElementById('intake-deadline-date');
+  const intakeQuotaInput = document.getElementById('intake-quota');
+  const intakePill = document.getElementById('intake-status-pill');
+
+  // Load Saved Intake Config
+  let currentIntakeConfig = {
+    status: 'OPEN',
+    batchName: 'Penerimaan Anggota Baru Periode 2026',
+    deadline: '31 Agustus 2026',
+    quota: 100
+  };
+
+  try {
+    const rawConfig = localStorage.getItem('ksm_intake_config');
+    if (rawConfig) currentIntakeConfig = { ...currentIntakeConfig, ...JSON.parse(rawConfig) };
+  } catch {}
+
+  function updateIntakePill() {
+    if (!intakePill) return;
+    if (currentIntakeConfig.status === 'OPEN') {
+      intakePill.className = 'badge-status badge-approved text-[10px]';
+      intakePill.innerHTML = `<i data-lucide="unlock" class="w-3 h-3"></i><span>Intake: OPEN (${currentIntakeConfig.deadline})</span>`;
+    } else {
+      intakePill.className = 'badge-status badge-danger text-[10px]';
+      intakePill.innerHTML = `<i data-lucide="lock" class="w-3 h-3"></i><span>Intake: CLOSED</span>`;
+    }
+    initIcons();
+  }
+  updateIntakePill();
+
+  if (isBPH && intakeBtn) {
+    intakeBtn.classList.remove('hidden');
+    intakeBtn.classList.add('inline-flex');
+
+    intakeBtn.addEventListener('click', () => {
+      if (intakeStatusSelect) intakeStatusSelect.value = currentIntakeConfig.status;
+      if (intakeBatchInput) intakeBatchInput.value = currentIntakeConfig.batchName;
+      if (intakeDeadlineInput) intakeDeadlineInput.value = currentIntakeConfig.deadline;
+      if (intakeQuotaInput) intakeQuotaInput.value = currentIntakeConfig.quota;
+
+      intakeModal?.classList.remove('hidden');
+      intakeModal?.classList.add('flex');
+    });
+
+    closeIntakeModalBtn?.addEventListener('click', () => {
+      intakeModal?.classList.add('hidden');
+      intakeModal?.classList.remove('flex');
+    });
+
+    intakeForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      currentIntakeConfig = {
+        status: intakeStatusSelect?.value || 'OPEN',
+        batchName: intakeBatchInput?.value.trim() || 'Penerimaan Anggota Baru Periode 2026',
+        deadline: intakeDeadlineInput?.value.trim() || '31 Agustus 2026',
+        quota: Number(intakeQuotaInput?.value) || 100
+      };
+
+      localStorage.setItem('ksm_intake_config', JSON.stringify(currentIntakeConfig));
+      updateIntakePill();
+      intakeModal?.classList.add('hidden');
+      intakeModal?.classList.remove('flex');
+      showToast(`Pengaturan Periode berhasil disimpan! Status: ${currentIntakeConfig.status}`, 'success');
+    });
+  }
 
   // DOM Elements
   const tbody = document.getElementById('admin-registrations-tbody');
@@ -25,72 +101,38 @@ document.addEventListener('DOMContentLoaded', () => {
   // Modal Elements
   const modal = document.getElementById('admin-review-modal');
   const closeModalBtn = document.getElementById('close-admin-modal');
-  const closeFooterBtn = document.getElementById('btn-modal-close-footer');
-  const btnApprove = document.getElementById('btn-action-approve');
-  const btnReject = document.getElementById('btn-action-reject');
+  const btnApprove = document.getElementById('btn-decision-approve');
+  const btnReject = document.getElementById('btn-decision-reject');
 
   const modalPhoto = document.getElementById('modal-review-photo');
   const modalName = document.getElementById('modal-review-name');
   const modalNim = document.getElementById('modal-review-nim');
   const modalProdi = document.getElementById('modal-review-prodi');
-  const modalAngkatan = document.getElementById('modal-review-angkatan');
-  const modalEmail = document.getElementById('modal-review-email');
-  const modalPhone = document.getElementById('modal-review-phone');
   const modalTrack = document.getElementById('modal-review-track');
   const modalMotivation = document.getElementById('modal-review-motivation');
+  const modalPortfolio = document.getElementById('modal-review-portfolio');
   const modalStatusBadge = document.getElementById('modal-review-status-badge');
-  const modalMemberIdBox = document.getElementById('modal-review-memberid-box');
-  const modalMemberId = document.getElementById('modal-review-memberid');
 
-  // Load Registrations from Backend
+  // Load Registrations directly from Database
   async function loadRegistrations() {
     try {
       const token = getAuthToken();
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-      const res = await fetch(`${API_BASE_URL}/registrations`, { headers });
+      const res = await fetch(`${API_BASE_URL}/registrations/`, { headers });
       if (res.ok) {
         registrationsList = await res.json();
       } else {
-        registrationsList = getFallbackRegistrations();
+        const err = await res.json().catch(() => ({}));
+        registrationsList = [];
+        console.warn('Backend returned error for registrations:', err);
       }
-    } catch {
-      registrationsList = getFallbackRegistrations();
+    } catch (err) {
+      console.error('Database connection error:', err);
+      registrationsList = [];
+      showToast('Koneksi ke database gagal. Pastikan backend aktif!', 'error');
     }
     renderStats();
     renderTable();
-  }
-
-  function getFallbackRegistrations() {
-    return [
-      {
-        id: "01a04935-6481-7499-ab68-33b12fe06966",
-        student_id: "2410511088",
-        full_name: "Ahmad Rizky Pratama",
-        program_of_study: "S1 Informatika",
-        email: "ahmad.rizky@mahasiswa.upnvj.ac.id",
-        contact_info: "0812-7788-9900",
-        intake_period: "2024",
-        interest_track: "Artificial Intelligence & ML",
-        motivation: "Tertarik mendalami riset TinyML pada mikrokontroler ESP32 untuk proyek Smart Agriculture.",
-        photo: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=200&auto=format&fit=crop",
-        status: "PENDING",
-        submit_date: "28/08/2026"
-      },
-      {
-        id: "01a04935-6481-7499-ab68-33b2d4b74d53",
-        student_id: "2410512014",
-        full_name: "Siti Nurhaliza",
-        program_of_study: "S1 Sistem Informasi",
-        email: "siti.nurhaliza@mahasiswa.upnvj.ac.id",
-        contact_info: "0819-3344-5566",
-        intake_period: "2024",
-        interest_track: "Internet of Things & Robotics",
-        motivation: "Ingin berkolaborasi membuat sistem monitoring kualitas udara berbasis LoRaWAN di lingkungan kampus.",
-        photo: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=200&auto=format&fit=crop",
-        status: "PENDING",
-        submit_date: "28/08/2026"
-      }
-    ];
   }
 
   function renderStats() {
@@ -111,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusFilter = filterStatusSelect?.value || 'all';
 
     const filtered = registrationsList.filter(r => {
-      const matchSearch = r.full_name.toLowerCase().includes(search) || r.student_id.toLowerCase().includes(search);
+      const matchSearch = (r.full_name || '').toLowerCase().includes(search) || (r.student_id || '').toLowerCase().includes(search);
       const matchStatus = statusFilter === 'all' || r.status === statusFilter;
       return matchSearch && matchStatus;
     });
@@ -119,9 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filtered.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="8" class="text-center py-12 text-slate-500 font-mono text-xs">
-            <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 text-slate-600"></i>
-            <span>Tidak ada berkas calon anggota yang cocok dengan filter.</span>
+          <td colspan="8" class="text-center py-10 text-gray-500 font-mono text-xs">
+            <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 text-gray-400"></i>
+            <span>Belum ada berkas calon anggota yang terdaftar di database.</span>
           </td>
         </tr>
       `;
@@ -132,35 +174,35 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.innerHTML = filtered.map(r => {
       let statusBadge = '';
       if (r.status === 'APPROVED') {
-        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold flex items-center space-x-1 inline-flex"><i data-lucide="check" class="w-3 h-3"></i><span>APPROVED</span></span>`;
+        statusBadge = `<span class="badge-status badge-approved text-[11px]"><i data-lucide="check" class="w-3 h-3"></i><span>APPROVED</span></span>`;
       } else if (r.status === 'REJECTED') {
-        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-mono bg-red-950 text-red-400 border border-red-800 font-bold flex items-center space-x-1 inline-flex"><i data-lucide="x" class="w-3 h-3"></i><span>REJECTED</span></span>`;
+        statusBadge = `<span class="badge-status badge-danger text-[11px]"><i data-lucide="x" class="w-3 h-3"></i><span>REJECTED</span></span>`;
       } else {
-        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-mono bg-amber-950 text-amber-300 border border-amber-800 font-bold flex items-center space-x-1 inline-flex"><i data-lucide="clock" class="w-3 h-3"></i><span>PENDING</span></span>`;
+        statusBadge = `<span class="badge-status badge-pending text-[11px]"><i data-lucide="clock" class="w-3 h-3"></i><span>PENDING</span></span>`;
       }
 
       const photoSrc = r.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop';
 
       return `
-        <tr class="hover:bg-slate-900/60 transition-colors">
-          <td class="py-3.5 px-5 font-semibold text-white">
-            <div class="flex items-center space-x-3">
-              <div class="w-8 h-8 rounded-xl overflow-hidden bg-slate-800 border border-slate-700 flex-shrink-0 shadow-sm">
+        <tr class="hover:bg-[#2d1052] transition-colors">
+          <td class="font-medium text-white">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-7 h-7 rounded-md overflow-hidden bg-[#150626] border border-[#561F99] flex-shrink-0">
                 <img src="${photoSrc}" alt="${r.full_name}" class="w-full h-full object-cover" />
               </div>
-              <span class="truncate max-w-[180px]">${r.full_name}</span>
+              <span class="truncate max-w-[170px]">${r.full_name}</span>
             </div>
           </td>
-          <td class="py-3.5 px-5 font-mono text-aiot-cyan">${r.student_id}</td>
-          <td class="py-3.5 px-5 text-slate-300">${r.program_of_study}</td>
-          <td class="py-3.5 px-5 text-slate-300">
-            <span class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-300">${r.interest_track}</span>
+          <td class="font-mono text-xs font-semibold text-[#C9A4F6]">${r.student_id}</td>
+          <td class="text-[#E9D8FD] text-xs">${r.program_of_study}</td>
+          <td>
+            <span class="px-2.5 py-0.5 rounded bg-[#561F99] border border-[#9B5CE8]/50 text-[10px] font-mono text-[#C9A4F6] font-semibold">${r.interest_track}</span>
           </td>
-          <td class="py-3.5 px-5 font-mono text-slate-400 text-[11px]">${r.email}</td>
-          <td class="py-3.5 px-5 font-mono text-slate-400">${r.submit_date || '-'}</td>
-          <td class="py-3.5 px-5">${statusBadge}</td>
-          <td class="py-3.5 px-5 text-center">
-            <button type="button" data-reg-id="${r.id}" class="btn-open-review px-3 py-1.5 rounded-xl bg-aiot-cyan/15 hover:bg-aiot-cyan/25 text-aiot-cyan border border-aiot-cyan/30 text-xs font-mono font-bold transition-all shadow-sm flex items-center space-x-1 mx-auto">
+          <td class="font-mono text-[#D8B4FE] text-[11px]">${r.email}</td>
+          <td class="font-mono text-[#D8B4FE] text-xs">${r.submit_date || '-'}</td>
+          <td>${statusBadge}</td>
+          <td class="text-center">
+            <button type="button" data-reg-id="${r.id}" class="btn-open-review px-2.5 py-1 rounded-md bg-[#301057] hover:bg-[#561F99] text-[#C9A4F6] hover:text-white border border-[#561F99] text-xs font-semibold transition-colors inline-flex items-center space-x-1">
               <i data-lucide="eye" class="w-3.5 h-3.5"></i>
               <span>Review</span>
             </button>
@@ -189,36 +231,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalName) modalName.textContent = selectedReg.full_name;
     if (modalNim) modalNim.textContent = selectedReg.student_id;
     if (modalProdi) modalProdi.textContent = selectedReg.program_of_study;
-    if (modalAngkatan) modalAngkatan.textContent = `Angkatan ${selectedReg.intake_period || '2024'}`;
-    if (modalEmail) modalEmail.textContent = selectedReg.email;
-    if (modalPhone) modalPhone.textContent = selectedReg.contact_info || '-';
     if (modalTrack) modalTrack.textContent = selectedReg.interest_track;
     if (modalMotivation) modalMotivation.textContent = `"${selectedReg.motivation || 'Tidak ada catatan motivasi.'}"`;
+    
+    if (modalPortfolio) {
+      const url = selectedReg.portfolio_url || 'https://github.com';
+      modalPortfolio.href = url;
+      modalPortfolio.querySelector('span').textContent = url;
+    }
 
     if (modalStatusBadge) {
       if (selectedReg.status === 'APPROVED') {
-        modalStatusBadge.className = 'px-3 py-1 rounded-full text-xs font-bold font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 flex-shrink-0';
+        modalStatusBadge.className = 'badge-status badge-approved';
         modalStatusBadge.textContent = 'APPROVED';
       } else if (selectedReg.status === 'REJECTED') {
-        modalStatusBadge.className = 'px-3 py-1 rounded-full text-xs font-bold font-mono bg-red-950 text-red-400 border border-red-800 flex-shrink-0';
+        modalStatusBadge.className = 'badge-status badge-danger';
         modalStatusBadge.textContent = 'REJECTED';
       } else {
-        modalStatusBadge.className = 'px-3 py-1 rounded-full text-xs font-bold font-mono bg-amber-950 text-amber-300 border border-amber-800 flex-shrink-0';
+        modalStatusBadge.className = 'badge-status badge-pending';
         modalStatusBadge.textContent = 'PENDING';
-      }
-    }
-
-    if (modalMemberIdBox) {
-      if (selectedReg.status === 'APPROVED' && selectedReg.member_id) {
-        modalMemberIdBox.classList.remove('hidden');
-        if (modalMemberId) modalMemberId.textContent = selectedReg.member_id;
-      } else {
-        modalMemberIdBox.classList.add('hidden');
       }
     }
 
     modal?.classList.remove('hidden');
     modal?.classList.add('flex');
+    initIcons();
   }
 
   function closeReviewModal() {
@@ -228,14 +265,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   closeModalBtn?.addEventListener('click', closeReviewModal);
-  closeFooterBtn?.addEventListener('click', closeReviewModal);
 
-  // Decision Action: Approve Candidate
+  // Decision Action: Approve Candidate (Direct Database Hit)
   btnApprove?.addEventListener('click', async () => {
     if (!selectedReg) return;
     const token = getAuthToken();
 
     try {
+      btnApprove.disabled = true;
       const res = await fetch(`${API_BASE_URL}/registrations/${selectedReg.id}/approve`, {
         method: 'PATCH',
         headers: {
@@ -248,51 +285,59 @@ document.addEventListener('DOMContentLoaded', () => {
         const updated = await res.json();
         selectedReg.status = 'APPROVED';
         selectedReg.member_id = updated.member_id;
-        showToast(`Berkas ${selectedReg.full_name} Disetujui! Member ID: ${updated.member_id} terbit.`, 'success');
+        showToast(`Berkas Disetujui! Member ID ${updated.member_id || ''} resmi tersimpan di database.`, 'success');
+        renderStats();
+        renderTable();
+        closeReviewModal();
       } else {
-        selectedReg.status = 'APPROVED';
-        selectedReg.member_id = `AIOT-2026-00${registrationsList.length + 1}`;
-        showToast(`Berkas ${selectedReg.full_name} Disetujui!`, 'success');
+        const err = await res.json().catch(() => ({}));
+        showToast(err.detail || 'Gagal menyetujui berkas di database.', 'error');
       }
-    } catch {
-      selectedReg.status = 'APPROVED';
-      selectedReg.member_id = `AIOT-2026-00${registrationsList.length + 1}`;
-      showToast(`Berkas ${selectedReg.full_name} Disetujui!`, 'success');
+    } catch (err) {
+      console.error('Approve Error:', err);
+      showToast('Gagal terhubung ke server database.', 'error');
+    } finally {
+      btnApprove.disabled = false;
     }
-
-    closeReviewModal();
-    renderStats();
-    renderTable();
   });
 
-  // Decision Action: Reject Candidate
+  // Decision Action: Reject Candidate (Direct Database Hit)
   btnReject?.addEventListener('click', async () => {
     if (!selectedReg) return;
     const token = getAuthToken();
 
     try {
-      await fetch(`${API_BASE_URL}/registrations/${selectedReg.id}/reject`, {
+      btnReject.disabled = true;
+      const res = await fetch(`${API_BASE_URL}/registrations/${selectedReg.id}/reject`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
       });
-    } catch {
-      // offline fallback
-    }
 
-    selectedReg.status = 'REJECTED';
-    showToast(`Berkas ${selectedReg.full_name} ditolak.`, 'error');
-    closeReviewModal();
-    renderStats();
-    renderTable();
+      if (res.ok) {
+        selectedReg.status = 'REJECTED';
+        showToast('Berkas Calon Anggota telah ditolak di database.', 'info');
+        renderStats();
+        renderTable();
+        closeReviewModal();
+      } else {
+        const err = await res.json().catch(() => ({}));
+        showToast(err.detail || 'Gagal memperbarui status di database.', 'error');
+      }
+    } catch (err) {
+      console.error('Reject Error:', err);
+      showToast('Gagal terhubung ke server database.', 'error');
+    } finally {
+      btnReject.disabled = false;
+    }
   });
 
-  // Search & Filter Listeners
+  // Search & Filter Event Listeners
   searchInput?.addEventListener('input', renderTable);
   filterStatusSelect?.addEventListener('change', renderTable);
 
-  // Load Data
+  // Initial Load
   loadRegistrations();
 });

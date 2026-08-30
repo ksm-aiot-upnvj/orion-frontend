@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="id" class="dark scroll-smooth">
+<html lang="id" class="scroll-smooth">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel Seleksi Calon Anggota — KSM AIoT CRM</title>
+  <title>Seleksi Calon Anggota — KSM AIoT ERP</title>
   <meta name="description" content="Panel Review Berkas & Keputusan Seleksi Calon Anggota Baru KSM AIoT UPNVJ." />
   <link rel="icon" type="image/png" href="/ksm-aiot-logo.png" />
 
@@ -17,235 +17,307 @@
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 
-<body class="bg-aiot-dark text-slate-200 font-sans bg-grid-pattern relative min-h-screen flex flex-col antialiased">
+<body
+  class="bg-[#150626] text-white font-sans min-h-screen flex flex-col antialiased selection:bg-[#9B5CE8] selection:text-white">
 
-  <div id="toast-container" class="fixed top-6 right-6 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none"></div>
-
-  <!-- Unified CRM Layout Elements -->
-  <aside id="crm-sidebar"
-    class="fixed inset-y-0 left-0 z-50 w-72 bg-aiot-dark/95 backdrop-blur-2xl border-r border-slate-800/90 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl">
-  </aside>
-  <div id="crm-sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm hidden transition-opacity">
+  <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none">
   </div>
-  <header id="crm-topbar"></header>
 
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  <!-- Topbar Header with Direct Navigation & Flowbite-style Account Dropdown -->
+  <header id="crm-topbar"
+    class="sticky top-0 z-40 w-full bg-[#301057] border-b border-[#561F99] shadow-md min-h-[64px]"></header>
 
-    <!-- Page Header Banner -->
-    <div
-      class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
-      <div class="relative z-10 space-y-2">
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Seleksi & Verifikasi Calon Anggota
-        </h1>
-        <p class="text-xs sm:text-sm text-slate-400 font-mono max-w-2xl leading-relaxed">
-          Tinjau berkas pendaftaran, evaluasi motivasi riset calon anggota, dan terbitkan Member ID resmi ke database
-          anggota aktif.
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6">
+
+    <!-- Page Title Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#561F99]">
+      <div>
+        <div class="flex items-center space-x-2 mb-1.5">
+          <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center space-x-2">
+            <span>Seleksi Penerimaan Anggota Baru</span>
+          </h1>
+          <!-- Dynamic Intake Status Badge -->
+          <span id="intake-status-pill" class="badge-status badge-approved text-[10px]">
+            <i data-lucide="unlock" class="w-3 h-3"></i>
+            <span>Status: OPEN</span>
+          </span>
+        </div>
+        <p class="text-xs sm:text-sm text-[#D8B4FE]">
+          Review pendaftaran berkas calon anggota, kelayakan minat, dan penetapan status kelulusan anggota.
         </p>
       </div>
 
-      <div class="relative z-10 flex items-center space-x-3 flex-shrink-0">
-        <a href="/pages/registration.html" target="_blank"
-          class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-mono font-medium flex items-center space-x-2 transition-all">
-          <i data-lucide="external-link" class="w-3.5 h-3.5 text-aiot-cyan"></i>
-          <span>Lihat Form Publik</span>
-        </a>
+      <div class="flex flex-wrap items-center gap-2.5">
+        <!-- BPH Only: Intake Control Panel Trigger -->
+        <button id="open-intake-control-btn"
+          class="hidden px-3 py-1.5 rounded-lg bg-[#301057] hover:bg-[#561F99] text-[#C9A4F6] hover:text-white border border-[#561F99] text-xs font-semibold transition-all items-center space-x-1.5 shadow-sm">
+          <i data-lucide="settings" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
+          <span>Kelola Periode (BPH)</span>
+        </button>
+
+        <button id="refresh-registrations-btn" class="btn-secondary text-xs py-1.5 px-3">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
+          <span>Muat Ulang Data</span>
+        </button>
       </div>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      <div class="glass-panel p-5 rounded-2xl border border-slate-800/80 flex items-center space-x-4">
+    <!-- Quick Stats Cards (Section 13) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="card-institutional p-4 flex items-center space-x-3.5">
         <div
-          class="w-12 h-12 rounded-2xl bg-cyan-950/80 text-aiot-cyan border border-cyan-800 flex items-center justify-center flex-shrink-0">
-          <i data-lucide="users" class="w-6 h-6"></i>
+          class="w-10 h-10 rounded-lg bg-[#301057] text-[#C9A4F6] flex items-center justify-center flex-shrink-0 border border-[#561F99]">
+          <i data-lucide="users" class="w-5 h-5"></i>
         </div>
         <div>
-          <span class="text-[11px] font-mono text-slate-400 uppercase">Total Pendaftar</span>
-          <h3 class="text-2xl font-black text-white font-mono" id="stat-total-reg">0</h3>
+          <span class="text-[11px] font-mono text-[#C9A4F6] uppercase font-semibold">Total Pendaftar</span>
+          <h3 class="text-xl font-bold text-white font-mono mt-0.5" id="stat-total-reg">0</h3>
         </div>
       </div>
 
-      <div class="glass-panel p-5 rounded-2xl border border-slate-800/80 flex items-center space-x-4">
+      <div class="card-institutional p-4 flex items-center space-x-3.5">
         <div
-          class="w-12 h-12 rounded-2xl bg-amber-950/80 text-amber-300 border border-amber-800 flex items-center justify-center flex-shrink-0">
-          <i data-lucide="clock" class="w-6 h-6"></i>
+          class="w-10 h-10 rounded-lg bg-[#301057] text-[#C9A4F6] flex items-center justify-center flex-shrink-0 border border-[#561F99]">
+          <i data-lucide="clock" class="w-5 h-5"></i>
         </div>
         <div>
-          <span class="text-[11px] font-mono text-slate-400 uppercase">Menunggu Review</span>
-          <h3 class="text-2xl font-black text-amber-300 font-mono" id="stat-pending-reg">0</h3>
+          <span class="text-[11px] font-mono text-[#C9A4F6] uppercase font-semibold">Menunggu Review</span>
+          <h3 class="text-xl font-bold text-amber-300 font-mono mt-0.5" id="stat-pending-reg">0</h3>
         </div>
       </div>
 
-      <div class="glass-panel p-5 rounded-2xl border border-slate-800/80 flex items-center space-x-4">
+      <div class="card-institutional p-4 flex items-center space-x-3.5">
         <div
-          class="w-12 h-12 rounded-2xl bg-emerald-950/80 text-emerald-400 border border-emerald-800 flex items-center justify-center flex-shrink-0">
-          <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+          class="w-10 h-10 rounded-lg bg-emerald-950/60 text-emerald-300 flex items-center justify-center flex-shrink-0 border border-emerald-500/40">
+          <i data-lucide="check-circle-2" class="w-5 h-5"></i>
         </div>
         <div>
-          <span class="text-[11px] font-mono text-slate-400 uppercase">Lolos (Approved)</span>
-          <h3 class="text-2xl font-black text-emerald-400 font-mono" id="stat-approved-reg">0</h3>
+          <span class="text-[11px] font-mono text-emerald-300 uppercase font-semibold">Lolos (Approved)</span>
+          <h3 class="text-xl font-bold text-emerald-300 font-mono mt-0.5" id="stat-approved-reg">0</h3>
         </div>
       </div>
 
-      <div class="glass-panel p-5 rounded-2xl border border-slate-800/80 flex items-center space-x-4">
+      <div class="card-institutional p-4 flex items-center space-x-3.5">
         <div
-          class="w-12 h-12 rounded-2xl bg-red-950/80 text-red-400 border border-red-800 flex items-center justify-center flex-shrink-0">
-          <i data-lucide="alert-circle" class="w-6 h-6"></i>
+          class="w-10 h-10 rounded-lg bg-rose-950/60 text-rose-300 flex items-center justify-center flex-shrink-0 border border-rose-500/40">
+          <i data-lucide="alert-circle" class="w-5 h-5"></i>
         </div>
         <div>
-          <span class="text-[11px] font-mono text-slate-400 uppercase">Ditolak</span>
-          <h3 class="text-2xl font-black text-red-400 font-mono" id="stat-rejected-reg">0</h3>
+          <span class="text-[11px] font-mono text-rose-300 uppercase font-semibold">Ditolak</span>
+          <h3 class="text-xl font-bold text-rose-300 font-mono mt-0.5" id="stat-rejected-reg">0</h3>
         </div>
       </div>
     </div>
 
-    <!-- Filter & Registrations Table -->
-    <div class="glass-panel rounded-3xl border border-slate-800/80 shadow-2xl overflow-hidden">
-      <div class="p-6 border-b border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h3 class="text-base font-bold text-white font-mono flex items-center space-x-2">
-            <i data-lucide="clipboard-list" class="w-5 h-5 text-aiot-cyan"></i>
-            <span>Antrean Berkas Pendaftaran Calon Anggota</span>
-          </h3>
-          <p class="text-xs text-slate-400 font-mono mt-0.5">Admin dapat memeriksa kualifikasi formulir, menyetujui
-            calon anggota, dan menerbitkan Member ID.</p>
+    <!-- Filtering & Control Toolbar -->
+    <div class="card-institutional p-4">
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+        <!-- Search Input -->
+        <div class="sm:col-span-8 relative">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#C9A4F6]"></i>
+          <input type="text" id="admin-search-reg" placeholder="Cari nama kandidat, NIM..."
+            class="input-institutional pl-11 py-2 text-xs" />
         </div>
 
-        <div class="flex items-center space-x-3">
-          <div class="relative">
-            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="text" id="admin-search-reg" placeholder="Cari Nama / NIM..."
-              class="form-input-aiot pl-9 pr-4 py-2.5 rounded-xl text-xs font-mono w-48 sm:w-60" />
-          </div>
-
-          <select id="admin-filter-status" class="form-input-aiot px-3 py-2.5 rounded-xl text-xs font-mono">
-            <option value="all">Semua Status</option>
-            <option value="PENDING" selected>Status PENDING</option>
-            <option value="APPROVED">Status APPROVED</option>
-            <option value="REJECTED">Status REJECTED</option>
+        <!-- Filter Status -->
+        <div class="sm:col-span-4">
+          <select id="admin-filter-status" class="input-institutional py-2 px-3 text-xs">
+            <option value="all" class="bg-[#240d42] text-white">Semua Status Berkas</option>
+            <option value="PENDING" selected class="bg-[#240d42] text-amber-300">Menunggu (PENDING)</option>
+            <option value="APPROVED" class="bg-[#240d42] text-emerald-300">Diterima (APPROVED)</option>
+            <option value="REJECTED" class="bg-[#240d42] text-rose-300">Ditolak (REJECTED)</option>
           </select>
         </div>
       </div>
+    </div>
 
-      <!-- Table with Bi-directional Scroll -->
-      <div class="table-scroll-container">
-        <table class="w-full text-left text-xs whitespace-nowrap min-w-[960px]">
-          <thead
-            class="text-slate-400 font-mono border-b border-slate-800 uppercase text-[11px] tracking-wider whitespace-nowrap">
+    <!-- Candidate Applications Table (Section 14) -->
+    <div class="card-institutional overflow-hidden">
+      <div class="p-4 border-b border-[#561F99] bg-[#301057]/60 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="inbox" class="w-4 h-4 text-[#C9A4F6]"></i>
+          <h3 class="text-xs font-bold text-white tracking-wider uppercase">Daftar Berkas Masuk</h3>
+        </div>
+        <span class="text-xs text-[#C9A4F6] font-mono font-medium">Periode Intake 2026</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="table-institutional">
+          <thead>
             <tr>
-              <th class="py-4 px-5 whitespace-nowrap">Nama Calon</th>
-              <th class="py-4 px-5 whitespace-nowrap">NIM</th>
-              <th class="py-4 px-5 whitespace-nowrap">Program Studi</th>
-              <th class="py-4 px-5 whitespace-nowrap">Peminatan Riset</th>
-              <th class="py-4 px-5 whitespace-nowrap">Kontak (Email / WA)</th>
-              <th class="py-4 px-5 whitespace-nowrap">Tgl Submit</th>
-              <th class="py-4 px-5 whitespace-nowrap">Status</th>
-              <th class="py-4 px-5 text-center whitespace-nowrap">Aksi Review</th>
+              <th>Calon Anggota</th>
+              <th>NIM Mahasiswa</th>
+              <th>Program Studi</th>
+              <th>Peminatan Riset</th>
+              <th>Email UPNVJ</th>
+              <th>Tanggal Submit</th>
+              <th>Status Seleksi</th>
+              <th class="text-center">Aksi Review</th>
             </tr>
           </thead>
-          <tbody id="admin-registrations-tbody" class="divide-y divide-slate-800/60 text-slate-300">
-            <!-- Rendered dynamically -->
+          <tbody id="admin-registrations-tbody" class="divide-y divide-[#561F99]/40">
+            <tr>
+              <td colspan="8" class="text-center py-10 text-[#D8B4FE] font-mono text-xs">
+                Memuat data pendaftar dari backend...
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
+
   </main>
 
-  <!-- Admin Review & Decision Modal -->
+  <!-- Admin Review & Decision Modal (Section 15: Clean Institutional Modal) -->
   <div id="admin-review-modal"
-    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4">
+    class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
     <div
-      class="glass-panel w-full max-w-2xl p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between pb-4 border-b border-slate-800/80">
-        <div class="flex items-center space-x-3">
+      class="bg-[#240d42] w-full max-w-2xl p-6 rounded-2xl border border-[#561F99] shadow-2xl space-y-5 relative max-h-[90vh] overflow-y-auto text-white">
+
+      <div class="flex items-center justify-between pb-3 border-b border-[#561F99]">
+        <div class="flex items-center space-x-2.5">
           <div
-            class="w-10 h-10 rounded-2xl bg-cyan-950/80 text-aiot-cyan border border-cyan-800 flex items-center justify-center">
-            <i data-lucide="file-check" class="w-5 h-5"></i>
+            class="w-8 h-8 rounded-lg bg-[#301057] text-[#C9A4F6] flex items-center justify-center border border-[#561F99]">
+            <i data-lucide="file-check" class="w-4 h-4"></i>
           </div>
           <div>
-            <h3 class="text-base font-bold text-white font-mono">Pemeriksaan Berkas Calon Anggota</h3>
-            <p class="text-xs text-slate-400 font-mono">Verifikasi Kualifikasi & Keputusan Seleksi KSM AIoT</p>
+            <h3 class="text-sm font-bold text-white">Pemeriksaan Berkas Calon Anggota</h3>
+            <p class="text-xs text-[#D8B4FE]">Verifikasi kualifikasi & penetapan status pendaftaran</p>
           </div>
         </div>
-        <button id="close-admin-modal"
-          class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button id="close-admin-modal" class="p-1.5 rounded text-[#C9A4F6] hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <div class="space-y-4 text-xs font-mono">
-        <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 flex items-center justify-between gap-4">
-          <div class="flex items-center space-x-3.5">
-            <div
-              class="w-14 h-14 rounded-2xl overflow-hidden bg-slate-800 border-2 border-slate-700 flex-shrink-0 shadow-md">
+      <div class="space-y-4 text-xs">
+        <!-- Candidate Overview Card -->
+        <div class="p-4 rounded-xl bg-[#150626] border border-[#561F99] flex items-center justify-between gap-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-lg overflow-hidden bg-[#240d42] border border-[#561F99] flex-shrink-0">
               <img id="modal-review-photo"
                 src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"
                 alt="Foto Calon" class="w-full h-full object-cover" />
             </div>
             <div>
-              <span class="text-slate-500 uppercase text-[10px] block">Nama Lengkap & NIM</span>
-              <h4 class="text-base font-bold text-white mt-0.5" id="modal-review-name">-</h4>
-              <p class="text-aiot-cyan font-bold" id="modal-review-nim">-</p>
+              <h4 class="text-sm font-bold text-white" id="modal-review-name">-</h4>
+              <p class="text-xs font-mono font-semibold text-[#C9A4F6] mt-0.5" id="modal-review-nim">-</p>
             </div>
           </div>
-          <span id="modal-review-status-badge"
-            class="px-3 py-1 rounded-full text-xs font-bold font-mono flex-shrink-0">PENDING</span>
+          <span id="modal-review-status-badge" class="badge-status badge-pending">PENDING</span>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
-            <span class="text-slate-500 uppercase text-[10px] block">Program Studi</span>
-            <span class="text-slate-200 font-bold mt-0.5 block" id="modal-review-prodi">-</span>
+          <div class="p-3 rounded-lg bg-[#150626] border border-[#561F99]">
+            <span class="text-[#D8B4FE] uppercase text-[10px] block font-semibold">Program Studi</span>
+            <span class="text-white font-bold mt-0.5 block" id="modal-review-prodi">-</span>
           </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
-            <span class="text-slate-500 uppercase text-[10px] block">Angkatan</span>
-            <span class="text-slate-200 font-bold mt-0.5 block" id="modal-review-angkatan">-</span>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
-            <span class="text-slate-500 uppercase text-[10px] block">Email Kampus</span>
-            <span class="text-slate-200 font-bold mt-0.5 block break-all" id="modal-review-email">-</span>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60">
-            <span class="text-slate-500 uppercase text-[10px] block">Nomor WhatsApp</span>
-            <span class="text-slate-200 font-bold mt-0.5 block" id="modal-review-phone">-</span>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60 col-span-2">
-            <span class="text-slate-500 uppercase text-[10px] block">Peminatan Riset</span>
-            <span class="text-aiot-cyan font-bold mt-0.5 block" id="modal-review-track">-</span>
-          </div>
-          <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/60 col-span-2">
-            <span class="text-slate-500 uppercase text-[10px] block">Motivasi Bergabung</span>
-            <p class="text-slate-300 font-sans mt-1 leading-relaxed text-xs" id="modal-review-motivation">-</p>
+          <div class="p-3 rounded-lg bg-[#150626] border border-[#561F99]">
+            <span class="text-[#D8B4FE] uppercase text-[10px] block font-semibold">Peminatan Riset</span>
+            <span class="text-[#C9A4F6] font-bold mt-0.5 block" id="modal-review-track">-</span>
           </div>
         </div>
 
-        <div id="modal-review-memberid-box"
-          class="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-800/60 hidden">
-          <span class="text-emerald-400 uppercase text-[10px] font-bold block">Status: Anggota Resmi Terdaftar</span>
-          <p class="text-sm font-bold text-white mt-0.5">Member ID: <span id="modal-review-memberid"
-              class="text-aiot-cyan font-mono">-</span></p>
+        <div class="p-3.5 rounded-lg bg-[#150626] border border-[#561F99] space-y-1.5">
+          <span class="text-[#D8B4FE] uppercase text-[10px] font-semibold block">Motivasi & Pengalaman Riset</span>
+          <p class="text-white text-xs leading-relaxed" id="modal-review-motivation">-</p>
+        </div>
+
+        <div class="p-3.5 rounded-lg bg-[#150626] border border-[#561F99] space-y-1.5">
+          <span class="text-[#D8B4FE] uppercase text-[10px] font-semibold block">Tautan Portofolio / GitHub / CV</span>
+          <a id="modal-review-portfolio" href="#" target="_blank"
+            class="text-[#C9A4F6] hover:text-white hover:underline font-mono text-xs flex items-center space-x-1.5 break-all transition-colors">
+            <i data-lucide="link" class="w-3.5 h-3.5 flex-shrink-0"></i>
+            <span class="truncate">-</span>
+          </a>
+        </div>
+
+        <!-- Decision Form Section -->
+        <div class="pt-3 border-t border-[#561F99] space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-[#D8B4FE] mb-1">Catatan Evaluator (Opsional)</label>
+            <textarea id="modal-review-notes" rows="2" placeholder="Tuliskan catatan pertimbangan seleksi..."
+              class="input-institutional text-xs"></textarea>
+          </div>
+
+          <div class="flex items-center justify-end space-x-2.5 pt-2">
+            <button type="button" id="btn-decision-reject"
+              class="px-4 py-2 rounded-lg bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 border border-rose-500/40 text-xs font-semibold transition-colors flex items-center space-x-1.5">
+              <i data-lucide="x-circle" class="w-4 h-4"></i>
+              <span>Tolak (Reject)</span>
+            </button>
+            <button type="button" id="btn-decision-approve" class="btn-primary text-xs py-2 px-4 rounded-lg">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span>Setujui & Terbitkan Member ID</span>
+            </button>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Decision Actions -->
-      <div class="pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center space-x-2">
-          <button type="button" id="btn-action-approve"
-            class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs font-mono flex items-center space-x-2 shadow-lg transition-all">
-            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-            <span>Setujui & Terbitkan Member ID</span>
-          </button>
-          <button type="button" id="btn-action-reject"
-            class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs font-mono flex items-center space-x-2 shadow-lg transition-all">
-            <i data-lucide="x" class="w-4 h-4"></i>
-            <span>Tolak Berkas</span>
-          </button>
+  <!-- BPH Intake Management & Settings Modal -->
+  <div id="intake-control-modal"
+    class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div
+      class="bg-[#240d42] w-full max-w-lg p-6 rounded-2xl border border-[#561F99] shadow-2xl space-y-4 relative text-white">
+
+      <div class="flex items-center justify-between pb-3 border-b border-[#561F99]">
+        <div class="flex items-center space-x-2.5">
+          <div
+            class="w-8 h-8 rounded-lg bg-[#301057] text-[#C9A4F6] flex items-center justify-center border border-[#561F99]">
+            <i data-lucide="sliders" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Pengaturan Periode Pendaftaran</h3>
+            <p class="text-[11px] text-[#C9A4F6] font-mono">Otoritas Khusus BPH (Ketua / Sekretaris)</p>
+          </div>
         </div>
-        <button type="button" id="btn-modal-close-footer"
-          class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono transition-all border border-slate-700">
-          Tutup
+        <button id="close-intake-modal" class="p-1.5 rounded text-[#C9A4F6] hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
+
+      <form id="intake-control-form" class="space-y-3.5 text-xs">
+        <!-- Status Switcher -->
+        <div class="p-3.5 rounded-xl bg-[#150626] border border-[#561F99] flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-white block">Status Pendaftaran Calon Anggota</span>
+            <span class="text-[11px] text-[#D8B4FE]">Mengontrol keterbukaan form di registration.html</span>
+          </div>
+          <select id="intake-status-select" class="input-institutional text-xs w-36 font-bold">
+            <option value="OPEN" class="bg-[#240d42] text-emerald-300">DIBUKA (OPEN)</option>
+            <option value="CLOSED" class="bg-[#240d42] text-rose-300">DITUTUP (CLOSED)</option>
+          </select>
+        </div>
+
+        <!-- Nama Gelombang Batch -->
+        <div>
+          <label class="block font-semibold text-[#D8B4FE] mb-1">Nama Gelombang Penerimaan</label>
+          <input id="intake-batch-name" type="text" value="Penerimaan Anggota Baru Periode 2026"
+            class="input-institutional text-xs" />
+        </div>
+
+        <!-- Tanggal Batas Deadline -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-[#D8B4FE] mb-1">Tanggal Deadline</label>
+            <input id="intake-deadline-date" type="text" value="31 Agustus 2026" class="input-institutional text-xs" />
+          </div>
+          <div>
+            <label class="block font-semibold text-[#D8B4FE] mb-1">Target Kuota Berkas</label>
+            <input id="intake-quota" type="number" value="100" class="input-institutional font-mono text-xs" />
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit"
+            class="btn-primary w-full py-2.5 text-xs font-bold flex items-center justify-center space-x-2">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Simpan Perubahan Periode</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 

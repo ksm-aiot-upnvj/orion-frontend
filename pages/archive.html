@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="id" class="dark scroll-smooth">
+<html lang="id" class="scroll-smooth">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arsip & Otomasi Surat — KSM AIoT UPNVJ</title>
+  <title>Arsip & Persuratan Resmi — KSM AIoT ERP</title>
   <meta name="description"
     content="Manajemen Arsip Surat Masuk/Keluar, Format Baku Kode Surat KSM-AIoT, dan Ekspor LaTeX/PDF." />
   <link rel="icon" type="image/png" href="/ksm-aiot-logo.png" />
 
-  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -19,81 +18,81 @@
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 
-<body class="bg-aiot-dark text-slate-200 font-sans bg-grid-pattern relative min-h-screen flex flex-col antialiased">
+<body class="bg-[#150626] text-white font-sans min-h-screen flex flex-col antialiased selection:bg-[#9B5CE8] selection:text-white">
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="fixed top-6 right-6 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none"></div>
+  <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col space-y-3 max-w-sm pointer-events-none"></div>
 
-  <!-- CRM Collapsible Sidebar -->
-  <aside id="crm-sidebar"
-    class="fixed inset-y-0 left-0 z-50 w-72 bg-aiot-dark/95 backdrop-blur-2xl border-r border-slate-800/90 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl">
-  </aside>
+  <!-- Topbar Header with Direct Navigation & Flowbite-style Account Dropdown -->
+  <header id="crm-topbar" class="sticky top-0 z-40 w-full bg-[#301057] border-b border-[#561F99] shadow-md min-h-[64px]"></header>
 
-  <!-- Sidebar Backdrop -->
-  <div id="crm-sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm hidden transition-opacity">
-  </div>
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6">
 
-  <!-- Unified Navigation Bar (Identical in height & structure to index.html) -->
-  <header id="crm-topbar"></header>
-
-  <!-- ============================================================== -->
-  <!-- MAIN CONTENT CONTAINER (Spacious, Flowbite-Styled Form)        -->
-  <!-- ============================================================== -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-
-    <!-- Page Header & Subtab Switcher -->
-    <div
-      class="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-6">
-      <div class="space-y-2">
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Manajemen Arsip & Otomasi Kop Surat</h1>
-        <p class="text-xs sm:text-sm text-slate-400 font-mono max-w-2xl leading-relaxed">
-          Log surat keluar/masuk, otomatisasi kode nomor surat resmi KSM AIoT, template kop surat resmi dual logo (UPNVJ
-          & AIoT), serta ekspor LaTeX/PDF.
+    <!-- Page Header & Tab Switcher (Section 12) -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#561F99]">
+      <div>
+        <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Arsip Dokumen & Otomasi Surat Resmi</h1>
+        <p class="text-xs text-[#D8B4FE] mt-1">
+          Buku registrasi surat keluar/masuk, standardisasi penomoran surat baku KSM AIoT, dan generator kop surat resmi UPNVJ.
         </p>
       </div>
 
       <!-- Tab Switcher -->
-      <div
-        class="flex items-center p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex-shrink-0 self-start md:self-auto">
-        <button data-tab="list"
-          class="archive-tab-btn px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all bg-aiot-cyan text-slate-950 shadow-[0_0_15px_rgba(0,242,254,0.3)] whitespace-nowrap">
+      <div class="flex items-center p-1 rounded-lg bg-[#301057] border border-[#561F99] flex-shrink-0 self-start sm:self-auto">
+        <button data-tab="list" class="archive-tab-btn px-4 py-1.5 rounded-md text-xs font-semibold bg-[#9B5CE8] text-white shadow-sm transition-all">
           Buku Arsip Surat
         </button>
-        <button id="tab-generator-btn" data-tab="generator"
-          class="archive-tab-btn px-5 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all text-slate-400 hover:text-white whitespace-nowrap">
+        <button id="tab-generator-btn" data-tab="generator" class="archive-tab-btn px-4 py-1.5 rounded-md text-xs font-semibold text-[#D8B4FE] hover:text-white transition-all">
           Generator Surat & Kop
         </button>
       </div>
     </div>
 
     <!-- TAB PANEL 1: BUKU ARSIP SURAT -->
-    <div id="tab-list" class="archive-tab-panel space-y-6">
-      <div class="glass-panel rounded-3xl border border-slate-800/80 shadow-2xl">
-        <div class="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <h3 class="text-sm font-bold text-white font-mono flex items-center space-x-2">
-            <i data-lucide="file-text" class="w-4 h-4 text-aiot-cyan"></i>
-            <span>Daftar Surat Keluar & Masuk Terarsip</span>
-          </h3>
-          <span class="text-xs text-aiot-cyan font-mono font-semibold">Instansi: Universitas Pembangunan Nasional
-            "Veteran" Jakarta</span>
+    <div id="tab-list" class="archive-tab-panel space-y-5">
+      
+      <!-- Filter Toolbar -->
+      <div class="card-institutional p-4">
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+          <div class="sm:col-span-8 relative">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#C9A4F6]"></i>
+            <input type="text" id="search-archive-input" placeholder="Cari nomor surat, perihal, atau tujuan..."
+              class="input-institutional pl-11 py-2 text-xs" />
+          </div>
+          <div class="sm:col-span-4">
+            <select id="filter-archive-sifat" class="input-institutional py-2 px-3 text-xs">
+              <option value="all" class="bg-[#240d42] text-white">Semua Sifat Surat</option>
+              <option value="B" class="bg-[#240d42] text-white">B — Eksternal</option>
+              <option value="A" class="bg-[#240d42] text-white">A — Internal</option>
+              <option value="SK" class="bg-[#240d42] text-white">SK — Surat Keputusan</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-institutional overflow-hidden">
+        <div class="p-4 border-b border-[#561F99] bg-[#301057]/60 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="file-text" class="w-4 h-4 text-[#C9A4F6]"></i>
+            <h3 class="text-xs font-bold text-white tracking-wider uppercase">Daftar Surat Keluar & Masuk Terarsip</h3>
+          </div>
+          <span class="text-xs text-[#C9A4F6] font-mono font-medium">Instansi: UPN "Veteran" Jakarta</span>
         </div>
 
-        <div class="table-scroll-container rounded-b-3xl">
-          <table class="w-full text-left text-xs whitespace-nowrap min-w-[960px]">
-            <thead
-              class="text-slate-400 font-mono border-b border-slate-800 uppercase text-[11px] tracking-wider whitespace-nowrap">
+        <div class="overflow-x-auto">
+          <table class="table-institutional">
+            <thead>
               <tr>
-                <th class="py-4 px-5 whitespace-nowrap">Nomor Surat Resmi</th>
-                <th class="py-4 px-5 whitespace-nowrap">Sifat Surat</th>
-                <th class="py-4 px-5 whitespace-nowrap">Perihal</th>
-                <th class="py-4 px-5 whitespace-nowrap">Tujuan Surat</th>
-                <th class="py-4 px-5 whitespace-nowrap">Tanggal</th>
-                <th class="py-4 px-5 whitespace-nowrap">Penandatangan</th>
-                <th class="py-4 px-5 text-center whitespace-nowrap">Aksi</th>
+                <th>Nomor Surat Resmi</th>
+                <th>Sifat</th>
+                <th>Perihal</th>
+                <th>Tujuan Surat</th>
+                <th>Tanggal</th>
+                <th>Penandatangan</th>
+                <th class="text-center">Aksi</th>
               </tr>
             </thead>
-            <tbody id="archive-tbody" class="divide-y divide-slate-800/60 text-slate-300">
-              <!-- Rendered dynamically -->
+            <tbody id="archive-tbody" class="divide-y divide-gray-100">
+              <!-- Rendered dynamically by archive.js -->
             </tbody>
           </table>
         </div>
@@ -101,310 +100,146 @@
     </div>
 
     <!-- TAB PANEL 2: GENERATOR SURAT & PDF PREVIEWER -->
-    <div id="tab-generator" class="archive-tab-panel hidden space-y-8">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div id="tab-generator" class="archive-tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        <!-- Left: Flowbite-Styled Form Controls -->
-        <div class="lg:col-span-5 glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800/80 space-y-6">
-          <div class="pb-4 border-b border-slate-800">
-            <h3 class="text-base font-bold text-white flex items-center space-x-2">
-              <i data-lucide="file-text" class="w-5 h-5 text-aiot-cyan"></i>
-              <span>Parameter Template Surat</span>
-            </h3>
-            <p class="text-xs text-slate-400 font-mono mt-1">Nomor surat otomatis di-increment dan bulan dikonversi ke
-              romawi.</p>
+        <!-- Form Controls Left 5 Cols -->
+        <div class="lg:col-span-5 card-institutional p-5 space-y-4">
+          <div class="pb-3 border-b border-gray-200">
+            <h3 class="text-sm font-bold text-gray-900">Parameter Template Surat Resmi</h3>
+            <p class="text-xs text-gray-500 mt-0.5">Penomoran otomatis berformat standar baku universitas.</p>
           </div>
 
           <!-- Generated Number Live Display -->
-          <div class="p-4 rounded-2xl bg-slate-900/90 border border-aiot-cyan/30 shadow-inner">
-            <span class="text-[11px] text-slate-400 font-mono uppercase block mb-1">Generated Official Letter
-              Code:</span>
-            <div id="generated-letter-number" class="text-sm font-mono font-extrabold text-aiot-cyan break-all">
+          <div class="p-3.5 rounded-lg bg-[#F3EDFD] border border-[#301057]/20">
+            <span class="text-[10px] text-gray-600 font-semibold uppercase block mb-0.5">Nomor Surat Tergenerate:</span>
+            <div id="generated-letter-number" class="text-xs font-mono font-bold text-[#301057] break-all">
               B/001/UN61/KSM-AIOT/III/2026
             </div>
           </div>
 
-          <form id="letter-generator-form" class="space-y-6">
-            <div class="grid grid-cols-2 gap-5">
+          <form id="letter-generator-form" class="space-y-3.5 text-xs">
+            <div class="grid grid-cols-2 gap-3">
               <div>
-                <label for="gen-sifat" class="block mb-2.5 text-sm font-semibold text-slate-200">Sifat Surat <span
-                    class="text-aiot-pink">*</span></label>
-                <select id="gen-sifat" class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-3.5">
+                <label class="block font-semibold text-gray-700 mb-1">Sifat Surat</label>
+                <select id="gen-sifat" class="input-institutional text-xs">
                   <option value="B" selected>B — Eksternal</option>
                   <option value="A">A — Internal</option>
                   <option value="SK">SK — Surat Keputusan</option>
                 </select>
               </div>
               <div>
-                <label for="gen-nomor" class="block mb-2.5 text-sm font-semibold text-slate-200">Nomor Urut <span
-                    class="text-aiot-pink">*</span></label>
+                <label class="block font-semibold text-gray-700 mb-1">Nomor Urut</label>
                 <input type="number" id="gen-nomor" value="1" min="1" max="999" required
-                  class="form-input-aiot text-slate-100 text-sm font-mono rounded-xl block w-full p-3.5" />
+                  class="input-institutional font-mono text-xs" />
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-5">
+            <div class="grid grid-cols-2 gap-3">
               <div>
-                <label for="gen-date" class="block mb-2.5 text-sm font-semibold text-slate-200">Tanggal Surat <span
-                    class="text-aiot-pink">*</span></label>
+                <label class="block font-semibold text-gray-700 mb-1">Tanggal Surat</label>
                 <input type="date" id="gen-date" value="2026-03-06" required
-                  class="form-input-aiot text-slate-100 text-sm font-mono rounded-xl block w-full p-3.5" />
+                  class="input-institutional text-xs" />
               </div>
               <div>
-                <label for="gen-lampiran" class="block mb-2.5 text-sm font-semibold text-slate-200">Lampiran</label>
-                <input type="text" id="gen-lampiran" value="1 (satu) bundel" placeholder="Contoh: 1 (satu) bundel"
-                  class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-3.5 placeholder-slate-500" />
+                <label class="block font-semibold text-gray-700 mb-1">Lampiran</label>
+                <input type="text" id="gen-lampiran" value="-" required
+                  class="input-institutional text-xs" />
               </div>
             </div>
 
             <div>
-              <label for="gen-perihal" class="block mb-2.5 text-sm font-semibold text-slate-200">Hal / Perihal Surat
-                <span class="text-aiot-pink">*</span></label>
-              <input type="text" id="gen-perihal" value="Permohonan Pembentukan KSM AIoT" required
-                class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-3.5 placeholder-slate-500" />
+              <label class="block font-semibold text-gray-700 mb-1">Perihal Surat</label>
+              <input type="text" id="gen-perihal" value="Permohonan Izin Riset Laboratorium & Peminjaman Perangkat" required
+                class="input-institutional text-xs" />
             </div>
 
             <div>
-              <label for="gen-tujuan" class="block mb-2.5 text-sm font-semibold text-slate-200">Tujuan Surat / Penerima
-                <span class="text-aiot-pink">*</span></label>
+              <label class="block font-semibold text-gray-700 mb-1">Tujuan / Penerima Surat</label>
               <input type="text" id="gen-tujuan" value="Dekan Fakultas Ilmu Komputer UPNVJ" required
-                class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-3.5 placeholder-slate-500" />
+                class="input-institutional text-xs" />
             </div>
 
             <div>
-              <label for="gen-isi" class="block mb-2.5 text-sm font-semibold text-slate-200">Isi Ringkas Surat <span
-                  class="text-aiot-pink">*</span></label>
-              <textarea id="gen-isi" rows="3" required
-                class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-3.5 placeholder-slate-500 resize-none">Sehubungan dengan tingginya minat mahasiswa dalam riset Edge AI dan Internet of Things, kami mengajukan permohonan pengesahan pembentukan Kelompok Studi Mahasiswa (KSM) Artificial Intelligence and Internet of Things.</textarea>
+              <label class="block font-semibold text-gray-700 mb-1">Isi Paragraf Surat</label>
+              <textarea id="gen-body" rows="4" required
+                class="input-institutional text-xs leading-relaxed">Sehubungan dengan pelaksanaan riset IoT Smart Hydroponics dan Edge Computing yang dilakukan oleh anggota KSM AIoT, bersama ini kami memohon izin penggunaan fasilitas laboratorium serta peminjaman sensor dan dev board.</textarea>
             </div>
 
-            <div>
-              <label for="gen-signer" class="block mb-2.5 text-sm font-semibold text-slate-200">Penandatangan Resmi
-                <span class="text-aiot-pink">*</span></label>
-              <select id="gen-signer" class="form-input-aiot text-slate-100 text-sm rounded-xl block w-full p-3.5">
-                <option value="Dzulfikri Adjmal">Dzulfikri Adjmal (Ketua KSM AIoT)</option>
-                <option value="Adinda Rizki Sya'bana Diva">Adinda Rizki Sya'bana Diva (Wakil Ketua KSM AIoT)</option>
-                <option value="Syahla Nada Afifah">Syahla Nada Afifah (Sekretaris KSM AIoT)</option>
-              </select>
-            </div>
-
-            <div class="pt-3 flex flex-col gap-3">
-              <button type="button" id="btn-save-to-archive"
-                class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-aiot-cyan to-aiot-purple text-slate-950 font-bold text-sm hover:opacity-90 transition-all flex items-center justify-center space-x-2 shadow-lg glow-cyan">
-                <i data-lucide="archive" class="w-4 h-4"></i>
-                <span>Simpan ke Buku Arsip</span>
+            <div class="grid grid-cols-2 gap-3 pt-2">
+              <button type="button" id="btn-export-latex" class="btn-outline-neutral justify-center text-xs py-2">
+                <i data-lucide="file-code" class="w-3.5 h-3.5 text-gray-500"></i>
+                <span>Download LaTeX</span>
               </button>
-              <div class="grid grid-cols-2 gap-3">
-                <button type="button" id="btn-print-pdf"
-                  class="py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center space-x-2 transition-colors border border-slate-700 text-xs font-semibold font-mono">
-                  <i data-lucide="printer" class="w-4 h-4 text-aiot-cyan"></i>
-                  <span>Cetak / PDF</span>
-                </button>
-                <button type="button" id="btn-view-latex"
-                  class="py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-aiot-cyan flex items-center justify-center space-x-2 transition-colors border border-slate-700 text-xs font-semibold font-mono">
-                  <i data-lucide="code" class="w-4 h-4"></i>
-                  <span>Source LaTeX</span>
-                </button>
-              </div>
+              <button type="button" id="btn-save-archive" class="btn-primary text-xs py-2">
+                <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                <span>Simpan ke Arsip</span>
+              </button>
             </div>
           </form>
         </div>
 
-        <!-- Right: Modern PDF Document Reader Previewer -->
-        <div class="lg:col-span-7 flex flex-col gap-3">
-
-          <!-- PDF Viewer Top Toolbar (Dark Sleek Chrome) -->
-          <div
-            class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between shadow-lg text-xs font-mono">
-            <div class="flex items-center space-x-3 min-w-0">
-              <div class="p-1.5 rounded-lg bg-red-950/80 text-red-400 border border-red-800 flex-shrink-0">
-                <i data-lucide="file-text" class="w-4 h-4"></i>
-              </div>
-              <div class="truncate">
-                <span class="text-white font-bold block truncate">Surat_KSM_AIoT_2026.pdf</span>
-                <span class="text-[10px] text-slate-400">Pratinjau PDF Terisolasi (A4 Document)</span>
-              </div>
+        <!-- Live Letterhead Document Preview Right 7 Cols -->
+        <div class="lg:col-span-7 card-institutional p-8 bg-white border border-gray-300 shadow-md">
+          <!-- Kop Surat Resmi -->
+          <div class="pb-4 border-b-2 border-black flex items-center justify-between text-center gap-4">
+            <img src="/Logo_UPNVJ.png" alt="Logo UPNVJ" class="w-14 h-14 object-contain flex-shrink-0" />
+            <div class="flex-1">
+              <h5 class="text-xs font-bold text-black uppercase tracking-tight">KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</h5>
+              <h4 class="text-sm font-extrabold text-black uppercase tracking-tight mt-0.5">UNIVERSITAS PEMBANGUNAN NASIONAL "VETERAN" JAKARTA</h4>
+              <h5 class="text-xs font-bold text-black uppercase tracking-tight">FAKULTAS ILMU KOMPUTER</h5>
+              <p class="text-[11px] font-bold text-[#301057] uppercase tracking-wider mt-0.5">KELOMPOK STUDI MAHASISWA ARTIFICIAL INTELLIGENCE OF THINGS</p>
+              <p class="text-[9px] text-gray-600 mt-0.5">Jl. RS. Fatmawati Raya, Pondok Labu, Jakarta Selatan 12450 • Email: ksm.aiot@upnvj.ac.id</p>
             </div>
-
-            <!-- Viewer Controls (Zoom & Actions) -->
-            <div class="flex items-center space-x-2 flex-shrink-0">
-              <div class="flex items-center p-1 rounded-xl bg-slate-950 border border-slate-800 space-x-1">
-                <button id="pdf-zoom-out" class="p-1 text-slate-400 hover:text-white rounded hover:bg-slate-800"
-                  title="Zoom Out">
-                  -
-                </button>
-                <span id="pdf-zoom-label" class="px-1 text-[11px] text-slate-300 font-bold">100%</span>
-                <button id="pdf-zoom-in" class="p-1 text-slate-400 hover:text-white rounded hover:bg-slate-800"
-                  title="Zoom In">
-                  +
-                </button>
-              </div>
-
-              <button id="toolbar-print-btn"
-                class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-aiot-cyan border border-slate-700"
-                title="Cetak PDF">
-                <i data-lucide="printer" class="w-4 h-4"></i>
-              </button>
-              <button id="toolbar-latex-btn"
-                class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-300 border border-slate-700"
-                title="Source LaTeX">
-                <i data-lucide="code" class="w-4 h-4"></i>
-              </button>
-            </div>
+            <img src="/ksm-aiot-logo.png" alt="Logo AIoT" class="w-14 h-14 object-contain flex-shrink-0" />
           </div>
 
-          <!-- PDF Viewport Canvas -->
-          <div
-            class="p-4 sm:p-8 rounded-3xl bg-slate-950/90 border border-slate-800/90 shadow-2xl flex justify-center items-start overflow-x-auto">
-
-            <!-- Isolated Floating A4 White Paper -->
-            <div
-              class="bg-white text-slate-950 p-8 sm:p-12 rounded-sm shadow-2xl border border-slate-300 max-w-3xl w-full transition-transform duration-200"
-              id="printable-letterhead" style="font-family: 'Times New Roman', Times, serif;">
-
-              <!-- Top Section: Kop Surat, Metadata, Kepada, Isi -->
-              <div class="letterhead-top space-y-6">
-                <!-- Kop Surat Header (Dual Logos: Left Logo_UPNVJ.png, Right ksm-aiot-logo-bg-black.png) -->
-                <div class="flex items-center justify-between pb-3 border-b-4 border-black"
-                  style="border-bottom-style: double; border-bottom-width: 4px;">
-                  <!-- Left Logo: Logo_UPNVJ.png -->
-                  <div class="w-20 h-20 flex items-center justify-center flex-shrink-0">
-                    <img src="/Logo_UPNVJ.png" width="76" height="76"
-                      style="width:76px; height:76px; max-width:76px; max-height:76px;"
-                      class="w-full h-full object-contain" alt="Logo UPNVJ" />
-                  </div>
-
-                  <!-- Center Text -->
-                  <div class="text-center flex-1 px-3">
-                    <h3
-                      class="kop-title-dept text-[12px] sm:text-[13px] font-normal uppercase tracking-tight text-black leading-tight">
-                      KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI
-                    </h3>
-                    <h2
-                      class="kop-title-univ text-[13px] sm:text-[14px] font-bold uppercase text-black leading-tight mt-0.5">
-                      UNIVERSITAS PEMBANGUNAN NASIONAL “VETERAN” JAKARTA
-                    </h2>
-                    <h1
-                      class="kop-title-fak text-[16px] sm:text-[17px] font-black uppercase tracking-normal text-black leading-tight mt-0.5">
-                      FAKULTAS ILMU KOMPUTER
-                    </h1>
-                    <h4
-                      class="kop-title-ksm text-[13px] sm:text-[14px] font-bold uppercase text-black leading-tight mt-0.5">
-                      KELOMPOK STUDI MAHASISWA
-                    </h4>
-                    <h4
-                      class="kop-title-aiot text-[13px] sm:text-[14px] font-black uppercase text-black leading-tight mt-0.5">
-                      ARTIFICIAL INTELLIGENCE OF THINGS
-                    </h4>
-                    <p class="kop-address text-[10px] sm:text-[11px] text-black leading-tight mt-1">
-                      Jalan Rumah Sakit Fatmawati, Pondok Labu, Jakarta Selatan 12450
-                    </p>
-                    <p class="kop-address text-[10px] sm:text-[11px] text-black leading-tight">
-                      Telepon 021-7656971, Fax 021-7656904
-                    </p>
-                  </div>
-
-                  <!-- Right Logo: ksm-aiot-logo-bg-black.png -->
-                  <div class="w-20 h-20 flex items-center justify-center flex-shrink-0">
-                    <img src="/ksm-aiot-logo-bg-black.png" width="76" height="76"
-                      style="width:76px; height:76px; max-width:76px; max-height:76px;"
-                      class="w-full h-full object-contain" alt="Logo KSM AIoT" />
-                  </div>
-                </div>
-
-                <!-- Letter Metadata Header -->
-                <div class="flex justify-between text-sm leading-relaxed text-black pt-2">
-                  <div class="space-y-1">
-                    <p><span class="inline-block w-24">Nomor</span>: <span id="preview-no-surat"
-                        class="font-mono font-bold">B/001/UN61/KSM-AIOT/III/2026</span></p>
-                    <p><span class="inline-block w-24">Lampiran</span>: <span id="preview-lampiran">1 (satu)
-                        bundel</span></p>
-                    <p><span class="inline-block w-24">Hal</span>: <strong id="preview-perihal">Permohonan Pembentukan
-                        KSM AIoT</strong></p>
-                  </div>
-                  <div class="text-right">
-                    <p><span id="preview-tanggal">6 Maret 2026</span></p>
-                  </div>
-                </div>
-
-                <!-- Kepada Yth -->
-                <div class="text-sm leading-relaxed text-black pt-2">
-                  <p>Kepada Yth.</p>
-                  <p><strong id="preview-tujuan">Dekan Fakultas Ilmu Komputer UPNVJ</strong></p>
-                  <p>di Tempat</p>
-                </div>
-
-                <!-- Letter Body -->
-                <div class="text-sm leading-relaxed text-justify space-y-4 text-black pt-2">
-                  <p>Dengan hormat,</p>
-                  <p id="preview-isi" class="indent-8 leading-relaxed">
-                    Sehubungan dengan tingginya minat mahasiswa dalam riset Edge AI dan Internet of Things, kami
-                    mengajukan permohonan pengesahan pembentukan Kelompok Studi Mahasiswa (KSM) Artificial Intelligence
-                    and Internet of Things.
-                  </p>
-                  <p class="indent-8 leading-relaxed">Demikian surat permohonan ini kami sampaikan. Atas perhatian dan
-                    kerja sama Bapak/Ibu, kami ucapkan terima kasih.</p>
-                </div>
+          <!-- Body Surat -->
+          <div class="pt-6 space-y-4 text-xs text-gray-900 leading-relaxed font-sans">
+            <div class="flex justify-between">
+              <div class="space-y-1">
+                <p>Nomor&nbsp;&nbsp;&nbsp;: <strong id="preview-letter-num" class="font-mono text-xs">B/001/UN61/KSM-AIOT/III/2026</strong></p>
+                <p>Lampiran : <span id="preview-lampiran">-</span></p>
+                <p>Perihal&nbsp;&nbsp;&nbsp;: <strong id="preview-perihal">Permohonan Izin Riset</strong></p>
               </div>
+              <div class="text-right">
+                <p id="preview-date">Jakarta, 06 Maret 2026</p>
+              </div>
+            </div>
 
-              <!-- Bottom Section: Letter Signatures & Digital Stamp & Verified Footer -->
-              <div class="letterhead-bottom mt-8 pt-2 flex justify-between items-end text-sm text-black">
-                <div>
-                  <span class="footer-note text-[10px] text-slate-500 font-sans italic">Dokumen Resmi Terverifikasi
-                    Sistem KSM AIoT FIK UPNVJ</span>
+            <div class="pt-2">
+              <p>Kepada Yth.</p>
+              <p><strong id="preview-tujuan">Dekan Fakultas Ilmu Komputer UPNVJ</strong></p>
+              <p>Di Tempat</p>
+            </div>
+
+            <div class="pt-2 space-y-2 text-justify">
+              <p>Dengan hormat,</p>
+              <p id="preview-body">
+                Sehubungan dengan pelaksanaan riset IoT Smart Hydroponics dan Edge Computing yang dilakukan oleh anggota KSM AIoT, bersama ini kami memohon izin penggunaan fasilitas laboratorium serta peminjaman sensor dan dev board.
+              </p>
+              <p>Demikian surat permohonan ini kami sampaikan. Atas perhatian dan kerja sama Bapak/Ibu, kami mengucapkan terima kasih.</p>
+            </div>
+
+            <!-- Signature Block -->
+            <div class="pt-8 flex justify-end">
+              <div class="text-center w-56 space-y-1">
+                <p>Ketua KSM AIoT UPNVJ</p>
+                <div class="h-14 flex items-center justify-center">
+                  <span class="text-[10px] text-gray-400 font-mono">[Tanda Tangan Digital]</span>
                 </div>
-                <div class="text-center space-y-1 relative pr-4">
-                  <p>Hormat kami,</p>
-                  <p class="font-semibold">Kelompok Studi Mahasiswa AIoT</p>
-
-                  <div class="h-16 flex items-center justify-center relative my-2">
-                    <div
-                      class="px-3 py-1 border border-sky-700 rounded text-[10px] text-sky-800 font-sans rotate-[-4deg] opacity-80 font-bold">
-                      VERIFIED DIGITAL SIGNATURE
-                    </div>
-                  </div>
-
-                  <p><strong id="preview-signer" class="underline font-bold text-base">Dzulfikri Adjmal</strong></p>
-                  <p class="text-xs text-slate-700 font-mono">NIM: 2310511001</p>
-                </div>
+                <p class="font-bold underline">Dzulfikri Adjmal</p>
+                <p class="text-[10px] text-gray-500 font-mono">NIM. 2310511001</p>
               </div>
             </div>
           </div>
         </div>
+
       </div>
     </div>
+
   </main>
-
-  <!-- LaTeX Code Modal -->
-  <div id="latex-modal"
-    class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="glass-panel w-full max-w-2xl p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-5">
-      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
-        <div class="flex items-center space-x-2.5">
-          <i data-lucide="code" class="w-5 h-5 text-aiot-cyan"></i>
-          <h3 class="text-base font-bold text-white font-mono">Source Code LaTeX Template Surat Resmi (.tex)</h3>
-        </div>
-        <button id="close-latex-modal" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <div class="relative">
-        <textarea id="latex-code-content" readonly rows="12"
-          class="w-full p-4 rounded-2xl bg-slate-950 border border-slate-800 text-slate-300 font-mono text-xs focus:outline-none resize-none selection:bg-aiot-cyan/30"></textarea>
-      </div>
-
-      <div class="flex justify-end space-x-3">
-        <button id="btn-copy-latex"
-          class="px-5 py-2.5 rounded-2xl bg-aiot-cyan text-slate-950 font-bold text-xs font-mono hover:opacity-90 transition-all flex items-center space-x-2">
-          <i data-lucide="copy" class="w-4 h-4"></i>
-          <span>Salin Kode LaTeX</span>
-        </button>
-      </div>
-    </div>
-  </div>
 
   <script type="module" src="/src/scripts/archive.js"></script>
 </body>
-
 </html>
