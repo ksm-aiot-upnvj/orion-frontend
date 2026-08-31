@@ -167,6 +167,12 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
             <!-- Navigation Links Inside Dropdown -->
             <ul class="py-1.5 text-xs text-purple-100">
               <li>
+                <a href="/pages/profile.html" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#280E48] hover:text-white transition-colors">
+                  <i data-lucide="user" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
+                  <span>Profil & Pengaturan Akun</span>
+                </a>
+              </li>
+              <li>
                 <a href="/index.html" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#280E48] hover:text-white transition-colors">
                   <i data-lucide="home" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
                   <span>Laman Utama</span>

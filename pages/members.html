@@ -27,21 +27,39 @@
   <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6">
 
     <!-- Page Header & Tab Controls -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#561F99]">
+    <!-- Page Header & Main Actions -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#561F99]">
       <div>
         <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Manajemen Anggota & Alumni KSM AIoT</h1>
         <p class="text-xs text-[#D8B4FE] mt-1">
-          Basis data anggota aktif lintas divisi (BPH, Riset, PSDM, Humas) dan pelacakan jejaring alumni.
+          Basis data keanggotaan resmi KSM AIoT, peminatan riset (AI, IoT, Cloud), kepengurusan, dan jejaring alumni.
         </p>
       </div>
 
-      <!-- Tab Switcher (Aktif vs Alumni) -->
-      <div class="flex items-center p-1 rounded-lg bg-[#301057] border border-[#561F99] flex-shrink-0 self-start sm:self-auto">
-        <button data-tab="active" id="tab-active-btn" class="tab-toggle-btn px-4 py-1.5 rounded-md text-xs font-semibold bg-[#9B5CE8] text-white shadow-sm transition-all">
+      <!-- Main Action Buttons (High-Contrast & Distinct) -->
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <button id="btn-open-create-member" class="h-10 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#9B5CE8] to-[#7C3AED] hover:from-[#A86DF0] hover:to-[#8B5CF6] border border-[#A78BFA]/50 transition-all inline-flex items-center justify-center space-x-2 shadow-lg shadow-purple-900/40">
+          <i data-lucide="user-plus" class="w-4 h-4 text-white"></i>
+          <span>Tambah Anggota</span>
+        </button>
+
+        <button id="btn-open-import-excel" class="h-10 px-4 rounded-xl text-xs font-bold text-white bg-[#240d42] hover:bg-[#301057] border border-[#7C3AED] hover:border-[#A78BFA] transition-all inline-flex items-center justify-center space-x-2 shadow-sm">
+          <i data-lucide="file-spreadsheet" class="w-4 h-4 text-[#C9A4F6]"></i>
+          <span>Import Excel</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tab Switcher (Dedicated Clean Row) -->
+    <div class="flex items-center justify-between gap-4">
+      <div class="inline-flex items-center p-1 rounded-xl bg-[#1e0a36] border border-[#561F99] shadow-inner">
+        <button data-tab="active" id="tab-active-btn" class="tab-toggle-btn px-4 py-2 rounded-lg text-xs font-bold bg-[#7C3AED] text-white shadow-md transition-all flex items-center space-x-2">
+          <i data-lucide="users" class="w-3.5 h-3.5"></i>
           <span id="active-members-tab-label">Anggota Aktif</span>
         </button>
-        <button data-tab="alumni" class="tab-toggle-btn px-4 py-1.5 rounded-md text-xs font-semibold text-[#D8B4FE] hover:text-white transition-all">
-          Direktori Alumni
+        <button data-tab="alumni" class="tab-toggle-btn px-4 py-2 rounded-lg text-xs font-semibold text-[#D8B4FE] hover:text-white hover:bg-white/5 transition-all flex items-center space-x-2">
+          <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+          <span>Direktori Alumni</span>
         </button>
       </div>
     </div>
@@ -54,9 +72,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
           
           <!-- Search by Name/NIM -->
-          <div class="sm:col-span-5 relative">
+          <div class="sm:col-span-4 relative">
             <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#C9A4F6]"></i>
-            <input type="text" id="search-member-input" placeholder="Cari nama, NIM, atau divisi..."
+            <input type="text" id="search-member-input" placeholder="Cari nama, NIM, email, atau keahlian..."
               class="input-institutional !pl-11 !py-2 text-xs" />
           </div>
 
@@ -64,21 +82,21 @@
           <div class="sm:col-span-3">
             <select id="filter-member-divisi" class="input-institutional py-2 px-3 text-xs">
               <option value="all" class="bg-[#240d42] text-white">Semua Divisi</option>
+              <option value="none" class="bg-[#240d42] text-white">Tanpa Divisi (Anggota Biasa)</option>
               <option value="BPH" class="bg-[#240d42] text-white">BPH (Badan Pengurus Harian)</option>
-              <option value="Akademik & Riset" class="bg-[#240d42] text-white">Akademik & Riset</option>
-              <option value="Pengembangan SDM" class="bg-[#240d42] text-white">Pengembangan SDM</option>
-              <option value="Humas & Multimedia" class="bg-[#240d42] text-white">Humas & Multimedia</option>
+              <option value="Akademik Riset" class="bg-[#240d42] text-white">Akademik Riset</option>
+              <option value="PSDM" class="bg-[#240d42] text-white">PSDM</option>
+              <option value="Humas Multimedia" class="bg-[#240d42] text-white">Humas Multimedia</option>
             </select>
           </div>
 
-          <!-- Filter Angkatan -->
-          <div class="sm:col-span-2">
-            <select id="filter-member-angkatan" class="input-institutional py-2 px-3 text-xs">
-              <option value="all" class="bg-[#240d42] text-white">Semua Angkatan</option>
-              <option value="2026" class="bg-[#240d42] text-white">2026</option>
-              <option value="2025" class="bg-[#240d42] text-white">2025</option>
-              <option value="2024" class="bg-[#240d42] text-white">2024</option>
-              <option value="2023" class="bg-[#240d42] text-white">2023</option>
+          <!-- Filter Track Riset -->
+          <div class="sm:col-span-3">
+            <select id="filter-member-track" class="input-institutional py-2 px-3 text-xs">
+              <option value="all" class="bg-[#240d42] text-white">Semua Bidang Riset</option>
+              <option value="IoT Embedded" class="bg-[#240d42] text-white">IoT Embedded</option>
+              <option value="AI" class="bg-[#240d42] text-white">Artificial Intelligence</option>
+              <option value="Software Engineer & Cloud" class="bg-[#240d42] text-white">Software Engineer & Cloud</option>
             </select>
           </div>
 
@@ -98,7 +116,7 @@
         <div class="p-4 border-b border-[#561F99] bg-[#301057]/60 flex items-center justify-between">
           <div class="flex items-center space-x-2">
             <i data-lucide="users" class="w-4 h-4 text-[#C9A4F6]"></i>
-            <h3 class="text-xs font-bold text-white tracking-wider uppercase">Daftar Anggota Aktif Terdaftar</h3>
+            <h3 class="text-xs font-bold text-white tracking-wider uppercase">Daftar Anggota Terdaftar</h3>
           </div>
           <span id="member-count-badge" class="badge-status badge-pending text-xs">
             Memuat...
@@ -109,19 +127,18 @@
           <table class="table-institutional">
             <thead>
               <tr>
+                <th>Member ID & NIM</th>
                 <th>Nama Lengkap</th>
-                <th>NIM Mahasiswa</th>
-                <th>Email UPNVJ</th>
-                <th>Divisi & Role</th>
-                <th>Angkatan</th>
-                <th>Tanggal Masuk</th>
+                <th>Program Studi</th>
+                <th>Divisi & Jabatan</th>
+                <th>Bidang Riset</th>
                 <th>Status</th>
                 <th class="text-center">Aksi</th>
               </tr>
             </thead>
             <tbody id="active-members-tbody" class="divide-y divide-[#561F99]/40">
               <tr>
-                <td colspan="8" class="text-center py-10 text-[#D8B4FE] font-mono text-xs">
+                <td colspan="7" class="text-center py-10 text-[#D8B4FE] font-mono text-xs">
                   Memuat data anggota dari database...
                 </td>
               </tr>
@@ -158,44 +175,383 @@
 
   </main>
 
-  <!-- Member Detail Modal -->
-  <div id="member-detail-modal"
-    class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-[#240d42] w-full max-w-lg p-6 rounded-2xl border border-[#561F99] shadow-2xl space-y-4 relative text-white">
-      <div class="flex items-center justify-between pb-3 border-b border-[#561F99]">
-        <h3 class="text-sm font-bold text-white">Profil Anggota KSM AIoT</h3>
-        <button id="close-detail-modal" class="p-1 rounded text-[#C9A4F6] hover:text-white">
+  <!-- ==================== MODAL 1: RICH PROFILE MODAL ==================== -->
+  <div id="member-profile-modal"
+    class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-[#1e0a36] w-full max-w-2xl rounded-2xl border border-[#7C3AED]/40 shadow-2xl overflow-hidden relative text-white my-8 animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Header Banner -->
+      <div class="bg-gradient-to-r from-[#4C1D95] via-[#6D28D9] to-[#3B0764] p-5 sm:p-6 relative border-b border-[#7C3AED]/30">
+        <button id="close-profile-modal" class="absolute top-4 right-4 p-1.5 rounded-lg bg-black/30 hover:bg-black/50 text-[#D8B4FE] hover:text-white transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+        
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-[#240d42] border-2 border-[#A78BFA] shadow-xl flex-shrink-0">
+            <img id="profile-modal-avatar" src="" alt="Foto" class="w-full h-full object-cover" />
+          </div>
+          <div class="text-center sm:text-left space-y-1.5">
+            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <span id="profile-modal-member-id" class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-[#7C3AED] text-white shadow-sm">-</span>
+              <span id="profile-modal-status-badge" class="badge-status badge-approved text-[10px]">AKTIF</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-white tracking-tight" id="profile-modal-name">-</h3>
+            <p class="text-xs font-mono text-[#D8B4FE]" id="profile-modal-nim">-</p>
+            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 pt-1" id="profile-modal-role-tags"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body Content (Sections) -->
+      <div class="p-5 sm:p-6 space-y-5 max-h-[70vh] overflow-y-auto custom-scrollbar text-xs">
+        
+        <!-- Section: Data Akademik & Kontak -->
+        <div class="space-y-2.5">
+          <h4 class="text-xs font-bold text-[#A78BFA] uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+            <span>Informasi Akademik & Kontak</span>
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div class="p-3 bg-[#150626] rounded-xl border border-[#561F99]/60">
+              <span class="text-[#D8B4FE] text-[10px] block font-medium">Program Studi & Semester</span>
+              <span class="text-white font-semibold text-xs mt-0.5 block" id="profile-modal-prodi">-</span>
+            </div>
+            <div class="p-3 bg-[#150626] rounded-xl border border-[#561F99]/60">
+              <span class="text-[#D8B4FE] text-[10px] block font-medium">Angkatan & Tanggal Masuk</span>
+              <span class="text-white font-semibold text-xs mt-0.5 block" id="profile-modal-intake">-</span>
+            </div>
+            <div class="p-3 bg-[#150626] rounded-xl border border-[#561F99]/60">
+              <span class="text-[#D8B4FE] text-[10px] block font-medium">Email Mahasiswa</span>
+              <span class="text-[#C9A4F6] font-mono text-xs mt-0.5 block truncate" id="profile-modal-email">-</span>
+            </div>
+            <div class="p-3 bg-[#150626] rounded-xl border border-[#561F99]/60">
+              <span class="text-[#D8B4FE] text-[10px] block font-medium">WhatsApp & Domisili</span>
+              <span class="text-white font-semibold text-xs mt-0.5 block" id="profile-modal-contact">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Peminatan Riset & Keahlian -->
+        <div class="space-y-2.5">
+          <h4 class="text-xs font-bold text-[#A78BFA] uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+            <span>Peminatan Riset & Keahlian</span>
+          </h4>
+          <div class="p-3.5 bg-[#150626] rounded-xl border border-[#561F99]/60 space-y-3">
+            <div>
+              <span class="text-[#D8B4FE] text-[10px] block font-medium mb-1.5">Bidang Riset / Interest Track:</span>
+              <div class="flex flex-wrap gap-1.5" id="profile-modal-tracks"></div>
+            </div>
+            <div id="profile-modal-focus-box" class="pt-2 border-t border-[#561F99]/40">
+              <span class="text-[#D8B4FE] text-[10px] block font-medium">Fokus & Eksplorasi Keahlian:</span>
+              <p class="text-white/90 text-xs mt-0.5 leading-relaxed" id="profile-modal-focus">-</p>
+            </div>
+            <div id="profile-modal-reason-box" class="pt-2 border-t border-[#561F99]/40">
+              <span class="text-[#D8B4FE] text-[10px] block font-medium">Alasan Memilih Bidang:</span>
+              <p class="text-white/90 text-xs mt-0.5 italic leading-relaxed" id="profile-modal-reason">-</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Teknis & Portofolio -->
+        <div class="space-y-2.5">
+          <h4 class="text-xs font-bold text-[#A78BFA] uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="code" class="w-3.5 h-3.5"></i>
+            <span>Skill Teknis & Portofolio</span>
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div class="p-3 bg-[#150626] rounded-xl border border-[#561F99]/60">
+              <span class="text-[#D8B4FE] text-[10px] block font-medium">Bahasa Pemrograman</span>
+              <span class="text-white font-medium text-xs mt-0.5 block" id="profile-modal-languages">-</span>
+            </div>
+            <div class="p-3 bg-[#150626] rounded-xl border border-[#561F99]/60">
+              <span class="text-[#D8B4FE] text-[10px] block font-medium">Tools & Frameworks</span>
+              <span class="text-white font-medium text-xs mt-0.5 block" id="profile-modal-tools">-</span>
+            </div>
+            <div class="p-3 bg-[#150626] rounded-xl border border-[#561F99]/60">
+              <span class="text-[#D8B4FE] text-[10px] block font-medium">Discord ID</span>
+              <span class="text-white font-mono text-xs mt-0.5 block" id="profile-modal-discord">-</span>
+            </div>
+            <div class="p-3 bg-[#150626] rounded-xl border border-[#561F99]/60">
+              <span class="text-[#D8B4FE] text-[10px] block font-medium">Link Portofolio / GitHub</span>
+              <div id="profile-modal-portfolio-box" class="mt-0.5"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 bg-[#150626] border-t border-[#561F99]/60 flex justify-end space-x-2">
+        <button id="profile-modal-btn-edit" class="btn-primary-purple text-xs py-1.5 px-4 flex items-center space-x-1.5">
+          <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+          <span>Edit Data</span>
+        </button>
+        <button id="close-profile-modal-btn" class="btn-outline-neutral text-xs py-1.5 px-4">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: MEMBER FORM MODAL (CREATE / EDIT) ==================== -->
+  <div id="member-form-modal"
+    class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-[#1e0a36] w-full max-w-2xl rounded-2xl border border-[#7C3AED]/40 shadow-2xl overflow-hidden relative text-white my-8 animate-in fade-in zoom-in-95 duration-200">
+      
+      <div class="p-5 border-b border-[#561F99] bg-[#301057]/80 flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#7C3AED]/20 border border-[#7C3AED] flex items-center justify-center">
+            <i data-lucide="user" class="w-4 h-4 text-[#A78BFA]" id="form-modal-icon"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white" id="member-form-modal-title">Tambah Anggota Baru</h3>
+            <p class="text-[11px] text-[#D8B4FE]">Lengkapi informasi data keanggotaan KSM AIoT.</p>
+          </div>
+        </div>
+        <button id="close-form-modal" class="p-1.5 rounded-lg text-[#C9A4F6] hover:text-white hover:bg-white/10">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <div class="space-y-3.5 text-xs">
-        <div class="flex items-center space-x-3 p-3 bg-[#150626] rounded-xl border border-[#561F99]">
-          <div class="w-12 h-12 rounded-lg overflow-hidden bg-[#240d42] border border-[#561F99] flex-shrink-0">
-            <img id="detail-member-photo" src="" alt="Foto" class="w-full h-full object-cover" />
+      <form id="member-form" class="p-5 space-y-4 max-h-[72vh] overflow-y-auto custom-scrollbar text-xs">
+        <input type="hidden" id="form-member-id-hidden" />
+
+        <!-- Row 1: NIM & Nama Lengkap -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">NIM Mahasiswa <span class="text-red-400">*</span></label>
+            <input type="text" id="form-student-id" required placeholder="Contoh: 2310511001"
+              class="input-institutional !py-2 text-xs" />
           </div>
           <div>
-            <h4 class="text-sm font-bold text-white" id="detail-member-name">-</h4>
-            <p class="text-xs font-mono text-[#C9A4F6] font-semibold" id="detail-member-nim">-</p>
-            <span class="badge-status badge-approved text-[10px] mt-1" id="detail-member-status">AKTIF</span>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Nama Lengkap <span class="text-red-400">*</span></label>
+            <input type="text" id="form-full-name" required placeholder="Nama Lengkap Mahasiswa"
+              class="input-institutional !py-2 text-xs" />
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2.5">
-          <div class="p-2.5 bg-[#150626] rounded-lg border border-[#561F99]">
-            <span class="text-[#D8B4FE] text-[10px] block font-semibold">Divisi & Peran</span>
-            <span class="text-white font-bold block mt-0.5" id="detail-member-divisi">-</span>
+        <!-- Row 2: Program Studi & Semester -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Program Studi <span class="text-red-400">*</span></label>
+            <select id="form-prodi" required class="input-institutional !py-2 text-xs">
+              <option value="S1 Informatika" class="bg-[#240d42] text-white">S1 Informatika</option>
+              <option value="S1 Sistem Informasi" class="bg-[#240d42] text-white">S1 Sistem Informasi</option>
+              <option value="S1 Sains Data" class="bg-[#240d42] text-white">S1 Sains Data</option>
+              <option value="D3 Sistem Informasi" class="bg-[#240d42] text-white">D3 Sistem Informasi</option>
+            </select>
           </div>
-          <div class="p-2.5 bg-[#150626] rounded-lg border border-[#561F99]">
-            <span class="text-[#D8B4FE] text-[10px] block font-semibold">Tahun Angkatan</span>
-            <span class="text-white font-bold block mt-0.5" id="detail-member-angkatan">-</span>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Semester</label>
+            <input type="number" id="form-semester" min="1" max="14" placeholder="Contoh: 4"
+              class="input-institutional !py-2 text-xs" />
           </div>
         </div>
 
-        <div class="p-2.5 bg-[#150626] rounded-lg border border-[#561F99]">
-          <span class="text-[#D8B4FE] text-[10px] block font-semibold">Email UPNVJ</span>
-          <span class="text-white font-mono block mt-0.5" id="detail-member-email">-</span>
+        <!-- Row 3: Email & WhatsApp -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Email <span class="text-red-400">*</span></label>
+            <input type="email" id="form-email" required placeholder="email@mahasiswa.upnvj.ac.id"
+              class="input-institutional !py-2 text-xs" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">No WhatsApp / Kontak</label>
+            <input type="text" id="form-contact" placeholder="08xxxxxxxxxx"
+              class="input-institutional !py-2 text-xs" />
+          </div>
         </div>
+
+        <!-- Row 4: Divisi, Jabatan, Status, Angkatan -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 p-3.5 bg-[#150626] rounded-xl border border-[#561F99]/60">
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Divisi Kepengurusan</label>
+            <select id="form-division" class="input-institutional !py-2 text-xs">
+              <option value="" class="bg-[#240d42] text-white">Tanpa Divisi (Anggota Biasa)</option>
+              <option value="BPH" class="bg-[#240d42] text-white">BPH (Badan Pengurus Harian)</option>
+              <option value="Akademik Riset" class="bg-[#240d42] text-white">Akademik Riset</option>
+              <option value="PSDM" class="bg-[#240d42] text-white">PSDM</option>
+              <option value="Humas Multimedia" class="bg-[#240d42] text-white">Humas Multimedia</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Jabatan / Role <span class="text-red-400">*</span></label>
+            <select id="form-role" required class="input-institutional !py-2 text-xs">
+              <option value="Anggota" class="bg-[#240d42] text-white">Anggota</option>
+              <option value="Staff" class="bg-[#240d42] text-white">Staff</option>
+              <option value="Kepala Divisi" class="bg-[#240d42] text-white">Kepala Divisi</option>
+              <option value="Wakil Ketua" class="bg-[#240d42] text-white">Wakil Ketua</option>
+              <option value="Ketua" class="bg-[#240d42] text-white">Ketua</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Status Keanggotaan <span class="text-red-400">*</span></label>
+            <select id="form-status" required class="input-institutional !py-2 text-xs">
+              <option value="Aktif" class="bg-[#240d42] text-white">Aktif</option>
+              <option value="Tidak Aktif" class="bg-[#240d42] text-white">Tidak Aktif</option>
+              <option value="Alumni" class="bg-[#240d42] text-white">Alumni</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Tahun Angkatan KSM</label>
+            <input type="text" id="form-intake" placeholder="2026" class="input-institutional !py-2 text-xs" />
+          </div>
+        </div>
+
+        <!-- Row 5: Interest Track (Multi-Select Checkboxes) -->
+        <div class="space-y-1.5 p-3.5 bg-[#150626] rounded-xl border border-[#561F99]/60">
+          <label class="block text-[11px] font-semibold text-[#D8B4FE]">Bidang Riset / Peminatan (Multi-Select):</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+            <label class="flex items-center space-x-2 p-2 rounded-lg bg-[#240d42] border border-[#561F99] cursor-pointer hover:border-[#7C3AED]">
+              <input type="checkbox" name="form_tracks" value="IoT Embedded" class="rounded text-[#7C3AED] focus:ring-0 bg-[#150626]" />
+              <span class="text-xs font-medium text-white">IoT Embedded</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2 rounded-lg bg-[#240d42] border border-[#561F99] cursor-pointer hover:border-[#7C3AED]">
+              <input type="checkbox" name="form_tracks" value="AI" class="rounded text-[#7C3AED] focus:ring-0 bg-[#150626]" />
+              <span class="text-xs font-medium text-white">AI</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2 rounded-lg bg-[#240d42] border border-[#561F99] cursor-pointer hover:border-[#7C3AED]">
+              <input type="checkbox" name="form_tracks" value="Software Engineer & Cloud" class="rounded text-[#7C3AED] focus:ring-0 bg-[#150626]" />
+              <span class="text-xs font-medium text-white">Software & Cloud</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Row 6: Skills, Portfolio, Discord -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Bahasa Pemrograman</label>
+            <input type="text" id="form-languages" placeholder="Contoh: Python, C++, TypeScript"
+              class="input-institutional !py-2 text-xs" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Tools & Frameworks</label>
+            <input type="text" id="form-tools" placeholder="Contoh: PyTorch, ESP-IDF, FastAPI"
+              class="input-institutional !py-2 text-xs" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Link Portofolio / GitHub</label>
+            <input type="url" id="form-portfolio" placeholder="https://github.com/..."
+              class="input-institutional !py-2 text-xs" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Discord ID / Username</label>
+            <input type="text" id="form-discord" placeholder="username#1234"
+              class="input-institutional !py-2 text-xs" />
+          </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="pt-4 border-t border-[#561F99] flex items-center justify-end space-x-2">
+          <button type="button" id="btn-cancel-member-form" class="btn-outline-neutral text-xs py-2 px-4">
+            Batal
+          </button>
+          <button type="submit" id="btn-submit-member-form" class="btn-primary-purple text-xs py-2 px-5 flex items-center space-x-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span id="btn-submit-member-label">Simpan Anggota</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 3: IMPORT EXCEL MODAL ==================== -->
+  <div id="import-excel-modal"
+    class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-[#1e0a36] w-full max-w-lg rounded-2xl border border-[#7C3AED]/40 shadow-2xl overflow-hidden relative text-white my-8 animate-in fade-in zoom-in-95 duration-200">
+      
+      <div class="p-5 border-b border-[#561F99] bg-[#301057]/80 flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#7C3AED]/20 border border-[#7C3AED] flex items-center justify-center">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-[#A78BFA]"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Import Data Anggota via Excel</h3>
+            <p class="text-[11px] text-[#D8B4FE]">Sinkronisasi spreadsheet (.xlsx / .xls) ke PostgreSQL.</p>
+          </div>
+        </div>
+        <button id="close-import-modal" class="p-1.5 rounded-lg text-[#C9A4F6] hover:text-white hover:bg-white/10">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="import-excel-form" class="p-5 space-y-4 text-xs">
+        
+        <!-- File Drop Area -->
+        <div id="excel-dropzone" class="border-2 border-dashed border-[#7C3AED]/50 hover:border-[#A78BFA] bg-[#150626] rounded-2xl p-6 text-center cursor-pointer transition-all">
+          <input type="file" id="excel-file-input" accept=".xlsx, .xls" class="hidden" />
+          <div class="flex flex-col items-center space-y-2">
+            <div class="w-12 h-12 rounded-full bg-[#7C3AED]/20 flex items-center justify-center text-[#A78BFA]">
+              <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <p class="font-bold text-white text-xs">Klik untuk memilih file atau seret file Excel ke sini</p>
+              <p class="text-[11px] text-[#D8B4FE] mt-0.5">Format file yang didukung: .xlsx atau .xls</p>
+            </div>
+            <div id="selected-file-name" class="hidden font-mono text-[11px] text-[#A78BFA] font-bold bg-[#7C3AED]/20 px-3 py-1 rounded-full"></div>
+          </div>
+        </div>
+
+        <!-- Sheet Name Input -->
+        <div>
+          <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Nama Sheet Excel</label>
+          <input type="text" id="excel-sheet-name" value="Database Anggota" placeholder="Database Anggota"
+            class="input-institutional !py-2 text-xs font-mono" />
+          <p class="text-[10px] text-[#D8B4FE]/70 mt-1">Default sheet data pendaftaran/anggota KSM AIoT: <span class="font-mono text-white">Database Anggota</span></p>
+        </div>
+
+        <!-- Info Note -->
+        <div class="p-3 bg-[#240d42] rounded-xl border border-[#561F99]/60 text-[11px] text-[#D8B4FE] leading-relaxed">
+          <div class="flex items-start space-x-2">
+            <i data-lucide="info" class="w-4 h-4 text-[#A78BFA] flex-shrink-0 mt-0.5"></i>
+            <p>Data anggota pada Excel akan di-upsert otomatis ke database PostgreSQL. NIM yang sudah ada akan diperbarui secara aman.</p>
+          </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="pt-3 border-t border-[#561F99] flex items-center justify-end space-x-2">
+          <button type="button" id="btn-cancel-import" class="btn-outline-neutral text-xs py-2 px-4">
+            Batal
+          </button>
+          <button type="submit" id="btn-submit-import" class="btn-primary-purple text-xs py-2 px-5 flex items-center space-x-1.5" disabled>
+            <i data-lucide="upload" class="w-4 h-4"></i>
+            <span id="btn-submit-import-label">Upload & Proses</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 4: DELETE CONFIRMATION MODAL ==================== -->
+  <div id="delete-confirm-modal"
+    class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-[#1e0a36] w-full max-w-sm rounded-2xl border border-red-500/40 shadow-2xl p-5 text-white space-y-4 animate-in fade-in zoom-in-95 duration-200">
+      <div class="flex items-center space-x-3 text-red-400">
+        <div class="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold text-white">Hapus Data Anggota?</h3>
+          <p class="text-[11px] text-[#D8B4FE]">Tindakan ini tidak dapat dibatalkan.</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-white/80 leading-relaxed">
+        Apakah Anda yakin ingin menghapus data anggota <span id="delete-member-name" class="font-bold text-white"></span> (<span id="delete-member-nim" class="font-mono text-[#A78BFA]"></span>)?
+      </p>
+
+      <div class="pt-2 flex items-center justify-end space-x-2">
+        <button id="btn-cancel-delete" class="btn-outline-neutral text-xs py-1.5 px-3.5">
+          Batal
+        </button>
+        <button id="btn-confirm-delete" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-red-600 hover:bg-red-700 text-white shadow-md transition-colors flex items-center space-x-1.5">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Hapus</span>
+        </button>
       </div>
     </div>
   </div>

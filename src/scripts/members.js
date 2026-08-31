@@ -8,13 +8,34 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000
 
 let activeMembersList = [];
 let alumniList = [...initialAlumniData];
+let memberToDelete = null;
+let selectedExcelFile = null;
 
+// ==================== FETCH MEMBERS ====================
 async function fetchMembersFromBackend() {
+  const tbody = document.getElementById('active-members-tbody');
+  const countBadge = document.getElementById('member-count-badge');
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center py-10 text-[#D8B4FE] font-mono text-xs">
+          <div class="flex items-center justify-center space-x-2">
+            <svg class="animate-spin h-4 w-4 text-[#A78BFA]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Memuat data anggota dari database...</span>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+
   try {
     const token = getAuthToken();
-    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
     const res = await fetch(`${API_BASE_URL}/members/`, { headers });
-    
+
     if (res.ok) {
       activeMembersList = await res.json();
     } else {
@@ -28,125 +49,239 @@ async function fetchMembersFromBackend() {
   if (tabLabel) {
     tabLabel.textContent = `Anggota Aktif (${activeMembersList.length})`;
   }
+  if (countBadge) {
+    countBadge.textContent = `${activeMembersList.length} Anggota`;
+  }
 
-  renderActiveMembers();
+  applyFilter();
 }
 
 function getFallbackMembers() {
   return [
     {
-      student_id: '2310511001',
+      member_id: 'AIOT-2026-001',
+      student_id: '2210511084',
       full_name: 'Dzulfikri Adjmal',
-      email: 'dzulfikri.adjmal@mahasiswa.upnvj.ac.id',
+      program_of_study: 'S1 Informatika',
+      email: '2210511084@mahasiswa.upnvj.ac.id',
       division: 'BPH',
-      role: 'Ketua KSM AIoT',
-      intake_period: '2023',
-      join_date: '10/01/2024',
-      status: 'Aktif'
+      role: 'Ketua',
+      intake_period: '2022',
+      interest_track: ['AI', 'IoT Embedded'],
+      status: 'Aktif',
     },
     {
-      student_id: '2310511002',
-      full_name: 'Adinda Rizki Sya\'bana Diva',
-      email: 'adinda.syabana@mahasiswa.upnvj.ac.id',
+      member_id: 'AIOT-2026-002',
+      student_id: '2210511056',
+      full_name: "Adinda Rizki Sya'bana Diva",
+      program_of_study: 'S1 Informatika',
+      email: '2210511056@mahasiswa.upnvj.ac.id',
       division: 'BPH',
-      role: 'Wakil Ketua KSM AIoT',
-      intake_period: '2023',
-      join_date: '10/01/2024',
-      status: 'Aktif'
+      role: 'Wakil Ketua',
+      intake_period: '2022',
+      interest_track: ['Software Engineer & Cloud'],
+      status: 'Aktif',
     },
     {
-      student_id: '2310511015',
-      full_name: 'Rahman Ilyas Al-Kahfi',
-      email: 'rahman.ilyas@mahasiswa.upnvj.ac.id',
-      division: 'Akademik & Riset',
-      role: 'Kepala Divisi Riset',
-      intake_period: '2023',
-      join_date: '15/01/2024',
-      status: 'Aktif'
+      member_id: 'AIOT-2026-003',
+      student_id: '2410501116',
+      full_name: 'Clara Ragil Dewanti',
+      program_of_study: 'D3 Sistem Informasi',
+      email: '2410501116@mahasiswa.upnvj.ac.id',
+      division: null,
+      role: 'Anggota',
+      intake_period: '2026',
+      interest_track: ['IoT Embedded'],
+      status: 'Aktif',
     },
-    {
-      student_id: '2310511020',
-      full_name: 'Nicolas Debrito',
-      email: 'nicolas.debrito@mahasiswa.upnvj.ac.id',
-      division: 'Pengembangan SDM',
-      role: 'Kepala Divisi PSDM',
-      intake_period: '2023',
-      join_date: '15/01/2024',
-      status: 'Aktif'
-    },
-    {
-      student_id: '2310511025',
-      full_name: 'Yusuf Martinus Arief',
-      email: 'yusuf.martinus@mahasiswa.upnvj.ac.id',
-      division: 'Humas & Multimedia',
-      role: 'Kepala Divisi Humas',
-      intake_period: '2023',
-      join_date: '15/01/2024',
-      status: 'Aktif'
-    }
   ];
 }
 
-function renderActiveMembers(filterText = '', division = 'all', angkatan = 'all') {
+// ==================== RENDER MEMBERS TABLE ====================
+function renderActiveMembers(filterText = '', division = 'all', track = 'all') {
   const tbody = document.getElementById('active-members-tbody');
   if (!tbody) return;
 
-  const filtered = activeMembersList.filter(m => {
+  const search = filterText.trim().toLowerCase();
+
+  const filtered = activeMembersList.filter((m) => {
     const name = (m.full_name || '').toLowerCase();
     const nim = (m.student_id || '').toLowerCase();
-    const div = (m.division || '').toLowerCase();
-    const search = filterText.toLowerCase();
+    const memId = (m.member_id || '').toLowerCase();
+    const email = (m.email || '').toLowerCase();
+    const prodi = (m.program_of_study || '').toLowerCase();
 
-    const matchText = name.includes(search) || nim.includes(search) || div.includes(search);
-    const matchDiv = division === 'all' || m.division === division;
-    const matchAng = angkatan === 'all' || String(m.intake_period) === String(angkatan);
-    return matchText && matchDiv && matchAng;
+    const matchText =
+      !search ||
+      name.includes(search) ||
+      nim.includes(search) ||
+      memId.includes(search) ||
+      email.includes(search) ||
+      prodi.includes(search);
+
+    // Division Filter
+    let matchDiv = true;
+    if (division === 'none') {
+      matchDiv = !m.division;
+    } else if (division !== 'all') {
+      matchDiv = m.division === division;
+    }
+
+    // Track Filter
+    let matchTrack = true;
+    if (track !== 'all') {
+      const tracks = m.interest_track || [];
+      matchTrack = tracks.some((t) => t === track);
+    }
+
+    return matchText && matchDiv && matchTrack;
   });
 
   const countBadge = document.getElementById('member-count-badge');
-  if (countBadge) countBadge.textContent = `${filtered.length} Anggota`;
+  if (countBadge) {
+    countBadge.textContent = `${filtered.length} dari ${activeMembersList.length} Anggota`;
+  }
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-gray-500 font-mono text-xs">Tidak ada data anggota yang cocok dengan filter.</td></tr>`;
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center py-10 text-[#D8B4FE] font-mono text-xs">
+          Tidak ada data anggota yang sesuai dengan kriteria pencarian.
+        </td>
+      </tr>
+    `;
     return;
   }
 
-  tbody.innerHTML = filtered.map(m => `
-    <tr class="hover:bg-[#2d1052] transition-colors">
-      <td class="font-medium text-white">${m.full_name}</td>
-      <td class="font-mono text-xs font-semibold text-[#C9A4F6]">${m.student_id}</td>
-      <td class="text-[#D8B4FE] font-mono text-xs">${m.email}</td>
-      <td>
-        <span class="badge-status ${m.division === 'BPH' ? 'badge-pending' : 'badge-neutral'} text-[10px]">
-          ${m.division} • ${m.role || 'Anggota'}
-        </span>
-      </td>
-      <td class="font-mono font-semibold text-white text-xs">${m.intake_period || '2024'}</td>
-      <td class="text-[#D8B4FE] font-mono text-xs">${m.join_date || '15/01/2026'}</td>
-      <td>
-        <span class="badge-status badge-approved text-[10px]">${m.status || 'Aktif'}</span>
-      </td>
-      <td class="text-center">
-        <button onclick="window.showMemberDetail('${m.student_id}')" 
-          class="px-2.5 py-1 rounded-md bg-[#301057] hover:bg-[#561F99] text-[#C9A4F6] hover:text-white text-xs font-semibold transition-colors border border-[#561F99]">
-          Detail
-        </button>
-      </td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = filtered
+    .map((m) => {
+      // Role & Division pill
+      let divRoleHtml = '';
+      if (m.division) {
+        divRoleHtml = `
+          <div class="flex flex-col items-start gap-1">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#7C3AED]/30 text-[#D8B4FE] border border-[#7C3AED]/40">${m.division}</span>
+            <span class="text-xs font-semibold text-white">${m.role || 'Pengurus'}</span>
+          </div>
+        `;
+      } else {
+        divRoleHtml = `
+          <div class="flex flex-col items-start gap-1">
+            <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[#150626] text-[#D8B4FE] border border-[#561F99]/60">Anggota Biasa</span>
+            <span class="text-xs text-[#A78BFA] font-medium">Non-Divisi</span>
+          </div>
+        `;
+      }
+
+      // Track badges
+      const tracks = m.interest_track || [];
+      const trackBadgesHtml =
+        tracks.length > 0
+          ? tracks
+              .map((t) => {
+                let badgeColor = 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+                if (t === 'AI') badgeColor = 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+                if (t === 'Software Engineer & Cloud')
+                  badgeColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+                return `<span class="px-1.5 py-0.5 rounded text-[10px] font-medium border ${badgeColor}">${t}</span>`;
+              })
+              .join(' ')
+          : `<span class="text-[11px] text-gray-500">-</span>`;
+
+      // Status
+      let statusClass = 'badge-approved';
+      if (m.status === 'Tidak Aktif') statusClass = 'badge-rejected';
+      if (m.status === 'Alumni') statusClass = 'badge-neutral';
+
+      const avatarSrc =
+        m.avatar ||
+        `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(m.student_id || 'orion')}&backgroundColor=240d42`;
+
+      return `
+      <tr class="hover:bg-[#301057]/40 transition-colors">
+        <!-- Member ID & NIM -->
+        <td class="py-3 px-4">
+          <div class="flex flex-col">
+            <span class="font-mono font-bold text-xs text-[#A78BFA]">${m.member_id || '-'}</span>
+            <span class="font-mono text-[11px] text-[#D8B4FE]">${m.student_id || '-'}</span>
+          </div>
+        </td>
+
+        <!-- Nama Lengkap & Avatar -->
+        <td class="py-3 px-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-full overflow-hidden bg-[#150626] border border-[#7C3AED]/40 flex-shrink-0">
+              <img src="${avatarSrc}" alt="${m.full_name}" class="w-full h-full object-cover" />
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-bold text-white truncate hover:text-[#A78BFA] cursor-pointer" onclick="window.showMemberProfile('${m.student_id}')">${m.full_name || '-'}</p>
+              <p class="text-[11px] text-[#D8B4FE] truncate font-mono">${m.email || '-'}</p>
+            </div>
+          </div>
+        </td>
+
+        <!-- Program Studi -->
+        <td class="py-3 px-4 text-xs font-medium text-white/90">
+          ${m.program_of_study || '-'}
+        </td>
+
+        <!-- Divisi & Jabatan -->
+        <td class="py-3 px-4">
+          ${divRoleHtml}
+        </td>
+
+        <!-- Bidang Riset -->
+        <td class="py-3 px-4">
+          <div class="flex flex-wrap gap-1">
+            ${trackBadgesHtml}
+          </div>
+        </td>
+
+        <!-- Status -->
+        <td class="py-3 px-4">
+          <span class="badge-status ${statusClass} text-[10px]">
+            ${m.status || 'Aktif'}
+          </span>
+        </td>
+
+        <!-- Aksi -->
+        <td class="py-3 px-4 text-center">
+          <div class="flex items-center justify-center space-x-1.5">
+            <button onclick="window.showMemberProfile('${m.student_id}')" title="Cek Profil Lengkap"
+              class="p-1.5 rounded-lg bg-[#150626] hover:bg-[#7C3AED]/30 text-[#A78BFA] hover:text-white border border-[#561F99]/60 transition-colors">
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+            </button>
+            <button onclick="window.openEditMember('${m.student_id}')" title="Edit Data"
+              class="p-1.5 rounded-lg bg-[#150626] hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 border border-[#561F99]/60 transition-colors">
+              <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+            </button>
+            <button onclick="window.openDeleteMember('${m.student_id}')" title="Hapus Anggota"
+              class="p-1.5 rounded-lg bg-[#150626] hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-[#561F99]/60 transition-colors">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+    })
+    .join('');
 
   initIcons();
 }
 
-function renderAlumni(searchText = '') {
+// ==================== RENDER ALUMNI ====================
+function renderAlumni(filterText = '') {
   const grid = document.getElementById('alumni-grid');
   if (!grid) return;
 
-  const query = searchText.toLowerCase().trim();
-  const filtered = alumniList.filter(a => {
-    return a.name.toLowerCase().includes(query) ||
-           a.company.toLowerCase().includes(query) ||
-           a.currentRole.toLowerCase().includes(query);
+  const search = filterText.toLowerCase();
+  const filtered = alumniList.filter((a) => {
+    return (
+      (a.name || '').toLowerCase().includes(search) ||
+      (a.company || '').toLowerCase().includes(search) ||
+      (a.currentRole || '').toLowerCase().includes(search) ||
+      (a.angkatan || '').toLowerCase().includes(search)
+    );
   });
 
   if (filtered.length === 0) {
@@ -154,7 +289,9 @@ function renderAlumni(searchText = '') {
     return;
   }
 
-  grid.innerHTML = filtered.map(a => `
+  grid.innerHTML = filtered
+    .map(
+      (a) => `
     <div class="card-institutional p-5 flex flex-col justify-between">
       <div>
         <div class="flex items-start space-x-3 mb-3">
@@ -182,11 +319,404 @@ function renderAlumni(searchText = '') {
         </a>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 
   initIcons();
 }
 
+// ==================== FILTER HANDLER ====================
+function applyFilter() {
+  const searchInput = document.getElementById('search-member-input');
+  const divSelect = document.getElementById('filter-member-divisi');
+  const trackSelect = document.getElementById('filter-member-track');
+
+  renderActiveMembers(
+    searchInput?.value || '',
+    divSelect?.value || 'all',
+    trackSelect?.value || 'all'
+  );
+}
+
+// ==================== 1. SHOW RICH PROFILE MODAL ====================
+window.showMemberProfile = function (studentId) {
+  const m = activeMembersList.find((item) => String(item.student_id) === String(studentId));
+  if (!m) {
+    showToast('Data anggota tidak ditemukan', 'error');
+    return;
+  }
+
+  const modal = document.getElementById('member-profile-modal');
+  if (!modal) return;
+
+  // Banner
+  document.getElementById('profile-modal-name').textContent = m.full_name || 'Anggota KSM AIoT';
+  document.getElementById('profile-modal-nim').textContent = `NIM: ${m.student_id || '-'}`;
+  document.getElementById('profile-modal-member-id').textContent = m.member_id || 'AIOT-MEMBER';
+
+  const avatarEl = document.getElementById('profile-modal-avatar');
+  if (avatarEl) {
+    avatarEl.src =
+      m.avatar ||
+      `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(m.student_id || 'orion')}&backgroundColor=240d42`;
+  }
+
+  // Status
+  const statusBadge = document.getElementById('profile-modal-status-badge');
+  if (statusBadge) {
+    statusBadge.textContent = (m.status || 'Aktif').toUpperCase();
+    statusBadge.className = `badge-status ${m.status === 'Tidak Aktif' ? 'badge-rejected' : m.status === 'Alumni' ? 'badge-neutral' : 'badge-approved'} text-[10px] font-bold`;
+  }
+
+  // Role Tags
+  const roleTagsContainer = document.getElementById('profile-modal-role-tags');
+  if (roleTagsContainer) {
+    let html = `<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-white/10 border border-white/20 text-white">${m.role || 'Anggota'}</span>`;
+    if (m.division) {
+      html += `<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#A78BFA]/30 border border-[#A78BFA] text-white">Divisi ${m.division}</span>`;
+    } else {
+      html += `<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-black/30 border border-white/10 text-[#D8B4FE]">Anggota Biasa (Non-Divisi)</span>`;
+    }
+    roleTagsContainer.innerHTML = html;
+  }
+
+  // Section 1: Akademik & Kontak
+  document.getElementById('profile-modal-prodi').textContent = `${m.program_of_study || '-'} ${m.semester ? `(Semester ${m.semester})` : ''}`;
+  document.getElementById('profile-modal-intake').textContent = `Angkatan ${m.intake_period || '-'} ${m.join_date ? `• Gabung: ${m.join_date}` : ''}`;
+  document.getElementById('profile-modal-email').textContent = m.email || '-';
+  document.getElementById('profile-modal-contact').textContent = `${m.contact_info || '-'} ${m.domicile_city ? `• ${m.domicile_city}` : ''}`;
+
+  // Section 2: Peminatan & Riset
+  const tracksContainer = document.getElementById('profile-modal-tracks');
+  if (tracksContainer) {
+    const tracks = m.interest_track || [];
+    if (tracks.length > 0) {
+      tracksContainer.innerHTML = tracks
+        .map((t) => {
+          let badgeColor = 'bg-blue-500/20 text-blue-300 border-blue-500/40';
+          if (t === 'AI') badgeColor = 'bg-purple-500/20 text-purple-300 border-purple-500/40';
+          if (t === 'Software Engineer & Cloud')
+            badgeColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+          return `<span class="px-2 py-1 rounded-lg text-xs font-semibold border ${badgeColor}">${t}</span>`;
+        })
+        .join('');
+    } else {
+      tracksContainer.innerHTML = `<span class="text-gray-400 italic">Belum memilih track riset</span>`;
+    }
+  }
+
+  document.getElementById('profile-modal-focus').textContent =
+    m.focus_expertise || m.exploration_field || 'Belum ada catatan fokus keahlian.';
+  document.getElementById('profile-modal-reason').textContent =
+    m.field_reason || 'Belum ada catatan alasan pemilihan bidang.';
+
+  // Section 3: Teknis & Portofolio
+  document.getElementById('profile-modal-languages').textContent = m.programming_languages || '-';
+  document.getElementById('profile-modal-tools').textContent = m.tools_frameworks || '-';
+  document.getElementById('profile-modal-discord').textContent = m.discord_id || '-';
+
+  const portfolioBox = document.getElementById('profile-modal-portfolio-box');
+  if (portfolioBox) {
+    if (m.portfolio_url) {
+      portfolioBox.innerHTML = `
+        <a href="${m.portfolio_url}" target="_blank" class="text-[#A78BFA] hover:text-white underline truncate block font-mono text-xs flex items-center gap-1">
+          <span>${m.portfolio_url}</span>
+          <i data-lucide="external-link" class="w-3 h-3 flex-shrink-0"></i>
+        </a>
+      `;
+    } else {
+      portfolioBox.innerHTML = `<span class="text-gray-400">-</span>`;
+    }
+  }
+
+  // Edit button inside profile modal
+  const editBtn = document.getElementById('profile-modal-btn-edit');
+  if (editBtn) {
+    editBtn.onclick = () => {
+      closeModal('member-profile-modal');
+      window.openEditMember(m.student_id);
+    };
+  }
+
+  openModal('member-profile-modal');
+  initIcons();
+};
+
+// ==================== 2. CREATE & EDIT MEMBER MODAL ====================
+window.openCreateMember = function () {
+  const form = document.getElementById('member-form');
+  if (form) form.reset();
+
+  document.getElementById('form-member-id-hidden').value = '';
+  document.getElementById('member-form-modal-title').textContent = 'Tambah Anggota Baru';
+  document.getElementById('btn-submit-member-label').textContent = 'Simpan Anggota Baru';
+  document.getElementById('form-student-id').disabled = false;
+
+  // Uncheck all tracks
+  document.querySelectorAll('input[name="form_tracks"]').forEach((cb) => (cb.checked = false));
+
+  openModal('member-form-modal');
+};
+
+window.openEditMember = function (studentId) {
+  const m = activeMembersList.find((item) => String(item.student_id) === String(studentId));
+  if (!m) return;
+
+  const form = document.getElementById('member-form');
+  if (form) form.reset();
+
+  document.getElementById('form-member-id-hidden').value = m.student_id;
+  document.getElementById('member-form-modal-title').textContent = `Edit Anggota: ${m.full_name}`;
+  document.getElementById('btn-submit-member-label').textContent = 'Simpan Perubahan';
+
+  // Fill inputs
+  document.getElementById('form-student-id').value = m.student_id || '';
+  document.getElementById('form-student-id').disabled = true; // NIM cannot be changed
+  document.getElementById('form-full-name').value = m.full_name || '';
+  document.getElementById('form-prodi').value = m.program_of_study || 'S1 Informatika';
+  document.getElementById('form-semester').value = m.semester || '';
+  document.getElementById('form-email').value = m.email || '';
+  document.getElementById('form-contact').value = m.contact_info || '';
+  document.getElementById('form-division').value = m.division || '';
+  document.getElementById('form-role').value = m.role || 'Anggota';
+  document.getElementById('form-status').value = m.status || 'Aktif';
+  document.getElementById('form-intake').value = m.intake_period || '2026';
+
+  document.getElementById('form-languages').value = m.programming_languages || '';
+  document.getElementById('form-tools').value = m.tools_frameworks || '';
+  document.getElementById('form-portfolio').value = m.portfolio_url || '';
+  document.getElementById('form-discord').value = m.discord_id || '';
+
+  // Check tracks
+  const tracks = m.interest_track || [];
+  document.querySelectorAll('input[name="form_tracks"]').forEach((cb) => {
+    cb.checked = tracks.includes(cb.value);
+  });
+
+  openModal('member-form-modal');
+};
+
+async function handleMemberFormSubmit(e) {
+  e.preventDefault();
+  const submitBtn = document.getElementById('btn-submit-member-form');
+  const originalLabel = document.getElementById('btn-submit-member-label').textContent;
+
+  submitBtn.disabled = true;
+  document.getElementById('btn-submit-member-label').textContent = 'Menyimpan...';
+
+  const hiddenId = document.getElementById('form-member-id-hidden').value;
+  const isEdit = Boolean(hiddenId);
+
+  // Collect selected tracks
+  const selectedTracks = [];
+  document.querySelectorAll('input[name="form_tracks"]:checked').forEach((cb) => {
+    selectedTracks.push(cb.value);
+  });
+
+  const payload = {
+    student_id: document.getElementById('form-student-id').value.trim(),
+    full_name: document.getElementById('form-full-name').value.trim(),
+    program_of_study: document.getElementById('form-prodi').value,
+    semester: document.getElementById('form-semester').value
+      ? parseInt(document.getElementById('form-semester').value, 10)
+      : null,
+    email: document.getElementById('form-email').value.trim(),
+    contact_info: document.getElementById('form-contact').value.trim() || null,
+    division: document.getElementById('form-division').value || null,
+    role: document.getElementById('form-role').value,
+    status: document.getElementById('form-status').value,
+    intake_period: document.getElementById('form-intake').value.trim() || '2026',
+    interest_track: selectedTracks.length > 0 ? selectedTracks : null,
+    programming_languages: document.getElementById('form-languages').value.trim() || null,
+    tools_frameworks: document.getElementById('form-tools').value.trim() || null,
+    portfolio_url: document.getElementById('form-portfolio').value.trim() || null,
+    discord_id: document.getElementById('form-discord').value.trim() || null,
+  };
+
+  try {
+    const token = getAuthToken();
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+
+    const url = isEdit ? `${API_BASE_URL}/members/${hiddenId}` : `${API_BASE_URL}/members/`;
+    const method = isEdit ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method,
+      headers,
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      showToast(
+        isEdit
+          ? `Data anggota ${payload.full_name} berhasil diperbarui!`
+          : `Anggota ${payload.full_name} berhasil ditambahkan!`,
+        'success'
+      );
+      closeModal('member-form-modal');
+      await fetchMembersFromBackend();
+    } else {
+      const err = await res.json();
+      showToast(`Gagal menyimpan data: ${err.detail || 'Terjadi kesalahan'}`, 'error');
+    }
+  } catch (error) {
+    showToast(`Error koneksi backend: ${error.message}`, 'error');
+  } finally {
+    submitBtn.disabled = false;
+    document.getElementById('btn-submit-member-label').textContent = originalLabel;
+  }
+}
+
+// ==================== 3. DELETE MEMBER ====================
+window.openDeleteMember = function (studentId) {
+  const m = activeMembersList.find((item) => String(item.student_id) === String(studentId));
+  if (!m) return;
+
+  memberToDelete = m;
+  document.getElementById('delete-member-name').textContent = m.full_name;
+  document.getElementById('delete-member-nim').textContent = m.student_id;
+
+  openModal('delete-confirm-modal');
+};
+
+async function handleConfirmDelete() {
+  if (!memberToDelete) return;
+
+  const btn = document.getElementById('btn-confirm-delete');
+  btn.disabled = true;
+  btn.innerHTML = `<span>Menghapus...</span>`;
+
+  try {
+    const token = getAuthToken();
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(`${API_BASE_URL}/members/${memberToDelete.student_id}`, {
+      method: 'DELETE',
+      headers,
+    });
+
+    if (res.ok) {
+      showToast(`Anggota ${memberToDelete.full_name} berhasil dihapus!`, 'success');
+      closeModal('delete-confirm-modal');
+      memberToDelete = null;
+      await fetchMembersFromBackend();
+    } else {
+      const err = await res.json();
+      showToast(`Gagal menghapus anggota: ${err.detail || 'Terjadi kesalahan'}`, 'error');
+    }
+  } catch (error) {
+    showToast(`Error: ${error.message}`, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Hapus</span>`;
+    initIcons();
+  }
+}
+
+// ==================== 4. IMPORT EXCEL ====================
+function openImportExcelModal() {
+  selectedExcelFile = null;
+  const fileInput = document.getElementById('excel-file-input');
+  if (fileInput) fileInput.value = '';
+
+  const fileNameLabel = document.getElementById('selected-file-name');
+  if (fileNameLabel) {
+    fileNameLabel.textContent = '';
+    fileNameLabel.classList.add('hidden');
+  }
+
+  const submitBtn = document.getElementById('btn-submit-import');
+  if (submitBtn) submitBtn.disabled = true;
+
+  openModal('import-excel-modal');
+}
+
+function handleExcelFileSelect(file) {
+  if (!file) return;
+  if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+    showToast('Format file harus berupa Excel (.xlsx atau .xls)', 'error');
+    return;
+  }
+
+  selectedExcelFile = file;
+  const fileNameLabel = document.getElementById('selected-file-name');
+  if (fileNameLabel) {
+    fileNameLabel.textContent = `File terpilih: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+    fileNameLabel.classList.remove('hidden');
+  }
+
+  const submitBtn = document.getElementById('btn-submit-import');
+  if (submitBtn) submitBtn.disabled = false;
+}
+
+async function handleImportExcelSubmit(e) {
+  e.preventDefault();
+  if (!selectedExcelFile) {
+    showToast('Pilih file Excel terlebih dahulu!', 'error');
+    return;
+  }
+
+  const submitBtn = document.getElementById('btn-submit-import');
+  const labelEl = document.getElementById('btn-submit-import-label');
+  submitBtn.disabled = true;
+  labelEl.textContent = 'Memproses Excel...';
+
+  const sheetName = document.getElementById('excel-sheet-name').value.trim() || 'Database Anggota';
+
+  const formData = new FormData();
+  formData.append('file', selectedExcelFile);
+
+  try {
+    const token = getAuthToken();
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const url = `${API_BASE_URL}/members/import-excel?sheet_name=${encodeURIComponent(sheetName)}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      showToast(
+        `Sukses! Berhasil mengimpor/sinkron ${data.imported_count || data.count || 'semua'} anggota dari Excel!`,
+        'success'
+      );
+      closeModal('import-excel-modal');
+      await fetchMembersFromBackend();
+    } else {
+      const err = await res.json();
+      showToast(`Gagal import Excel: ${err.detail || 'Terjadi kesalahan format sheet'}`, 'error');
+    }
+  } catch (error) {
+    showToast(`Error import: ${error.message}`, 'error');
+  } finally {
+    submitBtn.disabled = false;
+    labelEl.textContent = 'Upload & Proses';
+  }
+}
+
+// ==================== MODAL HELPERS ====================
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  initIcons();
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+// ==================== DOM INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
   initCRMLayout('members', 'Manajemen Anggota & Alumni');
   fetchMembersFromBackend();
@@ -196,16 +726,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabBtns = document.querySelectorAll('.tab-toggle-btn');
   const tabPanels = document.querySelectorAll('.tab-panel');
 
-  tabBtns.forEach(btn => {
+  tabBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       const tab = btn.getAttribute('data-tab');
 
-      tabBtns.forEach(b => {
-        b.className = 'tab-toggle-btn px-4 py-1.5 rounded-md text-xs font-semibold text-[#D8B4FE] hover:text-white transition-all';
+      tabBtns.forEach((b) => {
+        b.className =
+          'tab-toggle-btn px-4 py-2 rounded-lg text-xs font-semibold text-[#D8B4FE] hover:text-white hover:bg-white/5 transition-all flex items-center space-x-2';
       });
-      btn.className = 'tab-toggle-btn px-4 py-1.5 rounded-md text-xs font-semibold bg-[#9B5CE8] text-white shadow-sm transition-all';
+      btn.className =
+        'tab-toggle-btn px-4 py-2 rounded-lg text-xs font-bold bg-[#7C3AED] text-white shadow-md transition-all flex items-center space-x-2';
 
-      tabPanels.forEach(p => {
+      tabPanels.forEach((p) => {
         if (p.id === `tab-${tab}`) {
           p.classList.remove('hidden');
         } else {
@@ -215,67 +747,138 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  const searchInput = document.getElementById('search-member-input');
-  const divSelect = document.getElementById('filter-member-divisi');
-  const angSelect = document.getElementById('filter-member-angkatan');
+  // Auto-detect prodi, angkatan, and email from student_id in Member Form
+  const formStudentId = document.getElementById('form-student-id');
+  formStudentId?.addEventListener('input', () => {
+    const rawNim = (formStudentId.value || '').replace(/\D/g, '');
+    formStudentId.value = rawNim;
 
-  function applyFilter() {
-    renderActiveMembers(searchInput?.value || '', divSelect?.value || 'all', angSelect?.value || 'all');
-  }
+    const formEmail = document.getElementById('form-email');
+    if (rawNim.length > 0 && formEmail && !document.getElementById('form-member-id-hidden').value) {
+      formEmail.value = `${rawNim}@mahasiswa.upnvj.ac.id`;
+    }
 
-  searchInput?.addEventListener('input', applyFilter);
-  divSelect?.addEventListener('change', applyFilter);
-  angSelect?.addEventListener('change', applyFilter);
+    if (rawNim.length >= 2) {
+      const fullYear = `20${rawNim.slice(0, 2)}`;
+      const formIntake = document.getElementById('form-intake');
+      if (formIntake && !formIntake.value) {
+        formIntake.value = fullYear;
+      }
+    }
+
+    if (rawNim.length >= 7) {
+      const prodiCode = rawNim.slice(4, 7);
+      const formProdi = document.getElementById('form-prodi');
+      if (formProdi) {
+        if (prodiCode === '510') formProdi.value = 'S1 Sistem Informasi';
+        else if (prodiCode === '511') formProdi.value = 'S1 Informatika';
+        else if (prodiCode === '512') formProdi.value = 'D3 Sistem Informasi';
+        else if (prodiCode === '513') formProdi.value = 'S1 Sains Data';
+      }
+    }
+  });
+
+  // Filters
+  document.getElementById('search-member-input')?.addEventListener('input', applyFilter);
+  document.getElementById('filter-member-divisi')?.addEventListener('change', applyFilter);
+  document.getElementById('filter-member-track')?.addEventListener('change', applyFilter);
 
   document.getElementById('search-alumni-input')?.addEventListener('input', (e) => {
     renderAlumni(e.target.value);
   });
 
+  // Action Buttons
+  document
+    .getElementById('btn-open-create-member')
+    ?.addEventListener('click', window.openCreateMember);
+  document
+    .getElementById('btn-open-import-excel')
+    ?.addEventListener('click', openImportExcelModal);
+
+  // Form Submissions
+  document.getElementById('member-form')?.addEventListener('submit', handleMemberFormSubmit);
+  document
+    .getElementById('btn-cancel-member-form')
+    ?.addEventListener('click', () => closeModal('member-form-modal'));
+  document
+    .getElementById('close-form-modal')
+    ?.addEventListener('click', () => closeModal('member-form-modal'));
+
+  // Delete Handlers
+  document
+    .getElementById('btn-confirm-delete')
+    ?.addEventListener('click', handleConfirmDelete);
+  document
+    .getElementById('btn-cancel-delete')
+    ?.addEventListener('click', () => closeModal('delete-confirm-modal'));
+
+  // Profile Modal Close Handlers
+  document
+    .getElementById('close-profile-modal')
+    ?.addEventListener('click', () => closeModal('member-profile-modal'));
+  document
+    .getElementById('close-profile-modal-btn')
+    ?.addEventListener('click', () => closeModal('member-profile-modal'));
+
+  // Import Excel Handlers
+  const dropzone = document.getElementById('excel-dropzone');
+  const fileInput = document.getElementById('excel-file-input');
+
+  dropzone?.addEventListener('click', () => fileInput?.click());
+  fileInput?.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+      handleExcelFileSelect(e.target.files[0]);
+    }
+  });
+
+  dropzone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('border-[#A78BFA]', 'bg-[#7C3AED]/10');
+  });
+
+  dropzone?.addEventListener('dragleave', () => {
+    dropzone.classList.remove('border-[#A78BFA]', 'bg-[#7C3AED]/10');
+  });
+
+  dropzone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('border-[#A78BFA]', 'bg-[#7C3AED]/10');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleExcelFileSelect(e.dataTransfer.files[0]);
+    }
+  });
+
+  document
+    .getElementById('import-excel-form')
+    ?.addEventListener('submit', handleImportExcelSubmit);
+  document
+    .getElementById('close-import-modal')
+    ?.addEventListener('click', () => closeModal('import-excel-modal'));
+  document
+    .getElementById('btn-cancel-import')
+    ?.addEventListener('click', () => closeModal('import-excel-modal'));
+
+  // Export CSV
   document.getElementById('btn-export-member')?.addEventListener('click', () => {
     if (!activeMembersList.length) {
       showToast('Tidak ada data anggota untuk diekspor.', 'error');
       return;
     }
-    let csv = 'Member ID,Nama,NIM,Program Studi,Email,Divisi,Role,Angkatan,Tanggal Masuk,Status\n';
-    activeMembersList.forEach(m => {
-      csv += `"${m.student_id || ''}","${m.full_name || ''}","${m.student_id || ''}","S1 Informatika","${m.email || ''}","${m.division || ''}","${m.role || ''}","${m.intake_period || ''}","${m.join_date || ''}","${m.status || ''}"\n`;
+    let csv =
+      'Member ID,NIM,Nama Lengkap,Program Studi,Semester,Email,No WhatsApp,Domisili,Divisi,Role,Angkatan,Bidang Riset,Status\n';
+    activeMembersList.forEach((m) => {
+      const tracksStr = (m.interest_track || []).join('; ');
+      csv += `"${m.member_id || ''}","${m.student_id || ''}","${m.full_name || ''}","${m.program_of_study || ''}","${m.semester || ''}","${m.email || ''}","${m.contact_info || ''}","${m.domicile_city || ''}","${m.division || ''}","${m.role || ''}","${m.intake_period || ''}","${tracksStr}","${m.status || ''}"\n`;
     });
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.setAttribute('href', url);
-    a.setAttribute('download', `data_anggota_ksm_aiot_${new Date().toISOString().slice(0, 10)}.csv`);
+    a.setAttribute(
+      'download',
+      `data_anggota_ksm_aiot_${new Date().toISOString().slice(0, 10)}.csv`
+    );
     a.click();
     showToast(`Berhasil mengekspor ${activeMembersList.length} data anggota!`, 'success');
   });
-
-  // Modal Close
-  document.getElementById('close-detail-modal')?.addEventListener('click', () => {
-    document.getElementById('member-detail-modal')?.classList.add('hidden');
-    document.getElementById('member-detail-modal')?.classList.remove('flex');
-  });
 });
-
-window.showMemberDetail = function(studentId) {
-  const m = activeMembersList.find(item => item.student_id === studentId);
-  if (!m) return;
-
-  const modal = document.getElementById('member-detail-modal');
-  if (!modal) return;
-
-  document.getElementById('detail-member-name').textContent = m.full_name || 'Anggota KSM';
-  document.getElementById('detail-member-nim').textContent = m.student_id || '-';
-  document.getElementById('detail-member-email').textContent = m.email || '-';
-  document.getElementById('detail-member-divisi').textContent = `${m.division} (${m.role || 'Anggota'})`;
-  document.getElementById('detail-member-angkatan').textContent = `Angkatan ${m.intake_period || '2024'}`;
-  document.getElementById('detail-member-status').textContent = m.status || 'Aktif';
-
-  const photoEl = document.getElementById('detail-member-photo');
-  if (photoEl) {
-    photoEl.src = m.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop';
-  }
-
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-  initIcons();
-};

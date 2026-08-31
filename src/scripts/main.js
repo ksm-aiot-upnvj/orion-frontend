@@ -69,12 +69,24 @@ function initStructureTabs() {
         if (target === 'all') {
           group.classList.remove('branch-muted');
           group.classList.add('branch-active');
-        } else if (branchName === 'root' || branchName === target) {
-          group.classList.remove('branch-muted');
-          group.classList.add('branch-active');
+        } else if (target === 'bph') {
+          // BPH Inti selected: Presidium (root) and BPH stay active
+          if (branchName === 'root' || branchName === 'bph') {
+            group.classList.remove('branch-muted');
+            group.classList.add('branch-active');
+          } else {
+            group.classList.remove('branch-active');
+            group.classList.add('branch-muted');
+          }
         } else {
-          group.classList.remove('branch-active');
-          group.classList.add('branch-muted');
+          // Divisi selected (riset / psdm / humas): ONLY the selected division lights up, Ketua & Wakil (root) become muted
+          if (branchName === target) {
+            group.classList.remove('branch-muted');
+            group.classList.add('branch-active');
+          } else {
+            group.classList.remove('branch-active');
+            group.classList.add('branch-muted');
+          }
         }
       });
 
@@ -324,13 +336,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mobile Menu Toggle
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
   const mobileMenu = document.getElementById('mobile-menu');
-  
+
   // Create a slide-down animation for the mobile menu
   if (mobileMenu) {
     mobileMenu.classList.add('transition-all', 'duration-300', 'origin-top', 'transform', 'scale-y-0', 'opacity-0', 'absolute', 'left-0', 'right-0', 'z-40');
     mobileMenu.classList.remove('hidden', 'md:hidden'); // We will use opacity and scale instead of display:none for smooth animation
   }
-  
+
   mobileMenuBtn?.addEventListener('click', () => {
     mobileMenuBtn.classList.toggle('open');
     if (mobileMenuBtn.classList.contains('open')) {
@@ -349,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', () => {
     if (!mainHeader) return;
     const currentScrollY = window.scrollY;
-    
+
     // Hide when scrolling down and past 100px
     if (currentScrollY > lastScrollY && currentScrollY > 100) {
       mainHeader.classList.add('-translate-y-full');

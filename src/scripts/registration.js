@@ -77,38 +77,121 @@ document.addEventListener('DOMContentLoaded', () => {
       angkatanInput.appendChild(option);
     }
   }
-  populateDynamicAngkatan();
+  // Helper: NIM Pattern Auto-Detection
+  // Pattern: [YY][10][PRODI_CODE][INCREMENT] (Total 10 digits)
+  // 510 -> S1 Sistem Informasi
+  // 511 -> S1 Informatika
+  // 512 -> D3 Sistem Informasi
+  // 513 -> S1 Sains Data
+  const digitCounter = document.getElementById('nim-digit-counter');
+  const detectionBadge = document.getElementById('nim-detection-badge');
+  const detectionText = document.getElementById('nim-detection-text');
 
-  // Smart Auto-detection from NIM (First 2 digits -> Angkatan, digits -> Prodi)
-  nimInput?.addEventListener('input', () => {
-    const rawNim = nimInput.value.trim();
-    if (rawNim.length >= 2) {
-      const prefixYear = '20' + rawNim.slice(0, 2);
-      const matchingOption = Array.from(angkatanInput?.options || []).find(opt => opt.value === prefixYear);
-      if (matchingOption && angkatanInput.value !== prefixYear) {
-        angkatanInput.value = prefixYear;
-        showToast(`Tahun angkatan otomatis terdeteksi: ${prefixYear}`, 'info');
+  function handleNimInput() {
+    // Only allow numbers
+    let rawNim = (nimInput.value || '').replace(/\D/g, '');
+    if (rawNim.length > 10) rawNim = rawNim.slice(0, 10);
+    nimInput.value = rawNim;
+
+    // Counter update
+    if (digitCounter) {
+      if (rawNim.length === 10) {
+        digitCounter.textContent = '10/10 digit (Valid)';
+        digitCounter.className = 'text-[10px] font-mono font-bold text-emerald-400';
+      } else {
+        digitCounter.textContent = `${rawNim.length}/10 digit`;
+        digitCounter.className = 'text-[10px] font-mono text-gray-400';
       }
     }
 
-    // Auto-detect prodi UPNVJ if match prefix (2410511... / 2410512...)
-    if (rawNim.length >= 7 && prodiInput) {
-      if (rawNim.includes('10511') || rawNim.includes('511')) {
-        prodiInput.value = 'S1 Informatika';
-      } else if (rawNim.includes('10512') || rawNim.includes('512')) {
-        prodiInput.value = 'S1 Sistem Informasi';
-      } else if (rawNim.includes('10513') || rawNim.includes('513')) {
-        prodiInput.value = 'S1 Sains Data';
-      } else if (rawNim.includes('00511') || rawNim.includes('051')) {
-        prodiInput.value = 'D3 Sistem Informasi';
+    // Auto-populate UPNVJ Email: NIM@mahasiswa.upnvj.ac.id
+    if (rawNim.length > 0 && emailInput) {
+      emailInput.value = `${rawNim}@mahasiswa.upnvj.ac.id`;
+    }
+
+    // Detection when length >= 2 for angkatan and length >= 7 for prodi
+    let detectedAngkatan = null;
+    let detectedProdi = null;
+
+    if (rawNim.length >= 2) {
+      const yearPrefix = rawNim.slice(0, 2);
+      const fullYear = `20${yearPrefix}`;
+      detectedAngkatan = fullYear;
+
+      let matchingOption = Array.from(angkatanInput?.options || []).find((opt) => opt.value === fullYear);
+      if (!matchingOption && angkatanInput) {
+        const newOpt = document.createElement('option');
+        newOpt.value = fullYear;
+        newOpt.className = 'bg-[#240d42] text-white';
+        newOpt.textContent = `${fullYear} (Angkatan '${yearPrefix})`;
+        angkatanInput.appendChild(newOpt);
+      }
+      if (angkatanInput) angkatanInput.value = fullYear;
+    }
+
+    if (rawNim.length >= 7) {
+      // Format is: YY (2) + 10 (2) + PRODI (3) -> digits at index 4..6
+      const prodiCode = rawNim.slice(4, 7);
+      if (prodiCode === '510') {
+        detectedProdi = 'S1 Sistem Informasi';
+      } else if (prodiCode === '511') {
+        detectedProdi = 'S1 Informatika';
+      } else if (prodiCode === '512') {
+        detectedProdi = 'D3 Sistem Informasi';
+      } else if (prodiCode === '513') {
+        detectedProdi = 'S1 Sains Data';
+      }
+
+      if (detectedProdi && prodiInput) {
+        prodiInput.value = detectedProdi;
+      }
+    }
+
+    // Feedback Badge
+    if (detectionBadge && detectionText) {
+      if (rawNim.length === 10 && detectedProdi) {
+        detectionBadge.classList.remove('hidden');
+        detectionText.innerHTML = `Terdeteksi: <strong class="text-white">${detectedProdi}</strong> (Angkatan <strong class="text-white">${detectedAngkatan}</strong>)`;
+      } else if (rawNim.length >= 7 && detectedProdi) {
+        detectionBadge.classList.remove('hidden');
+        detectionText.innerHTML = `Terdeteksi: <strong class="text-white">${detectedProdi}</strong>`;
+      } else if (rawNim.length === 10 && !detectedProdi) {
+        detectionBadge.classList.remove('hidden');
+        detectionText.innerHTML = `<span class="text-amber-300">Format kode prodi UPNVJ tidak dikenali (digit 5-7 bukan 510/511/512/513)</span>`;
+      } else {
+        detectionBadge.classList.add('hidden');
       }
     }
 
     updateLiveCard();
-  });
+  }
 
-  // Handle Photo File Upload & Base64 Conversion
-  photoFileInput?.addEventListener('change', (e) => {
+  nimInput?.addEventListener('input', handleNimInput);
+  nimInput?.addEventListener('paste', () => setTimeout(handleNimInput, 50));
+
+  let uploadedPhotoPath = '';
+
+  const consentCheckbox = document.getElementById('input-consent');
+  const submitBtn = document.getElementById('btn-submit-reg');
+
+  function updateSubmitButtonState() {
+    if (!submitBtn) return;
+    if (consentCheckbox && !consentCheckbox.checked) {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      submitBtn.classList.remove('hover:bg-opacity-90');
+    } else {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      submitBtn.classList.add('hover:bg-opacity-90');
+    }
+  }
+
+  consentCheckbox?.addEventListener('change', updateSubmitButtonState);
+  updateSubmitButtonState();
+
+  // Handle Photo File Upload & Backend Storage Pipeline (EXIF Stripped, WebP)
+  photoFileInput?.addEventListener('change', async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -119,18 +202,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (photoFilenameLabel) {
-      photoFilenameLabel.textContent = file.name;
+      photoFilenameLabel.textContent = `Memproses & sanitasi ${file.name}...`;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      uploadedPhotoBase64 = event.target.result;
-      if (cardPhoto) {
-        cardPhoto.src = uploadedPhotoBase64;
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${API_BASE_URL}/uploads/avatar`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        uploadedPhotoPath = data.path; // 'avatars/<uuid4>.webp'
+        if (cardPhoto) {
+          cardPhoto.src = `${API_BASE_URL}/${data.path}`;
+        }
+        if (photoFilenameLabel) {
+          photoFilenameLabel.textContent = `✓ ${file.name} (WebP / EXIF Stripped)`;
+          photoFilenameLabel.classList.add('text-emerald-300');
+        }
+        showToast('Foto berhasil diproses & dibersihkan dari metadata EXIF (UU PDP)!', 'success');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        showToast(`Gagal memproses foto: ${err.detail || 'Format file tidak didukung'}`, 'error');
       }
-      showToast('Foto berhasil dimuat ke kartu preview!', 'info');
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      console.error(err);
+      showToast('Gagal terhubung ke storage server backend.', 'error');
+    }
   });
 
   // Handle CV / Resume File Upload
@@ -149,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cvFilenameLabel.textContent = `✓ ${file.name}`;
       cvFilenameLabel.classList.add('text-emerald-300');
     }
-    showToast(`Berkas CV "${file.name}" siap diunggah.`, 'info');
+    showToast(`Berkas CV "${file.name}" siap dilampirkan.`, 'info');
   });
 
   // Live Mirror to Member Card
@@ -157,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cardName) cardName.textContent = nameInput?.value.trim() || 'Nama Mahasiswa';
     if (cardNim) cardNim.textContent = nimInput?.value.trim() || '2410511088';
     if (cardProdi) cardProdi.textContent = prodiInput?.value || 'S1 Informatika';
-    if (cardTrack) cardTrack.textContent = trackInput?.value || 'Hardware & IoT';
+    if (cardTrack) cardTrack.textContent = trackInput?.value || 'IoT Embedded';
   }
 
   [nimInput, nameInput, prodiInput, trackInput].forEach(el => {
@@ -169,17 +270,28 @@ document.addEventListener('DOMContentLoaded', () => {
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const submitBtn = form.querySelector('button[type="submit"]');
+    if (consentCheckbox && !consentCheckbox.checked) {
+      showToast('Anda harus menyetujui pernyataan dan persetujuan pengolahan data untuk melanjutkan!', 'warning');
+      consentCheckbox.focus();
+      return;
+    }
+
     const originalBtnText = submitBtn?.innerHTML || 'Kirim Formulir Pendaftaran';
 
-    const photoPayload = uploadedPhotoBase64 || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop';
     let motivationText = motivationInput?.value.trim() || '';
     if (uploadedCvName) {
       motivationText += ` [Lampiran Berkas: ${uploadedCvName}]`;
     }
 
+    const rawNim = nimInput.value.trim().replace(/\D/g, '');
+    if (rawNim.length !== 10) {
+      showToast('NIM Mahasiswa harus terdiri dari tepat 10 digit angka!', 'error');
+      nimInput.focus();
+      return;
+    }
+
     const payload = {
-      student_id: nimInput.value.trim(),
+      student_id: rawNim,
       full_name: nameInput.value.trim(),
       program_of_study: prodiInput.value,
       email: emailInput.value.trim(),
@@ -187,7 +299,8 @@ document.addEventListener('DOMContentLoaded', () => {
       intake_period: angkatanInput.value,
       interest_track: trackInput.value,
       motivation: motivationText,
-      photo: photoPayload
+      photo: uploadedPhotoPath || null,
+      consent_given: true
     };
 
     try {

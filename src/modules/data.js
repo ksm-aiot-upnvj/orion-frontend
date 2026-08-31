@@ -1,4 +1,17 @@
-// Shared mock data for Alumni, Inventory, Finance, and Archive in KSM AIoT
+// Shared mock data & official Backend Enums for KSM AIoT Orion
+
+export const RESEARCH_FIELDS = [
+  { value: 'IoT Embedded', label: 'IoT Embedded', desc: 'ESP32, STM32, Sensor & Robotika, LoRa' },
+  { value: 'AI', label: 'Artificial Intelligence (AI)', desc: 'Computer Vision, Machine Learning, NLP, RAG' },
+  { value: 'Software Engineer & Cloud', label: 'Software Engineer & Cloud', desc: 'FastAPI, Modern Web App, Cloud Infrastructure' }
+];
+
+export const STUDY_PROGRAMS = [
+  { value: 'S1 Informatika', code: '511' },
+  { value: 'S1 Sistem Informasi', code: '510' },
+  { value: 'S1 Sains Data', code: '513' },
+  { value: 'D3 Sistem Informasi', code: '512' }
+];
 
 export const initialAlumniData = [
   {
@@ -93,11 +106,11 @@ export const initialProjectsData = [
     id: 'smart-greenhouse',
     title: 'Smart Greenhouse',
     category: 'iot',
-    categoryLabel: 'IoT & Precision Agriculture',
-    description: 'Solusi mikroklimat cerdas berbasis Wireless Sensor Networks (WSN) dan logika Fuzzy untuk otomasi presisi penyiraman tanaman berdasarkan kelembapan tanah, suhu, dan intensitas cahaya matahari.',
+    categoryLabel: 'IoT & Smart Agriculture',
+    description: 'Solusi mikroklimat cerdas berbasis logika Fuzzy untuk otomasi presisi penyiraman tanaman berdasarkan kelembapan tanah, suhu, dan intensitas cahaya matahari.',
     image: '/greenhouse.jpeg',
-    repoUrl: 'https://github.com/ksm-aiot-upnvj/smart-greenhouse',
-    techStack: ['ESP32', 'WSN', 'Fuzzy Logic', 'Web Dashboard', 'LoRaWAN', 'Actuators']
+    repoUrl: 'https://github.com/ksm-aiot-upnvj/Greenhouse-Web-App',
+    techStack: ['ESP32', 'Fuzzy Logic', 'Web Dashboard', 'Actuators']
   },
   {
     id: 'nexo',

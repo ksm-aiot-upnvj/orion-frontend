@@ -60,12 +60,13 @@
       <div class="hidden md:flex items-center space-x-3">
         <div id="desktop-login-area">
           <button
-            class="open-login-modal text-xs font-semibold px-3.5 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 border border-[#561F99] transition-all flex items-center space-x-2">
-            <i data-lucide="log-in" class="w-4 h-4 text-gray-400"></i>
+            class="open-login-modal h-9 px-4 rounded-xl text-xs font-semibold text-gray-300 hover:text-white bg-[#1E0A38]/80 hover:bg-[#280E48] border border-[#561F99] transition-all inline-flex items-center justify-center space-x-2 shadow-sm">
+            <i data-lucide="log-in" class="w-4 h-4 text-purple-300"></i>
             <span>Login Pengurus</span>
           </button>
         </div>
-        <a href="/pages/registration.html" class="btn-primary text-xs py-2 px-4 flex items-center space-x-2">
+        <a href="/pages/registration.html"
+          class="h-9 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#9B5CE8] to-[#7C3AED] hover:from-[#A86DF0] hover:to-[#8B5CF6] border border-[#9B5CE8] transition-all inline-flex items-center justify-center space-x-2 shadow-md hover:shadow-purple-500/25">
           <i data-lucide="user-plus" class="w-4 h-4 text-white"></i>
           <span>Daftar Anggota</span>
         </a>
@@ -106,7 +107,8 @@
   <!-- ============================================================
        1. HERO SECTION (Continuous Flow & Official Tagline)
        ============================================================ -->
-  <section class="public-hero min-h-screen flex flex-col justify-center pt-24 pb-20 lg:pt-32 lg:pb-24 relative overflow-hidden">
+  <section
+    class="public-hero min-h-screen flex flex-col justify-center pt-24 pb-20 lg:pt-32 lg:pb-24 relative overflow-hidden">
 
     <!-- Concentric Sonar Signal Rings (Matching KSM AIoT Official Brand Motif) -->
     <div
@@ -136,8 +138,8 @@
 
       <!-- Subheadline -->
       <p class="text-base sm:text-lg text-gray-300 leading-relaxed max-w-3xl mx-auto mt-6">
-        Portal resmi dan <strong>Sistem Manajemen KSM AIoT</strong>. Wadah kolaborasi riset rekayasa perangkat keras
-        IoT, kecerdasan buatan terapan, dan ekosistem otomasi operasional mahasiswa Fakultas Ilmu Komputer UPNVJ.
+        <strong>KSM AIoT</strong> &mdash; Kelompok riset mahasiswa Fakultas Ilmu Komputer UPNVJ. Berfokus pada riset
+        <strong>Artificial Intelligence</strong> dan <strong>Internet of Things</strong>.
       </p>
 
       <!-- Action Buttons (High Contrast, Bold Text, Ambient Hover) -->
@@ -201,7 +203,7 @@
           </div>
           <h3 class="text-base font-bold text-white tracking-tight">Riset Terapan Perangkat Keras</h3>
           <p class="text-xs text-gray-400 leading-relaxed">
-            Eksplorasi sensor terdistribusi, komunikasi LoRaWAN & MQTT, serta integrasi mikrokontroler berdaya rendah
+            Eksplorasi sensor terdistribusi, protokol komunikasi, serta integrasi mikrokontroler berdaya rendah
             untuk monitoring lingkungan presisi.
           </p>
         </div>
@@ -260,11 +262,11 @@
           </div>
           <h3 class="text-lg font-bold text-white">Hardware & Embedded</h3>
           <p class="text-xs text-gray-400 leading-relaxed">
-            Perancangan sirkuit mikrokontroler (ESP32, STM32, Arduino), akuisisi data sensor real-time, protokol
-            transmisi MQTT, LoRaWAN, dan FreeRTOS.
+            Perancangan sirkuit mikrokontroler (ESP32, Arduino), data sensor real-time, protokol
+            komunikasi.
           </p>
           <div class="pt-3 border-t border-[#561F99] text-[11px] font-mono text-gray-400 font-medium">
-            #ESP32 #SensorArray #MQTT #FreeRTOS
+            #ESP32 #Sensor #ProtokolKomunikasi
           </div>
         </div>
 
@@ -280,7 +282,7 @@
             pgvector, dan analitik cerdas.
           </p>
           <div class="pt-3 border-t border-[#561F99] text-[11px] font-mono text-gray-400 font-medium">
-            #PyTorch #YOLOv8 #LangChain #RAG
+            #PyTorch #LangChain #RAG
           </div>
         </div>
 
@@ -317,7 +319,8 @@
           Struktur Kepengurusan KSM AIoT
         </h2>
         <p class="text-[#E9D8FD] text-xs sm:text-sm mt-2 max-w-2xl mx-auto">
-          Bagan komando dan koordinasi pengurus KSM AIoT UPNVJ Periode 2025/2026. Klik filter jabatan untuk menyorot <em>(highlight)</em> alur cabang tertentu.
+          Bagan komando dan koordinasi pengurus KSM AIoT UPNVJ Periode 2025/2026. Klik filter jabatan untuk menyorot
+          <em>(highlight)</em> alur cabang tertentu.
         </p>
 
         <!-- Structure Filter Tabs -->
@@ -328,7 +331,7 @@
           </button>
           <button data-target="bph"
             class="struct-tab-btn px-4 py-2 rounded-xl text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#280E48] hover:text-white border border-[#561F99] transition-all shadow-sm">
-            BPH Inti
+            BPH
           </button>
           <button data-target="riset"
             class="struct-tab-btn px-4 py-2 rounded-xl text-xs font-medium bg-[#1E0A38] text-[#C9A4F6] hover:bg-[#280E48] hover:text-white border border-[#561F99] transition-all shadow-sm">
@@ -344,35 +347,29 @@
           </button>
         </div>
       </div>
-
-      <!-- Mobile Drag & Pan Helper Pill -->
-      <div class="flex items-center justify-center space-x-2 text-xs font-mono text-[#C9A4F6] bg-[#1E0A38]/90 border border-[#561F99] rounded-full px-4 py-1.5 mx-auto w-fit mb-6 shadow-sm">
-        <i data-lucide="move-horizontal" class="w-3.5 h-3.5 text-[#9B5CE8] animate-pulse"></i>
-        <span>Geser / Drag kanvas untuk menjelajah seluruh bagan hierarki</span>
-      </div>
-
       <!-- Tree Canvas Container (Pan/Scroll on Mobile & Desktop) -->
       <div id="tree-canvas-container"
         class="w-full overflow-x-auto pb-12 pt-6 no-scrollbar cursor-grab active:cursor-grabbing select-none touch-pan-x rounded-2xl bg-[#090312]/60 border border-[#561F99]/40 p-4 sm:p-8 backdrop-blur-xs">
-        
+
         <div id="tree-canvas" class="min-w-[1100px] max-w-6xl mx-auto flex flex-col items-center">
 
           <!-- 1. KETUA & WAKIL KETUA (PRESIDIUM STACK) -->
           <div class="tree-branch-group relative flex flex-col items-center z-20" data-branch="root">
             <!-- Ketua Card -->
             <div class="tree-node-card border-accent-presidium w-64 pt-6 pb-4 px-5 text-center relative group">
-              <div class="tree-avatar-bubble mx-auto -mt-10 mb-2 border-2 border-[#9B5CE8] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+              <div
+                class="tree-avatar-bubble mx-auto -mt-10 mb-2 border-2 border-[#9B5CE8] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
                 <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop"
                   alt="Ketua" class="w-full h-full object-cover" />
               </div>
-              <div class="absolute top-2.5 left-3 text-[10px] font-mono text-purple-300 bg-[#301057] px-2 py-0.5 rounded border border-[#561F99] font-bold">
+              <div
+                class="absolute top-2.5 left-3 text-[10px] font-mono text-purple-300 bg-[#301057] px-2 py-0.5 rounded border border-[#561F99] font-bold">
                 01
               </div>
               <h4 class="text-sm font-bold text-white tracking-tight group-hover:text-[#C9A4F6] transition-colors">
                 Dzulfikri Adjmal
               </h4>
               <p class="text-xs font-semibold text-[#E9D8FD] mt-0.5">Ketua KSM AIoT</p>
-              <p class="text-[10px] font-mono text-purple-300/70 mt-1">Informatika UPNVJ 🇮🇩</p>
             </div>
 
             <!-- Vertical Connector to Wakil Ketua -->
@@ -380,18 +377,19 @@
 
             <!-- Wakil Ketua Card -->
             <div class="tree-node-card border-accent-presidium w-64 pt-6 pb-4 px-5 text-center relative group">
-              <div class="tree-avatar-bubble mx-auto -mt-10 mb-2 border-2 border-[#9B5CE8] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+              <div
+                class="tree-avatar-bubble mx-auto -mt-10 mb-2 border-2 border-[#9B5CE8] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
                 <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop"
                   alt="Wakil Ketua" class="w-full h-full object-cover" />
               </div>
-              <div class="absolute top-2.5 left-3 text-[10px] font-mono text-purple-300 bg-[#301057] px-2 py-0.5 rounded border border-[#561F99] font-bold">
+              <div
+                class="absolute top-2.5 left-3 text-[10px] font-mono text-purple-300 bg-[#301057] px-2 py-0.5 rounded border border-[#561F99] font-bold">
                 02
               </div>
               <h4 class="text-sm font-bold text-white tracking-tight group-hover:text-[#C9A4F6] transition-colors">
                 Adinda Rizki Sya'bana Diva
               </h4>
               <p class="text-xs font-semibold text-[#E9D8FD] mt-0.5">Wakil Ketua KSM AIoT</p>
-              <p class="text-[10px] font-mono text-purple-300/70 mt-1">Sistem Informasi UPNVJ 🇮🇩</p>
             </div>
 
             <!-- Vertical Connector down from Wakil Ketua to BPH Fork -->
@@ -400,7 +398,7 @@
 
           <!-- 2. BPH INTI FORK (SEKRETARIS & BENDAHARA WINGS) -->
           <div class="w-full max-w-4xl relative z-10 my-0">
-            
+
             <!-- Horizontal Fork Bar to Sekretaris & Bendahara -->
             <div class="relative flex items-center justify-between px-16">
               <!-- Horizontal line spanning left to right -->
@@ -410,36 +408,43 @@
               <div class="tree-branch-group flex flex-col items-center relative z-10" data-branch="bph">
                 <div class="w-0.5 h-5 bg-[#561F99]"></div>
                 <div class="tree-node-card border-accent-bph w-60 pt-6 pb-3.5 px-4 text-center relative group">
-                  <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#C084FC] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
-                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop"
+                  <div
+                    class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#C084FC] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                    <img
+                      src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop"
                       alt="Sekretaris" class="w-full h-full object-cover" />
                   </div>
-                  <div class="absolute top-2 left-2 text-[9px] font-mono text-purple-300 bg-[#301057] px-1.5 py-0.5 rounded border border-[#561F99] font-bold">
+                  <div
+                    class="absolute top-2 left-2 text-[9px] font-mono text-purple-300 bg-[#301057] px-1.5 py-0.5 rounded border border-[#561F99] font-bold">
                     BPH
                   </div>
-                  <h5 class="text-xs font-bold text-white group-hover:text-[#C084FC] transition-colors">Syahla Nada Afifah</h5>
-                  <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Sekretaris Umum</p>
-                  <p class="text-[9px] font-mono text-purple-300/70 mt-0.5">Informatika UPNVJ</p>
+                  <h5 class="text-xs font-bold text-white group-hover:text-[#C084FC] transition-colors">Syahla Nada
+                    Afifah</h5>
+                  <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Sekretaris</p>
                 </div>
               </div>
 
               <!-- Central Trunk Continuing Down -->
-              <div class="w-0.5 h-28 bg-[#561F99] self-stretch mx-auto absolute left-1/2 -translate-x-1/2 top-0 z-0"></div>
+              <div class="w-0.5 h-28 bg-[#561F99] self-stretch mx-auto absolute left-1/2 -translate-x-1/2 top-0 z-0">
+              </div>
 
               <!-- Right Branch: Bendahara -->
               <div class="tree-branch-group flex flex-col items-center relative z-10" data-branch="bph">
                 <div class="w-0.5 h-5 bg-[#561F99]"></div>
                 <div class="tree-node-card border-accent-bph w-60 pt-6 pb-3.5 px-4 text-center relative group">
-                  <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#C084FC] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
-                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=300&auto=format&fit=crop"
+                  <div
+                    class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#C084FC] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                    <img
+                      src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=300&auto=format&fit=crop"
                       alt="Bendahara" class="w-full h-full object-cover" />
                   </div>
-                  <div class="absolute top-2 left-2 text-[9px] font-mono text-purple-300 bg-[#301057] px-1.5 py-0.5 rounded border border-[#561F99] font-bold">
+                  <div
+                    class="absolute top-2 left-2 text-[9px] font-mono text-purple-300 bg-[#301057] px-1.5 py-0.5 rounded border border-[#561F99] font-bold">
                     BPH
                   </div>
-                  <h5 class="text-xs font-bold text-white group-hover:text-[#C084FC] transition-colors">Aniqah Raniah R.L.</h5>
-                  <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Bendahara Umum</p>
-                  <p class="text-[9px] font-mono text-purple-300/70 mt-0.5">Sistem Informasi UPNVJ</p>
+                  <h5 class="text-xs font-bold text-white group-hover:text-[#C084FC] transition-colors">Aniqah Raniah
+                    R.L.</h5>
+                  <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Bendahara</p>
                 </div>
               </div>
             </div>
@@ -462,22 +467,27 @@
                  ========================================= -->
             <div class="tree-branch-group flex flex-col items-center" data-branch="riset">
               <div class="w-0.5 h-6 bg-[#561F99]"></div>
-              
+
               <!-- Division Pill Badge -->
-              <div class="px-3.5 py-1 rounded-full bg-[#0284C7]/20 border border-[#38BDF8]/50 text-[11px] font-mono font-bold text-[#38BDF8] mb-5 shadow-sm">
-                Divisi Akademik & Riset &bull; 6
+              <div
+                class="px-3.5 py-1 rounded-full bg-[#0284C7]/20 border border-[#38BDF8]/50 text-[11px] font-mono font-bold text-[#38BDF8] mb-5 shadow-sm">
+                Divisi Akademik & Riset
               </div>
 
               <!-- Kadiv Card -->
               <div class="tree-node-card border-accent-riset w-full pt-6 pb-3.5 px-4 text-center relative group mb-4">
-                <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#38BDF8] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
-                  <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop"
+                <div
+                  class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#38BDF8] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                  <img
+                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop"
                     alt="Kadiv Riset" class="w-full h-full object-cover" />
                 </div>
-                <div class="absolute top-2 left-2 text-[9px] font-mono text-[#38BDF8] bg-[#0c243c] px-1.5 py-0.5 rounded border border-[#38BDF8]/40 font-bold">
+                <div
+                  class="absolute top-2 left-2 text-[9px] font-mono text-[#38BDF8] bg-[#0c243c] px-1.5 py-0.5 rounded border border-[#38BDF8]/40 font-bold">
                   Kadiv
                 </div>
-                <h5 class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Rahman Ilyas Al Kahfi</h5>
+                <h5 class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Rahman Ilyas Al
+                  Kahfi</h5>
                 <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Kepala Divisi Riset</p>
                 <p class="text-[9px] font-mono text-purple-300/70 mt-0.5">Informatika UPNVJ</p>
               </div>
@@ -488,73 +498,93 @@
               <!-- Staff Stack (5 Members) -->
               <div class="w-full space-y-2">
                 <!-- Staff 1 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
                       1
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Bima Saputra</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Bima Saputra
+                      </p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff Riset</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">AIoT</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">AIoT</span>
                 </div>
 
                 <!-- Staff 2 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
                       2
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Stenly Christian</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Stenly
+                        Christian</p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff Riset</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Embedded</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Embedded</span>
                 </div>
 
                 <!-- Staff 3 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
                       3
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Ihsan Naufal Ikhwansyah</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Ihsan Naufal
+                        Ikhwansyah</p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff Riset</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">AIoT</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">AIoT</span>
                 </div>
 
                 <!-- Staff 4 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
                       4
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">M. Naufal Alif Athallah</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">M. Naufal
+                        Alif Athallah</p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff Riset</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">AIoT</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">AIoT</span>
                 </div>
 
                 <!-- Staff 5 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#38BDF8]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#38BDF8]/50 flex items-center justify-center text-[10px] font-bold text-[#38BDF8]">
                       5
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Hanif Naundra Arsantyo</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#38BDF8] transition-colors">Hanif Naundra
+                        Arsantyo</p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff Riset</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">AIoT</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">AIoT</span>
                 </div>
               </div>
             </div>
@@ -564,22 +594,27 @@
                  ========================================= -->
             <div class="tree-branch-group flex flex-col items-center" data-branch="psdm">
               <div class="w-0.5 h-6 bg-[#561F99]"></div>
-              
+
               <!-- Division Pill Badge -->
-              <div class="px-3.5 py-1 rounded-full bg-[#166534]/20 border border-[#4ADE80]/50 text-[11px] font-mono font-bold text-[#4ADE80] mb-5 shadow-sm">
-                Divisi PSDM &bull; 6
+              <div
+                class="px-3.5 py-1 rounded-full bg-[#166534]/20 border border-[#4ADE80]/50 text-[11px] font-mono font-bold text-[#4ADE80] mb-5 shadow-sm">
+                Divisi PSDM
               </div>
 
               <!-- Kadiv Card -->
               <div class="tree-node-card border-accent-psdm w-full pt-6 pb-3.5 px-4 text-center relative group mb-4">
-                <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#4ADE80] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
-                  <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=300&auto=format&fit=crop"
+                <div
+                  class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#4ADE80] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                  <img
+                    src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=300&auto=format&fit=crop"
                     alt="Kadiv PSDM" class="w-full h-full object-cover" />
                 </div>
-                <div class="absolute top-2 left-2 text-[9px] font-mono text-[#4ADE80] bg-[#0e301d] px-1.5 py-0.5 rounded border border-[#4ADE80]/40 font-bold">
+                <div
+                  class="absolute top-2 left-2 text-[9px] font-mono text-[#4ADE80] bg-[#0e301d] px-1.5 py-0.5 rounded border border-[#4ADE80]/40 font-bold">
                   Kadiv
                 </div>
-                <h5 class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Nicolas Debrito</h5>
+                <h5 class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Nicolas Debrito
+                </h5>
                 <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Kepala Divisi PSDM</p>
                 <p class="text-[9px] font-mono text-purple-300/70 mt-0.5">Informatika UPNVJ</p>
               </div>
@@ -590,73 +625,93 @@
               <!-- Staff Stack (5 Members) -->
               <div class="w-full space-y-2">
                 <!-- Staff 1 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
                       1
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Septi Astuti</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Septi Astuti
+                      </p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff PSDM</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
                 </div>
 
                 <!-- Staff 2 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
                       2
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Ramadhania</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Ramadhania
+                      </p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff PSDM</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
                 </div>
 
                 <!-- Staff 3 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
                       3
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Farrel Shanrui Fikri</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Farrel
+                        Shanrui Fikri</p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff PSDM</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
                 </div>
 
                 <!-- Staff 4 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
                       4
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Farel Muhammad Nelwan</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Farel
+                        Muhammad Nelwan</p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff PSDM</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
                 </div>
 
                 <!-- Staff 5 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#4ADE80]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#4ADE80]/50 flex items-center justify-center text-[10px] font-bold text-[#4ADE80]">
                       5
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Levianto Adhigana Putra</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#4ADE80] transition-colors">Levianto
+                        Adhigana Putra</p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff PSDM</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kaderisasi</span>
                 </div>
               </div>
             </div>
@@ -666,22 +721,27 @@
                  ========================================= -->
             <div class="tree-branch-group flex flex-col items-center" data-branch="humas">
               <div class="w-0.5 h-6 bg-[#561F99]"></div>
-              
+
               <!-- Division Pill Badge -->
-              <div class="px-3.5 py-1 rounded-full bg-[#9A3412]/20 border border-[#FB923C]/50 text-[11px] font-mono font-bold text-[#FB923C] mb-5 shadow-sm">
-                Divisi Humas & Multimedia &bull; 5
+              <div
+                class="px-3.5 py-1 rounded-full bg-[#9A3412]/20 border border-[#FB923C]/50 text-[11px] font-mono font-bold text-[#FB923C] mb-5 shadow-sm">
+                Divisi Humas & Multimedia
               </div>
 
               <!-- Kadiv Card -->
               <div class="tree-node-card border-accent-humas w-full pt-6 pb-3.5 px-4 text-center relative group mb-4">
-                <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#FB923C] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
-                  <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=300&auto=format&fit=crop"
+                <div
+                  class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#FB923C] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                  <img
+                    src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=300&auto=format&fit=crop"
                     alt="Kadiv Humas" class="w-full h-full object-cover" />
                 </div>
-                <div class="absolute top-2 left-2 text-[9px] font-mono text-[#FB923C] bg-[#3a1d0d] px-1.5 py-0.5 rounded border border-[#FB923C]/40 font-bold">
+                <div
+                  class="absolute top-2 left-2 text-[9px] font-mono text-[#FB923C] bg-[#3a1d0d] px-1.5 py-0.5 rounded border border-[#FB923C]/40 font-bold">
                   Kadiv
                 </div>
-                <h5 class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Yusuf Martinus Arief</h5>
+                <h5 class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Yusuf Martinus
+                  Arief</h5>
                 <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Kepala Divisi Humas</p>
                 <p class="text-[9px] font-mono text-purple-300/70 mt-0.5">Sistem Informasi UPNVJ</p>
               </div>
@@ -692,59 +752,57 @@
               <!-- Staff Stack (4 Members) -->
               <div class="w-full space-y-2">
                 <!-- Staff 1 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#FB923C]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#FB923C]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#FB923C]/50 flex items-center justify-center text-[10px] font-bold text-[#FB923C]">
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#FB923C]/50 flex items-center justify-center text-[10px] font-bold text-[#FB923C]">
                       1
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Alfred Yosua</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Alfred Yosua
+                      </p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff Humas</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Media</span>
-                </div>
-
-                <!-- Staff 2 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#FB923C]/70 py-2.5 px-3.5 flex items-center justify-between group">
-                  <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#FB923C]/50 flex items-center justify-center text-[10px] font-bold text-[#FB923C]">
-                      2
-                    </div>
-                    <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Muhammad Farid</p>
-                      <p class="text-[10px] text-purple-200/70 font-mono">Staff Humas</p>
-                    </div>
-                  </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Desain</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Media</span>
                 </div>
 
                 <!-- Staff 3 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#FB923C]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#FB923C]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#FB923C]/50 flex items-center justify-center text-[10px] font-bold text-[#FB923C]">
-                      3
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#FB923C]/50 flex items-center justify-center text-[10px] font-bold text-[#FB923C]">
+                      2
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Raya Destrya Inamori</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Raya Destrya
+                        Inamori</p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff Humas</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kemitraan</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Kemitraan</span>
                 </div>
 
                 <!-- Staff 4 -->
-                <div class="tree-node-card border border-[#561F99]/60 hover:border-[#FB923C]/70 py-2.5 px-3.5 flex items-center justify-between group">
+                <div
+                  class="tree-node-card border border-[#561F99]/60 hover:border-[#FB923C]/70 py-2.5 px-3.5 flex items-center justify-between group">
                   <div class="flex items-center space-x-2.5">
-                    <div class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#FB923C]/50 flex items-center justify-center text-[10px] font-bold text-[#FB923C]">
-                      4
+                    <div
+                      class="w-7 h-7 rounded-full bg-[#1E0A38] border border-[#FB923C]/50 flex items-center justify-center text-[10px] font-bold text-[#FB923C]">
+                      3
                     </div>
                     <div class="text-left">
-                      <p class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Yoram Messiah Kaliey</p>
+                      <p class="text-xs font-bold text-white group-hover:text-[#FB923C] transition-colors">Yoram Messiah
+                        Kaliey</p>
                       <p class="text-[10px] text-purple-200/70 font-mono">Staff Humas</p>
                     </div>
                   </div>
-                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Dokumentasi</span>
+                  <span
+                    class="text-[9px] font-mono px-2 py-0.5 rounded bg-[#090312] text-gray-400 border border-[#561F99]">Dokumentasi</span>
                 </div>
               </div>
             </div>

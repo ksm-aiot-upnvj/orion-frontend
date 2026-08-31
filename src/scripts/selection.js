@@ -135,11 +135,18 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTable();
   }
 
+  function getNormalizedStatus(status) {
+    const s = (status || '').toLowerCase();
+    if (s === 'accepted' || s === 'approved') return 'Accepted';
+    if (s === 'rejected') return 'Rejected';
+    return 'Pending';
+  }
+
   function renderStats() {
     const total = registrationsList.length;
-    const pending = registrationsList.filter(r => r.status === 'PENDING').length;
-    const approved = registrationsList.filter(r => r.status === 'APPROVED').length;
-    const rejected = registrationsList.filter(r => r.status === 'REJECTED').length;
+    const pending = registrationsList.filter(r => getNormalizedStatus(r.status) === 'Pending').length;
+    const approved = registrationsList.filter(r => getNormalizedStatus(r.status) === 'Accepted').length;
+    const rejected = registrationsList.filter(r => getNormalizedStatus(r.status) === 'Rejected').length;
 
     if (statTotal) statTotal.textContent = total;
     if (statPending) statPending.textContent = pending;
@@ -150,11 +157,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderTable() {
     if (!tbody) return;
     const search = searchInput?.value.toLowerCase().trim() || '';
-    const statusFilter = filterStatusSelect?.value || 'all';
+    const statusFilter = (filterStatusSelect?.value || 'all').toLowerCase();
 
     const filtered = registrationsList.filter(r => {
       const matchSearch = (r.full_name || '').toLowerCase().includes(search) || (r.student_id || '').toLowerCase().includes(search);
-      const matchStatus = statusFilter === 'all' || r.status === statusFilter;
+      const rNorm = getNormalizedStatus(r.status).toLowerCase();
+      const matchStatus = statusFilter === 'all' || rNorm === statusFilter || (statusFilter === 'approved' && rNorm === 'accepted');
       return matchSearch && matchStatus;
     });
 
@@ -163,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <tr>
           <td colspan="8" class="text-center py-10 text-gray-500 font-mono text-xs">
             <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 text-gray-400"></i>
-            <span>Belum ada berkas calon anggota yang terdaftar di database.</span>
+            <span>Tidak ada berkas calon anggota yang sesuai dengan filter.</span>
           </td>
         </tr>
       `;
@@ -171,17 +179,29 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    function resolvePhotoUrl(photo, defaultSeed = 'kandidat') {
+      if (!photo || photo === '-' || photo === 'null') {
+        return `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(defaultSeed)}&backgroundColor=240d42`;
+      }
+      if (photo.startsWith('http://') || photo.startsWith('https://') || photo.startsWith('data:image')) {
+        return photo;
+      }
+      const clean = photo.replace(/^(\/|uploads\/)/, '');
+      return `${API_BASE_URL}/uploads/${clean}`;
+    }
+
     tbody.innerHTML = filtered.map(r => {
+      const norm = getNormalizedStatus(r.status);
       let statusBadge = '';
-      if (r.status === 'APPROVED') {
-        statusBadge = `<span class="badge-status badge-approved text-[11px]"><i data-lucide="check" class="w-3 h-3"></i><span>APPROVED</span></span>`;
-      } else if (r.status === 'REJECTED') {
-        statusBadge = `<span class="badge-status badge-danger text-[11px]"><i data-lucide="x" class="w-3 h-3"></i><span>REJECTED</span></span>`;
+      if (norm === 'Accepted') {
+        statusBadge = `<span class="badge-status badge-approved text-[11px]"><i data-lucide="check" class="w-3 h-3"></i><span>DITERIMA</span></span>`;
+      } else if (norm === 'Rejected') {
+        statusBadge = `<span class="badge-status badge-danger text-[11px]"><i data-lucide="x" class="w-3 h-3"></i><span>DITOLAK</span></span>`;
       } else {
         statusBadge = `<span class="badge-status badge-pending text-[11px]"><i data-lucide="clock" class="w-3 h-3"></i><span>PENDING</span></span>`;
       }
 
-      const photoSrc = r.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop';
+      const photoSrc = resolvePhotoUrl(r.photo, r.student_id || r.full_name);
 
       return `
         <tr class="hover:bg-[#2d1052] transition-colors">
@@ -227,7 +247,18 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedReg = registrationsList.find(r => String(r.id) === String(regId));
     if (!selectedReg) return;
 
-    if (modalPhoto) modalPhoto.src = selectedReg.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop';
+    function resolvePhotoUrl(photo, defaultSeed = 'kandidat') {
+      if (!photo || photo === '-' || photo === 'null') {
+        return `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(defaultSeed)}&backgroundColor=240d42`;
+      }
+      if (photo.startsWith('http://') || photo.startsWith('https://') || photo.startsWith('data:image')) {
+        return photo;
+      }
+      const clean = photo.replace(/^(\/|uploads\/)/, '');
+      return `${API_BASE_URL}/uploads/${clean}`;
+    }
+
+    if (modalPhoto) modalPhoto.src = resolvePhotoUrl(selectedReg.photo, selectedReg.student_id || selectedReg.full_name);
     if (modalName) modalName.textContent = selectedReg.full_name;
     if (modalNim) modalNim.textContent = selectedReg.student_id;
     if (modalProdi) modalProdi.textContent = selectedReg.program_of_study;
@@ -235,18 +266,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalMotivation) modalMotivation.textContent = `"${selectedReg.motivation || 'Tidak ada catatan motivasi.'}"`;
     
     if (modalPortfolio) {
-      const url = selectedReg.portfolio_url || 'https://github.com';
-      modalPortfolio.href = url;
-      modalPortfolio.querySelector('span').textContent = url;
+      const url = (selectedReg.portfolio_url || '').trim();
+      if (url && url !== '-' && url !== 'null' && url !== 'undefined') {
+        const fullUrl = url.startsWith('http') ? url : `https://${url}`;
+        modalPortfolio.href = fullUrl;
+        modalPortfolio.className = 'text-[#C9A4F6] hover:text-white hover:underline font-mono text-xs flex items-center space-x-1.5 break-all transition-colors';
+        modalPortfolio.innerHTML = `<i data-lucide="link" class="w-3.5 h-3.5 flex-shrink-0"></i><span class="truncate">${url}</span>`;
+      } else {
+        modalPortfolio.removeAttribute('href');
+        modalPortfolio.className = 'text-gray-400 font-mono text-xs flex items-center space-x-1.5 cursor-default';
+        modalPortfolio.innerHTML = `<i data-lucide="link-2-off" class="w-3.5 h-3.5 flex-shrink-0 text-gray-500"></i><span class="italic">Tidak melampirkan portofolio / CV</span>`;
+      }
     }
 
     if (modalStatusBadge) {
-      if (selectedReg.status === 'APPROVED') {
+      const norm = getNormalizedStatus(selectedReg.status);
+      if (norm === 'Accepted') {
         modalStatusBadge.className = 'badge-status badge-approved';
-        modalStatusBadge.textContent = 'APPROVED';
-      } else if (selectedReg.status === 'REJECTED') {
+        modalStatusBadge.textContent = 'DITERIMA (ACCEPTED)';
+      } else if (norm === 'Rejected') {
         modalStatusBadge.className = 'badge-status badge-danger';
-        modalStatusBadge.textContent = 'REJECTED';
+        modalStatusBadge.textContent = 'DITOLAK (REJECTED)';
       } else {
         modalStatusBadge.className = 'badge-status badge-pending';
         modalStatusBadge.textContent = 'PENDING';
