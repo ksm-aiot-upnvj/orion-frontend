@@ -18,21 +18,34 @@ COPY . .
 # Build production bundle with Vite
 RUN pnpm run build
 
-# --- STAGE 2: RUNNER (Nginx Web Server) ---
+# --- STAGE 2: RUNNER (Nginx Web Server with Security Headers) ---
 FROM nginx:alpine AS runner
 
-# Custom Nginx configuration for multi-page routing and static caching
-RUN echo 'server {' \
+# Hardened Nginx configuration with OWASP Security Headers
+RUN printf '%s\n' \
+    'server {' \
     '    listen 80;' \
     '    server_name localhost;' \
+    '    server_tokens off;' \
     '    root /usr/share/nginx/html;' \
     '    index index.html;' \
+    '' \
+    '    # Security Headers' \
+    '    add_header X-Content-Type-Options "nosniff" always;' \
+    '    add_header X-Frame-Options "DENY" always;' \
+    '    add_header X-XSS-Protection "1; mode=block" always;' \
+    '    add_header Referrer-Policy "strict-origin-when-cross-origin" always;' \
+    '    add_header Permissions-Policy "geolocation=(), camera=(), microphone=()" always;' \
+    '    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;' \
+    '' \
     '    location / {' \
     '        try_files $uri $uri/ $uri.html /index.html;' \
     '    }' \
+    '' \
     '    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|webp)$ {' \
     '        expires 30d;' \
     '        add_header Cache-Control "public, no-transform";' \
+    '        add_header X-Content-Type-Options "nosniff" always;' \
     '    }' \
     '}' > /etc/nginx/conf.d/default.conf
 
