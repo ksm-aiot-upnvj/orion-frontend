@@ -163,10 +163,49 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast(`Surat resmi ${code} berhasil didokumentasikan ke Buku Arsip!`, 'success');
   });
 
+  // Export PDF (Times New Roman Standard)
+  document.getElementById('btn-export-pdf')?.addEventListener('click', () => {
+    const code = document.getElementById('generated-letter-number').textContent.trim();
+    const element = document.getElementById('letter-preview-paper');
+
+    if (!element) {
+      showToast('Kop surat tidak ditemukan!', 'error');
+      return;
+    }
+
+    if (typeof html2pdf === 'undefined') {
+      showToast('Modul PDF sedang dimuat, silakan coba sesaat lagi...', 'warning');
+      return;
+    }
+
+    showToast('Sedang merender PDF Surat Resmi (Times New Roman)...', 'info');
+
+    const opt = {
+      margin: [15, 20, 15, 20], // top, left, bottom, right in mm
+      filename: `Surat_Resmi_${code.replace(/[\/\\:]/g, '_')}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+      showToast(`Dokumen PDF ${code} berhasil diunduh!`, 'success');
+    }).catch(err => {
+      console.error('PDF export error:', err);
+      showToast('Gagal mengekspor PDF, gunakan print browser (Ctrl+P).', 'error');
+    });
+  });
+
   // Export LaTeX
   document.getElementById('btn-export-latex')?.addEventListener('click', () => {
     const code = document.getElementById('generated-letter-number').textContent.trim();
-    const latex = generateLaTeXSource(code, genDate.value, genPerihal.value, genTujuan.value, genBody.value, 'Dzulfikri Adjmal');
+    const latex = generateLaTeXSource({
+      noSurat: code,
+      date: genDate.value,
+      perihal: genPerihal.value,
+      tujuan: genTujuan.value,
+      lampiran: genLampiran.value
+    });
     const blob = new Blob([latex], { type: 'text/plain;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');

@@ -15,6 +15,9 @@
     href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet">
 
+  <!-- html2pdf.js for Client-Side Official PDF Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 
@@ -32,7 +35,7 @@
       <div>
         <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Arsip Dokumen & Otomasi Surat Resmi</h1>
         <p class="text-xs text-[#D8B4FE] mt-1">
-          Buku registrasi surat keluar/masuk, standardisasi penomoran surat baku KSM AIoT, dan generator kop surat resmi UPNVJ.
+          Buku registrasi surat keluar/masuk, standardisasi penomoran surat baku KSM AIoT, dan generator kop surat resmi UPNVJ (Times New Roman).
         </p>
       </div>
 
@@ -107,7 +110,7 @@
         <div class="lg:col-span-5 card-institutional p-5 space-y-4">
           <div class="pb-3 border-b border-[#561F99]">
             <h3 class="text-sm font-bold text-white">Parameter Template Surat Resmi</h3>
-            <p class="text-xs text-gray-400 mt-0.5">Penomoran otomatis berformat standar baku universitas.</p>
+            <p class="text-xs text-gray-400 mt-0.5">Penomoran otomatis berformat standar baku universitas (Times New Roman).</p>
           </div>
 
           <!-- Generated Number Live Display -->
@@ -166,39 +169,44 @@
                 class="input-institutional text-xs leading-relaxed">Sehubungan dengan pelaksanaan riset IoT Smart Hydroponics dan Edge Computing yang dilakukan oleh anggota KSM AIoT, bersama ini kami memohon izin penggunaan fasilitas laboratorium serta peminjaman sensor dan dev board.</textarea>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 pt-2">
+            <!-- Export Buttons Grid (Unduh PDF, Download LaTeX, Simpan ke Arsip) -->
+            <div class="grid grid-cols-3 gap-2 pt-2">
+              <button type="button" id="btn-export-pdf" class="px-3 py-2 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+                <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+                <span>Unduh PDF</span>
+              </button>
               <button type="button" id="btn-export-latex" class="btn-outline-neutral justify-center text-xs py-2">
                 <i data-lucide="file-code" class="w-3.5 h-3.5 text-current"></i>
-                <span>Download LaTeX</span>
+                <span>LaTeX</span>
               </button>
-              <button type="button" id="btn-save-archive" class="btn-primary text-xs py-2">
+              <button type="button" id="btn-save-archive" class="btn-primary text-xs py-2 justify-center">
                 <i data-lucide="save" class="w-3.5 h-3.5"></i>
-                <span>Simpan ke Arsip</span>
+                <span>Simpan</span>
               </button>
             </div>
           </form>
         </div>
 
-        <!-- Live Letterhead Document Preview Right 7 Cols -->
-        <div class="lg:col-span-7 rounded-xl p-8 bg-white border border-gray-300 shadow-md">
+        <!-- Live Letterhead Document Preview Right 7 Cols (Styled with Times New Roman) -->
+        <div id="letter-preview-paper" class="lg:col-span-7 rounded-xl p-8 bg-white border border-gray-300 shadow-md font-['Times_New_Roman',_Times,_serif] text-black">
           <!-- Kop Surat Resmi -->
           <div class="pb-4 border-b-2 border-black flex items-center justify-between text-center gap-4">
             <img src="/Logo_UPNVJ.png" alt="Logo UPNVJ" class="w-14 h-14 object-contain flex-shrink-0" />
-            <div class="flex-1">
-              <h5 class="text-xs font-bold text-black uppercase tracking-tight">KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</h5>
-              <h4 class="text-sm font-extrabold text-black uppercase tracking-tight mt-0.5">UNIVERSITAS PEMBANGUNAN NASIONAL "VETERAN" JAKARTA</h4>
-              <h5 class="text-xs font-bold text-black uppercase tracking-tight">FAKULTAS ILMU KOMPUTER</h5>
-              <p class="text-[11px] font-bold text-[#301057] uppercase tracking-wider mt-0.5">KELOMPOK STUDI MAHASISWA ARTIFICIAL INTELLIGENCE OF THINGS</p>
-              <p class="text-[9px] text-gray-600 mt-0.5">Jl. RS. Fatmawati Raya, Pondok Labu, Jakarta Selatan 12450 • Email: ksm.aiot@upnvj.ac.id</p>
+            <div class="flex-1 font-['Times_New_Roman',_Times,_serif]">
+              <h5 class="text-[11px] font-bold text-black uppercase tracking-tight leading-tight">KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</h5>
+              <h4 class="text-[13px] font-bold text-black uppercase tracking-tight mt-0.5 leading-tight">UNIVERSITAS PEMBANGUNAN NASIONAL "VETERAN" JAKARTA</h4>
+              <h5 class="text-[12px] font-bold text-black uppercase tracking-tight leading-tight">FAKULTAS ILMU KOMPUTER</h5>
+              <p class="text-[11px] font-bold text-[#301057] uppercase tracking-wide mt-0.5 leading-tight">KELOMPOK STUDI MAHASISWA ARTIFICIAL INTELLIGENCE OF THINGS</p>
+              <p class="text-[10px] text-gray-700 mt-0.5 leading-tight">Jl. RS. Fatmawati Raya, Pondok Labu, Jakarta Selatan 12450 • Email: ksm.aiot@upnvj.ac.id</p>
             </div>
             <img src="/ksm-aiot-logo.png" alt="Logo AIoT" class="w-14 h-14 object-contain flex-shrink-0" />
           </div>
 
-          <!-- Body Surat -->
-          <div class="pt-6 space-y-4 text-xs text-gray-900 leading-relaxed font-sans">
+          <!-- Body Surat (Times New Roman, 12pt Standard) -->
+          <div class="pt-6 space-y-4 text-[13px] text-gray-900 leading-[1.6] font-['Times_New_Roman',_Times,_serif]">
             <div class="flex justify-between">
               <div class="space-y-1">
-                <p>Nomor&nbsp;&nbsp;&nbsp;: <strong id="preview-letter-num" class="font-mono text-xs">B/001/UN61/KSM-AIOT/III/2026</strong></p>
+                <p>Nomor&nbsp;&nbsp;&nbsp;&nbsp;: <strong id="preview-letter-num">B/001/UN61/KSM-AIOT/III/2026</strong></p>
                 <p>Lampiran : <span id="preview-lampiran">-</span></p>
                 <p>Perihal&nbsp;&nbsp;&nbsp;: <strong id="preview-perihal">Permohonan Izin Riset</strong></p>
               </div>
@@ -223,13 +231,13 @@
 
             <!-- Signature Block -->
             <div class="pt-8 flex justify-end">
-              <div class="text-center w-56 space-y-1">
+              <div class="text-center w-56 space-y-1 font-['Times_New_Roman',_Times,_serif]">
                 <p>Ketua KSM AIoT UPNVJ</p>
                 <div class="h-14 flex items-center justify-center">
-                  <span class="text-[10px] text-gray-400 font-mono">[Tanda Tangan Digital]</span>
+                  <span class="text-[11px] text-gray-500 italic">[Tanda Tangan Digital]</span>
                 </div>
                 <p class="font-bold underline">Dzulfikri Adjmal</p>
-                <p class="text-[10px] text-gray-500 font-mono">NIM. 2310511001</p>
+                <p class="text-[11px] text-gray-700">NIM. 2310511001</p>
               </div>
             </div>
           </div>

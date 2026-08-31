@@ -208,6 +208,7 @@ export function generateLaTeXSource(letterData = {}) {
 \\usepackage{graphicx}
 \\usepackage{tabularx}
 \\usepackage{setspace}
+\\usepackage{mathptmx} % Standard Times New Roman for official Indonesian academic letters
 \\geometry{top=2cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
 
 \\begin{document}
