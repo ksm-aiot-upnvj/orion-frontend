@@ -1,5 +1,5 @@
-import { initIcons } from './ui.js';
-import { getAuthUser, logout, requireAuth } from './auth.js';
+import { initIcons, resolveAvatarUrl } from './ui.js';
+import { getAuthUser, logout, requireAuth, clearAuthSession, initSessionWatcher } from './auth.js';
 
 /**
  * Institutional ERP/CRM Layout Renderer with Flowbite-style Rounded Account Dropdown
@@ -147,7 +147,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
             class="flex items-center text-sm rounded-full p-0.5 focus:ring-4 focus:ring-purple-900/50 focus:outline-none transition-all hover:ring-2 hover:ring-[#9B5CE8]">
             <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border border-[#561F99] bg-[#1E0A38] flex items-center justify-center">
               ${currentUser.avatar
-        ? `<img src="${currentUser.avatar}" alt="${currentUser.full_name}" class="w-full h-full object-cover" />`
+        ? `<img src="${resolveAvatarUrl(currentUser.avatar, currentUser.student_id || 'admin')}" alt="${currentUser.full_name}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<span class=\\'text-xs font-bold text-[#C9A4F6] font-mono\\'>${initials}</span>'" />`
         : `<span class="text-xs font-bold text-[#C9A4F6] font-mono">${initials}</span>`
       }
             </div>
@@ -247,13 +247,130 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       if (e.key === 'Escape') closeDropdown();
     });
 
-    // Logout Handler
+    // Inject Custom Institutional Modals (Logout & Session Expired) if not present
+    if (!document.getElementById('crm-logout-modal')) {
+      const modalWrapper = document.createElement('div');
+      modalWrapper.id = 'crm-injected-modals';
+      modalWrapper.innerHTML = `
+        <!-- Modal: Konfirmasi Keluar (Logout) -->
+        <div id="crm-logout-modal"
+          class="fixed inset-0 z-[9998] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 animate-in fade-in duration-150">
+          <div
+            class="bg-[#1e0a36] w-full max-w-md rounded-2xl border border-[#561F99] shadow-2xl overflow-hidden relative text-white p-6 space-y-4">
+            <div class="flex items-center space-x-3 pb-3 border-b border-[#561F99]/60">
+              <div class="w-10 h-10 rounded-xl bg-rose-950/60 border border-rose-500/40 text-rose-400 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="log-out" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-white">Konfirmasi Keluar (Logout)</h3>
+                <p class="text-[11px] text-[#C9A4F6] font-mono">Sistem Manajemen Internal KSM AIoT</p>
+              </div>
+            </div>
+
+            <p class="text-xs text-[#E9D8FD] leading-relaxed">
+              Apakah Anda yakin ingin mengakhiri sesi kerja Pengurus KSM AIoT? Anda perlu masuk kembali dengan NIM dan kata sandi untuk mengakses modul internal ini.
+            </p>
+
+            <div class="flex items-center justify-end space-x-2.5 pt-2 border-t border-[#561F99]/40">
+              <button type="button" id="btn-cancel-logout"
+                class="px-4 py-2 rounded-lg bg-[#301057] hover:bg-[#561F99] text-[#C9A4F6] hover:text-white border border-[#561F99] text-xs font-semibold transition-colors">
+                Batal
+              </button>
+              <button type="button" id="btn-confirm-logout"
+                class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-colors flex items-center space-x-1.5 shadow-lg shadow-rose-900/30">
+                <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                <span>Ya, Keluar</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal: Sesi Habis (Session Expired) -->
+        <div id="crm-session-expired-modal"
+          class="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md hidden items-center justify-center p-4 animate-in fade-in duration-200">
+          <div
+            class="bg-[#1e0a36] w-full max-w-md rounded-2xl border border-amber-500/50 shadow-2xl overflow-hidden relative text-white p-6 space-y-4">
+            <div class="flex items-center space-x-3 pb-3 border-b border-[#561F99]/60">
+              <div class="w-10 h-10 rounded-xl bg-amber-950/60 border border-amber-500/40 text-amber-400 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="shield-alert" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-white">Sesi Anda Telah Berakhir</h3>
+                <p class="text-[11px] text-amber-300 font-mono">Keamanan Akun Pengurus</p>
+              </div>
+            </div>
+
+            <p class="text-xs text-[#E9D8FD] leading-relaxed">
+              Masa berlaku token otentikasi akun Anda telah habis demi menjaga integritas data internal. Silakan masuk kembali untuk melanjutkan pekerjaan Anda.
+            </p>
+
+            <div class="pt-2 border-t border-[#561F99]/40">
+              <button type="button" id="btn-relogin-session"
+                class="btn-primary w-full py-2.5 text-xs font-bold flex items-center justify-center space-x-2 shadow-lg shadow-purple-950/40">
+                <i data-lucide="log-in" class="w-4 h-4"></i>
+                <span>Masuk Kembali ke Akun</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalWrapper);
+    }
+
+    const logoutModal = document.getElementById('crm-logout-modal');
+    const btnCancelLogout = document.getElementById('btn-cancel-logout');
+    const btnConfirmLogout = document.getElementById('btn-confirm-logout');
+
+    const sessionExpiredModal = document.getElementById('crm-session-expired-modal');
+    const btnReloginSession = document.getElementById('btn-relogin-session');
+
+    // Open Logout Confirmation Modal
     dropdownLogoutBtn?.addEventListener('click', (e) => {
       e.preventDefault();
-      if (confirm('Apakah Anda yakin ingin keluar dari Management System KSM AIoT?')) {
-        logout();
-        window.location.href = '/index.html';
+      closeDropdown();
+      logoutModal?.classList.remove('hidden');
+      logoutModal?.classList.add('flex');
+    });
+
+    // Close Logout Modal (Cancel)
+    btnCancelLogout?.addEventListener('click', () => {
+      logoutModal?.classList.add('hidden');
+      logoutModal?.classList.remove('flex');
+    });
+
+    // Backdrop click on Logout Modal
+    logoutModal?.addEventListener('click', (e) => {
+      if (e.target === logoutModal) {
+        logoutModal.classList.add('hidden');
+        logoutModal.classList.remove('flex');
       }
+    });
+
+    // Confirm Logout
+    btnConfirmLogout?.addEventListener('click', () => {
+      logoutModal?.classList.add('hidden');
+      logoutModal?.classList.remove('flex');
+      logout();
+    });
+
+    // Session Expired Modal Trigger
+    function showSessionExpired() {
+      clearAuthSession();
+      logoutModal?.classList.add('hidden');
+      logoutModal?.classList.remove('flex');
+      sessionExpiredModal?.classList.remove('hidden');
+      sessionExpiredModal?.classList.add('flex');
+    }
+    window.showSessionExpiredModal = showSessionExpired;
+
+    // Relogin after Session Expired
+    btnReloginSession?.addEventListener('click', () => {
+      window.location.href = '/index.html?login_required=1&expired=1';
+    });
+
+    // Initialize Proactive Session Expiration Watcher
+    initSessionWatcher(() => {
+      showSessionExpired();
     });
   }
 
