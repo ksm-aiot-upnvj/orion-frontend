@@ -38,45 +38,72 @@ document.addEventListener('DOMContentLoaded', () => {
   let uploadedCvName = '';
 
   // ============================================================
-  // Intake Status Verification (Controlled by BPH Control Panel)
+  // Intake Status Verification (Real-Time Backend Endpoint Hit)
   // ============================================================
-  const savedConfig = localStorage.getItem('ksm_intake_config');
-  let intakeConfig = {
-    status: 'OPEN',
-    batchName: 'Penerimaan Anggota Baru Periode 2026',
-    deadline: '31 Agustus 2026'
-  };
-  if (savedConfig) {
-    try { intakeConfig = { ...intakeConfig, ...JSON.parse(savedConfig) }; } catch {}
-  }
-
   const closedBanner = document.getElementById('intake-closed-banner');
   const formHeader = document.getElementById('form-header-box');
-  if (intakeConfig.status === 'CLOSED') {
-    if (form) form.classList.add('opacity-50', 'pointer-events-none');
-    if (formHeader) formHeader.classList.add('hidden');
-    if (closedBanner) closedBanner.classList.remove('hidden');
+  const deadlineDisplay = document.getElementById('registration-deadline-display');
+
+  async function checkIntakeStatus() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/registrations/intake-status`);
+      if (res.ok) {
+        const cfg = await res.json();
+        if (deadlineDisplay && cfg.deadline) {
+          deadlineDisplay.textContent = cfg.deadline;
+        }
+
+        const isClosed = cfg.status === 'CLOSED';
+        let isPastDeadline = false;
+        if (cfg.deadline) {
+          const deadlineDate = new Date(cfg.deadline);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          if (today > deadlineDate) isPastDeadline = true;
+        }
+
+        if (isClosed || isPastDeadline) {
+          if (form) form.classList.add('opacity-50', 'pointer-events-none');
+          if (formHeader) formHeader.classList.add('hidden');
+          if (closedBanner) closedBanner.classList.remove('hidden');
+        } else {
+          if (form) form.classList.remove('opacity-50', 'pointer-events-none');
+          if (formHeader) formHeader.classList.remove('hidden');
+          if (closedBanner) closedBanner.classList.add('hidden');
+        }
+      }
+    } catch (e) {
+      console.warn('Gagal memuat status intake dari backend:', e);
+    }
   }
+  checkIntakeStatus();
 
   // ============================================================
-  // Dynamic 4-Year Intake Angkatan Generator (e.g., 2026 -> 26, 25, 24, 23)
+  // Dynamic 4-Year Intake Angkatan Generator (e.g., current 2026 -> 2026, 2025, 2024, 2023, 2022)
   // ============================================================
+  const CURRENT_YEAR = new Date().getFullYear() || 2026;
+  const MIN_VALID_YEAR = CURRENT_YEAR - 3; // Maksimal 4 tahun ke belakang
+  const MAX_VALID_YEAR = CURRENT_YEAR;
+
   function populateDynamicAngkatan() {
     if (!angkatanInput) return;
-    const currentYear = new Date().getFullYear() || 2026;
+    const currentVal = angkatanInput.value;
     angkatanInput.innerHTML = '';
 
-    for (let i = 0; i < 4; i++) {
-      const year = currentYear - i;
+    for (let year = MAX_VALID_YEAR; year >= MIN_VALID_YEAR; year--) {
       const shortYear = String(year).slice(-2);
       const option = document.createElement('option');
       option.value = String(year);
       option.className = 'bg-[#240d42] text-white';
-      option.textContent = `${year} (Angkatan '${shortYear})`;
-      if (i === 0) option.selected = true;
+      option.textContent = `${year} (Angkatan '${shortYear}')`;
+      if (currentVal ? String(year) === currentVal : year === MAX_VALID_YEAR) {
+        option.selected = true;
+      }
       angkatanInput.appendChild(option);
     }
   }
+  populateDynamicAngkatan();
+
   // Helper: NIM Pattern Auto-Detection
   // Pattern: [YY][10][PRODI_CODE][INCREMENT] (Total 10 digits)
   // 510 -> S1 Sistem Informasi
@@ -112,21 +139,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // Detection when length >= 2 for angkatan and length >= 7 for prodi
     let detectedAngkatan = null;
     let detectedProdi = null;
+    let isYearValid = true;
+    let yearErrorMsg = '';
 
     if (rawNim.length >= 2) {
       const yearPrefix = rawNim.slice(0, 2);
       const fullYear = `20${yearPrefix}`;
+      const yearNum = parseInt(fullYear, 10);
       detectedAngkatan = fullYear;
 
-      let matchingOption = Array.from(angkatanInput?.options || []).find((opt) => opt.value === fullYear);
-      if (!matchingOption && angkatanInput) {
-        const newOpt = document.createElement('option');
-        newOpt.value = fullYear;
-        newOpt.className = 'bg-[#240d42] text-white';
-        newOpt.textContent = `${fullYear} (Angkatan '${yearPrefix})`;
-        angkatanInput.appendChild(newOpt);
+      if (isNaN(yearNum) || yearNum < MIN_VALID_YEAR || yearNum > MAX_VALID_YEAR) {
+        isYearValid = false;
+        if (yearNum > MAX_VALID_YEAR) {
+          yearErrorMsg = `Pendaftaran hanya dibuka untuk mahasiswa angkatan ${MIN_VALID_YEAR} - ${MAX_VALID_YEAR}.`;
+        } else {
+          yearErrorMsg = `Pendaftaran hanya dibuka untuk mahasiswa angkatan ${MIN_VALID_YEAR} - ${MAX_VALID_YEAR}.`;
+        }
+        nimInput.classList.add('!border-rose-500');
+      } else {
+        isYearValid = true;
+        nimInput.classList.remove('!border-rose-500');
+
+        // Pastikan opsi dropdown sesuai tahun valid tanpa menambahkan opsi fiktif
+        if (angkatanInput) {
+          angkatanInput.value = fullYear;
+        }
       }
-      if (angkatanInput) angkatanInput.value = fullYear;
+    } else {
+      nimInput.classList.remove('!border-rose-500');
     }
 
     if (rawNim.length >= 7) {
@@ -149,14 +189,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Feedback Badge
     if (detectionBadge && detectionText) {
-      if (rawNim.length === 10 && detectedProdi) {
+      if (!isYearValid && yearErrorMsg) {
         detectionBadge.classList.remove('hidden');
+        detectionBadge.className =
+          'text-[11px] mt-1.5 p-1.5 rounded bg-rose-950/70 border border-rose-500/50 text-rose-300 font-medium flex items-center gap-1.5';
+        detectionText.innerHTML = `<span class="text-rose-400 font-semibold">${yearErrorMsg}</span>`;
+      } else if (rawNim.length === 10 && detectedProdi) {
+        detectionBadge.classList.remove('hidden');
+        detectionBadge.className =
+          'text-[11px] mt-1.5 p-1.5 rounded bg-[#301057]/80 border border-[#7C3AED]/40 text-[#D8B4FE] font-medium flex items-center gap-1.5';
         detectionText.innerHTML = `Terdeteksi: <strong class="text-white">${detectedProdi}</strong> (Angkatan <strong class="text-white">${detectedAngkatan}</strong>)`;
       } else if (rawNim.length >= 7 && detectedProdi) {
         detectionBadge.classList.remove('hidden');
+        detectionBadge.className =
+          'text-[11px] mt-1.5 p-1.5 rounded bg-[#301057]/80 border border-[#7C3AED]/40 text-[#D8B4FE] font-medium flex items-center gap-1.5';
         detectionText.innerHTML = `Terdeteksi: <strong class="text-white">${detectedProdi}</strong>`;
       } else if (rawNim.length === 10 && !detectedProdi) {
         detectionBadge.classList.remove('hidden');
+        detectionBadge.className =
+          'text-[11px] mt-1.5 p-1.5 rounded bg-amber-950/60 border border-amber-500/40 text-amber-300 font-medium flex items-center gap-1.5';
         detectionText.innerHTML = `<span class="text-amber-300">Format kode prodi UPNVJ tidak dikenali (digit 5-7 bukan 510/511/512/513)</span>`;
       } else {
         detectionBadge.classList.add('hidden');
@@ -220,17 +271,17 @@ document.addEventListener('DOMContentLoaded', () => {
           cardPhoto.src = `${API_BASE_URL}/${data.path}`;
         }
         if (photoFilenameLabel) {
-          photoFilenameLabel.textContent = `✓ ${file.name} (WebP / EXIF Stripped)`;
+          photoFilenameLabel.textContent = `✓ ${file.name}`;
           photoFilenameLabel.classList.add('text-emerald-300');
         }
-        showToast('Foto berhasil diproses & dibersihkan dari metadata EXIF (UU PDP)!', 'success');
+        showToast('Foto profil berhasil diunggah.', 'success');
       } else {
         const err = await res.json().catch(() => ({}));
-        showToast(`Gagal memproses foto: ${err.detail || 'Format file tidak didukung'}`, 'error');
+        showToast(`Gagal mengunggah foto: ${err.detail || 'Format file tidak didukung'}`, 'error');
       }
     } catch (err) {
       console.error(err);
-      showToast('Gagal terhubung ke storage server backend.', 'error');
+      showToast('Gagal terhubung ke server penyimpanan.', 'error');
     }
   });
 
@@ -251,6 +302,43 @@ document.addEventListener('DOMContentLoaded', () => {
       cvFilenameLabel.classList.add('text-emerald-300');
     }
     showToast(`Berkas CV "${file.name}" siap dilampirkan.`, 'info');
+  });
+
+  // Live Motivation Sentence & Word Counter
+  const motivationCounter = document.getElementById('motivation-counter');
+  const motivationWarning = document.getElementById('motivation-warning');
+
+  function checkMotivationLimits(text) {
+    const clean = (text || '').trim();
+    // const sentences = clean ? clean.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 0) : [];
+    const words = clean ? clean.split(/\s+/).filter(w => w.length > 0) : [];
+    return {
+      words: words.length,
+      valid: words.length <= 150
+    };
+  }
+
+  motivationInput?.addEventListener('input', () => {
+    const { words, valid } = checkMotivationLimits(motivationInput.value);
+    if (motivationCounter) {
+      motivationCounter.textContent = `${words}/150 Kata`;
+      if (!valid) {
+        motivationCounter.className = 'text-[11px] font-mono font-bold text-rose-400';
+      } else {
+        motivationCounter.className = 'text-[11px] font-mono text-[#C9A4F6]';
+      }
+    }
+    if (motivationWarning) {
+      if (!valid) {
+        const msg = 'Maksimal 150 kata.';
+        motivationWarning.textContent = msg;
+        motivationWarning.classList.remove('hidden');
+        motivationInput.classList.add('!border-rose-500');
+      } else {
+        motivationWarning.classList.add('hidden');
+        motivationInput.classList.remove('!border-rose-500');
+      }
+    }
   });
 
   // Live Mirror to Member Card
@@ -276,17 +364,42 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const { valid: isMotivationValid } = checkMotivationLimits(motivationInput?.value || '');
+    if (!isMotivationValid) {
+      showToast('Teks motivasi maksimal 150 kata.', 'warning');
+      motivationInput.focus();
+      return;
+    }
+
     const originalBtnText = submitBtn?.innerHTML || 'Kirim Formulir Pendaftaran';
 
-    let motivationText = motivationInput?.value.trim() || '';
-    if (uploadedCvName) {
-      motivationText += ` [Lampiran Berkas: ${uploadedCvName}]`;
-    }
+    const motivationText = motivationInput?.value.trim() || '';
 
     const rawNim = nimInput.value.trim().replace(/\D/g, '');
     if (rawNim.length !== 10) {
       showToast('NIM Mahasiswa harus terdiri dari tepat 10 digit angka!', 'error');
       nimInput.focus();
+      return;
+    }
+
+    const yearPrefix = rawNim.slice(0, 2);
+    const nimYear = parseInt(`20${yearPrefix}`, 10);
+    if (isNaN(nimYear) || nimYear < MIN_VALID_YEAR || nimYear > MAX_VALID_YEAR) {
+      showToast(
+        `Tahun angkatan dari NIM (${nimYear || 'tidak valid'}) di luar batas pendaftaran (maksimal 4 tahun ke belakang: ${MIN_VALID_YEAR} - ${MAX_VALID_YEAR})!`,
+        'error'
+      );
+      nimInput.focus();
+      return;
+    }
+
+    const selectedAngkatan = parseInt(angkatanInput?.value, 10);
+    if (isNaN(selectedAngkatan) || selectedAngkatan < MIN_VALID_YEAR || selectedAngkatan > MAX_VALID_YEAR) {
+      showToast(
+        `Pilihan tahun angkatan harus berada dalam rentang ${MIN_VALID_YEAR} - ${MAX_VALID_YEAR}!`,
+        'error'
+      );
+      angkatanInput?.focus();
       return;
     }
 
@@ -306,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = `<span class="inline-flex items-center space-x-2"><i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Menyimpan ke Database...</span></span>`;
+        submitBtn.innerHTML = `<span class="inline-flex items-center space-x-2"><i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Menyimpan pendaftaran...</span></span>`;
         initIcons();
       }
 
@@ -318,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (res.ok) {
         const data = await res.json();
-        showToast(`Pendaftaran Berhasil! Data NIM ${data.student_id} resmi tersimpan di database.`, 'success');
+        showToast(`Pendaftaran berhasil dikirim! NIM: ${data.student_id}`, 'success');
         if (stepIcon2) {
           stepIcon2.className = 'w-8 h-8 rounded-full bg-[#9B5CE8] text-white flex items-center justify-center font-bold text-xs shadow-sm';
         }
@@ -330,14 +443,18 @@ document.addEventListener('DOMContentLoaded', () => {
           cvFilenameLabel.textContent = 'Pilih file (PDF, maks 5MB)';
           cvFilenameLabel.classList.remove('text-emerald-300');
         }
+        if (motivationCounter) {
+          motivationCounter.textContent = '0/3 Kalimat • 0/100 Kata';
+          motivationCounter.className = 'text-[11px] font-mono text-[#C9A4F6]';
+        }
         updateLiveCard();
       } else {
         const err = await res.json().catch(() => ({}));
-        showToast(err.detail || 'Gagal menyimpan pendaftaran ke database.', 'error');
+        showToast(err.detail || 'Gagal mengirim pendaftaran.', 'error');
       }
     } catch (err) {
       console.error('Registration API Error:', err);
-      showToast('Koneksi backend gagal. Pastikan server API aktif di port 8000!', 'error');
+      showToast('Gagal terhubung ke server. Silakan coba beberapa saat lagi.', 'error');
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
@@ -428,14 +545,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const studentId = document.getElementById('login-nim').value;
       const password = document.getElementById('login-password').value;
       const btn = loginForm.querySelector('button[type="submit"]');
-      
+
       const originalText = btn.innerHTML;
       btn.disabled = true;
       btn.innerHTML = `<span class="inline-flex items-center space-x-2"><i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Loading...</span></span>`;
       initIcons();
 
       const success = await login(studentId, password);
-      
+
       btn.disabled = false;
       btn.innerHTML = originalText;
       initIcons();

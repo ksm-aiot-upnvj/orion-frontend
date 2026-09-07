@@ -122,7 +122,8 @@
       <div
         class="flex items-center space-x-2 text-xs font-mono text-purple-200 bg-[#240d42] border border-[#561F99] px-3 py-1.5 sm:py-2 rounded-lg flex-shrink-0 self-start sm:self-auto">
         <i data-lucide="calendar" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C9A4F6]"></i>
-        <span>Batas Submit: <strong class="text-white">31 Agustus 2026</strong></span>
+        <span>Batas Submit: <strong id="registration-deadline-display" class="text-white">31 Agustus
+            2026</strong></span>
       </div>
     </div>
 
@@ -327,11 +328,15 @@
 
           <!-- Motivasi -->
           <div>
-            <label class="block text-xs font-bold text-white mb-1">Motivasi & Pengalaman Riset <span
-                class="text-rose-400">*</span></label>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold text-white">Motivasi & Pengalaman Riset <span
+                  class="text-rose-400">*</span></label>
+              <span id="motivation-counter" class="text-[11px] font-mono text-[#C9A4F6]">0/150 Kata</span>
+            </div>
             <textarea id="input-motivation" rows="3" required
-              placeholder="Jelaskan ketertarikan Anda dalam riset AI & IoT..."
-              class="input-institutional text-xs"></textarea>
+              placeholder="Jelaskan ketertarikan Anda dalam riset AI & IoT (maksimal 150 kata)..."
+              class="input-institutional text-xs transition-colors"></textarea>
+            <p id="motivation-warning" class="text-[11px] text-rose-400 font-mono mt-1 hidden"></p>
           </div>
 
           <!-- Portofolio URL -->
