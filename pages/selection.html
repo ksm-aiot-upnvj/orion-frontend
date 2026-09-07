@@ -149,6 +149,7 @@
               <th>NIM Mahasiswa</th>
               <th>Program Studi</th>
               <th>Peminatan Riset</th>
+              <th>No. WhatsApp</th>
               <th>Email UPNVJ</th>
               <th>Tanggal Submit</th>
               <th>Status Seleksi</th>
@@ -157,7 +158,7 @@
           </thead>
           <tbody id="admin-registrations-tbody" class="divide-y divide-[#561F99]/40">
             <tr>
-              <td colspan="8" class="text-center py-10 text-[#D8B4FE] font-mono text-xs">
+              <td colspan="9" class="text-center py-10 text-[#D8B4FE] font-mono text-xs">
                 Memuat data pendaftar dari backend...
               </td>
             </tr>
@@ -232,8 +233,50 @@
           </a>
         </div>
 
+        <!-- WhatsApp Direct Contact -->
+        <div class="p-3.5 rounded-lg bg-[#150626] border border-[#561F99] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div>
+            <span class="text-[#D8B4FE] uppercase text-[10px] font-semibold block">Kontak WhatsApp</span>
+            <span id="modal-review-phone" class="text-white font-mono font-bold text-xs mt-0.5 block">-</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" id="btn-wa-accepted"
+              class="px-2.5 py-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 border border-emerald-500/40 text-[11px] font-semibold transition-colors flex items-center space-x-1.5">
+              <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+              <span>Hubungi (Lolos)</span>
+            </button>
+            <button type="button" id="btn-wa-rejected"
+              class="px-2.5 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 border border-rose-500/40 text-[11px] font-semibold transition-colors flex items-center space-x-1.5">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              <span>Hubungi (Belum Lolos)</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Decision Form Section -->
         <div class="pt-3 border-t border-[#561F99] space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-[#D8B4FE] mb-1">Divisi Penempatan</label>
+              <select id="modal-review-division" class="input-institutional text-xs">
+                <option value="Akademik Riset" class="bg-[#240d42] text-white">Akademik Riset</option>
+                <option value="PSDM" class="bg-[#240d42] text-white">PSDM</option>
+                <option value="Humas Multimedia" class="bg-[#240d42] text-white">Humas Multimedia</option>
+                <option value="BPH" class="bg-[#240d42] text-white">BPH</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#D8B4FE] mb-1">Jabatan / Role</label>
+              <select id="modal-review-role" class="input-institutional text-xs">
+                <option value="Anggota" class="bg-[#240d42] text-white">Anggota</option>
+                <option value="Staff" class="bg-[#240d42] text-white">Staff</option>
+                <option value="Sekretaris" class="bg-[#240d42] text-white">Sekretaris</option>
+                <option value="Bendahara" class="bg-[#240d42] text-white">Bendahara</option>
+                <option value="Kepala Divisi" class="bg-[#240d42] text-white">Kepala Divisi</option>
+              </select>
+            </div>
+          </div>
+
           <div>
             <label class="block text-xs font-semibold text-[#D8B4FE] mb-1">Catatan Evaluator (Opsional)</label>
             <textarea id="modal-review-notes" rows="2" placeholder="Tuliskan catatan pertimbangan seleksi..."
@@ -302,7 +345,7 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block font-semibold text-[#D8B4FE] mb-1">Tanggal Deadline</label>
-            <input id="intake-deadline-date" type="text" value="31 Agustus 2026" class="input-institutional text-xs" />
+            <input id="intake-deadline-date" type="date" value="2026-08-31" class="input-institutional text-xs cursor-pointer" />
           </div>
           <div>
             <label class="block font-semibold text-[#D8B4FE] mb-1">Target Kuota Berkas</label>

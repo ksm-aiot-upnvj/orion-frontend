@@ -11,9 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize Unified CRM Layout (with Auth Route Guard)
   initCRMLayout('selection', 'Seleksi Calon Anggota');
 
-  // RBAC Check for BPH Intake Control Button
+  // RBAC Check for BPH / PSDM Intake Control Button
   const currentUser = getAuthUser() || { role: 'SUPERADMIN' };
-  const isBPH = currentUser.role === 'SUPERADMIN' || currentUser.role === 'ADMIN_BPH';
+  const canManageSelection = currentUser.is_superadmin ||
+    ['SUPERADMIN', 'ADMIN_BPH', 'Ketua', 'Wakil Ketua'].includes(currentUser.role) ||
+    currentUser.division === 'PSDM';
 
   const intakeBtn = document.getElementById('open-intake-control-btn');
   const intakeModal = document.getElementById('intake-control-modal');
@@ -25,11 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const intakeQuotaInput = document.getElementById('intake-quota');
   const intakePill = document.getElementById('intake-status-pill');
 
-  // Load Saved Intake Config
+  // Default Intake Config
   let currentIntakeConfig = {
     status: 'OPEN',
     batchName: 'Penerimaan Anggota Baru Periode 2026',
-    deadline: '31 Agustus 2026',
+    deadline: '2026-08-31',
     quota: 100
   };
 
@@ -51,7 +53,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   updateIntakePill();
 
-  if (isBPH && intakeBtn) {
+  // Real-time Intake Status from Backend API
+  async function fetchIntakeStatus() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/registrations/intake-status`);
+      if (res.ok) {
+        const data = await res.json();
+        currentIntakeConfig = {
+          status: data.status || 'OPEN',
+          batchName: data.batch_name || 'Penerimaan Anggota Baru Periode 2026',
+          deadline: data.deadline || '2026-08-31',
+          quota: data.quota || 100
+        };
+        localStorage.setItem('ksm_intake_config', JSON.stringify(currentIntakeConfig));
+        updateIntakePill();
+      }
+    } catch (err) {
+      console.warn('Gagal memuat status intake backend:', err);
+    }
+  }
+  fetchIntakeStatus();
+
+  if (canManageSelection && intakeBtn) {
     intakeBtn.classList.remove('hidden');
     intakeBtn.classList.add('inline-flex');
 
@@ -70,20 +93,47 @@ document.addEventListener('DOMContentLoaded', () => {
       intakeModal?.classList.remove('flex');
     });
 
-    intakeForm?.addEventListener('submit', (e) => {
+    intakeForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      currentIntakeConfig = {
+      const token = getAuthToken();
+      const payload = {
         status: intakeStatusSelect?.value || 'OPEN',
-        batchName: intakeBatchInput?.value.trim() || 'Penerimaan Anggota Baru Periode 2026',
-        deadline: intakeDeadlineInput?.value.trim() || '31 Agustus 2026',
+        batch_name: intakeBatchInput?.value.trim() || 'Penerimaan Anggota Baru Periode 2026',
+        deadline: intakeDeadlineInput?.value || '2026-08-31',
         quota: Number(intakeQuotaInput?.value) || 100
       };
 
-      localStorage.setItem('ksm_intake_config', JSON.stringify(currentIntakeConfig));
-      updateIntakePill();
-      intakeModal?.classList.add('hidden');
-      intakeModal?.classList.remove('flex');
-      showToast(`Pengaturan Periode berhasil disimpan! Status: ${currentIntakeConfig.status}`, 'success');
+      try {
+        const res = await fetch(`${API_BASE_URL}/registrations/intake-status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const saved = await res.json();
+          currentIntakeConfig = {
+            status: saved.status,
+            batchName: saved.batch_name,
+            deadline: saved.deadline,
+            quota: saved.quota
+          };
+          localStorage.setItem('ksm_intake_config', JSON.stringify(currentIntakeConfig));
+          updateIntakePill();
+          intakeModal?.classList.add('hidden');
+          intakeModal?.classList.remove('flex');
+          showToast('Pengaturan periode pendaftaran berhasil disimpan.', 'success');
+        } else {
+          const err = await res.json().catch(() => ({}));
+          showToast(err.detail || 'Gagal menyimpan pengaturan periode.', 'error');
+        }
+      } catch (err) {
+        console.error('Save intake error:', err);
+        showToast('Gagal terhubung ke server backend.', 'error');
+      }
     });
   }
 
@@ -112,6 +162,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalMotivation = document.getElementById('modal-review-motivation');
   const modalPortfolio = document.getElementById('modal-review-portfolio');
   const modalStatusBadge = document.getElementById('modal-review-status-badge');
+  const modalPhone = document.getElementById('modal-review-phone');
+  const modalReviewDivision = document.getElementById('modal-review-division');
+  const modalReviewRole = document.getElementById('modal-review-role');
+  const modalReviewNotes = document.getElementById('modal-review-notes');
+  const btnWaAccepted = document.getElementById('btn-wa-accepted');
+  const btnWaRejected = document.getElementById('btn-wa-rejected');
 
   // Load Registrations directly from Database
   async function loadRegistrations() {
@@ -129,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('Database connection error:', err);
       registrationsList = [];
-      showToast('Koneksi ke database gagal. Pastikan backend aktif!', 'error');
+      showToast('Gagal memuat data pendaftaran dari server.', 'error');
     }
     renderStats();
     renderTable();
@@ -169,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filtered.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="8" class="text-center py-10 text-gray-500 font-mono text-xs">
+          <td colspan="9" class="text-center py-10 text-gray-500 font-mono text-xs">
             <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 text-gray-400"></i>
             <span>Tidak ada berkas calon anggota yang sesuai dengan filter.</span>
           </td>
@@ -202,6 +258,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const photoSrc = resolvePhotoUrl(r.photo, r.student_id || r.full_name);
+      const rawPhone = (r.contact_info || '').trim();
+      const cleanPhone = rawPhone.replace(/\D/g, '').replace(/^0/, '62');
+      const waLinkHtml = rawPhone ? `
+        <a href="https://wa.me/${cleanPhone}" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 inline-flex items-center space-x-1 hover:underline">
+          <i data-lucide="message-circle" class="w-3 h-3"></i>
+          <span>${rawPhone}</span>
+        </a>
+      ` : `<span class="text-gray-500 italic">-</span>`;
 
       return `
         <tr class="hover:bg-[#2d1052] transition-colors">
@@ -218,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>
             <span class="px-2.5 py-0.5 rounded bg-[#561F99] border border-[#9B5CE8]/50 text-[10px] font-mono text-[#C9A4F6] font-semibold">${r.interest_track}</span>
           </td>
+          <td class="font-mono text-xs">${waLinkHtml}</td>
           <td class="font-mono text-[#D8B4FE] text-[11px]">${r.email}</td>
           <td class="font-mono text-[#D8B4FE] text-xs">${r.submit_date || '-'}</td>
           <td>${statusBadge}</td>
@@ -264,7 +329,45 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalProdi) modalProdi.textContent = selectedReg.program_of_study;
     if (modalTrack) modalTrack.textContent = selectedReg.interest_track;
     if (modalMotivation) modalMotivation.textContent = `"${selectedReg.motivation || 'Tidak ada catatan motivasi.'}"`;
-    
+    if (modalPhone) modalPhone.textContent = selectedReg.contact_info || '-';
+
+    if (modalReviewDivision) modalReviewDivision.value = 'Akademik Riset';
+    if (modalReviewRole) modalReviewRole.value = 'Anggota';
+    if (modalReviewNotes) modalReviewNotes.value = selectedReg.review_note || '';
+
+    // Bind WhatsApp Direct Contact Buttons
+    if (btnWaAccepted) {
+      btnWaAccepted.onclick = () => {
+        const rawPhone = (selectedReg.contact_info || '').trim();
+        const cleanPhone = rawPhone.replace(/\D/g, '').replace(/^0/, '62');
+        if (!cleanPhone) {
+          showToast('Nomor WhatsApp kandidat tidak tersedia.', 'warning');
+          return;
+        }
+        const reviewerName = currentUser.full_name || currentUser.name || 'Pengurus PSDM';
+        const candidateName = selectedReg.full_name || 'Calon Anggota';
+        const msg = `Halo, perkenalkan aku ${reviewerName} dari divisi PSDM KSM AIoT. Selamat kamu dengan nama ${candidateName} dinyatakan lolos seleksi penerimaan anggota baru KSM AIoT! Silakan bergabung ke grup koordinasi berikut: https://chat.whatsapp.com/invite dan Discord: https://discord.gg/ksmaiot`;
+        showToast('Membuka WhatsApp...', 'info');
+        window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+      };
+    }
+
+    if (btnWaRejected) {
+      btnWaRejected.onclick = () => {
+        const rawPhone = (selectedReg.contact_info || '').trim();
+        const cleanPhone = rawPhone.replace(/\D/g, '').replace(/^0/, '62');
+        if (!cleanPhone) {
+          showToast('Nomor WhatsApp kandidat tidak tersedia.', 'warning');
+          return;
+        }
+        const reviewerName = currentUser.full_name || currentUser.name || 'Pengurus PSDM';
+        const candidateName = selectedReg.full_name || 'Calon Anggota';
+        const msg = `Halo, perkenalkan aku ${reviewerName} dari divisi PSDM KSM AIoT. Terima kasih telah berpartisipasi dalam seleksi KSM AIoT UPNVJ. Mohon maaf saat ini kamu belum dapat bergabung pada periode ini. Tetap semangat dan pantau terus kesempatan berikutnya!`;
+        showToast('Membuka WhatsApp...', 'info');
+        window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+      };
+    }
+
     if (modalPortfolio) {
       const url = (selectedReg.portfolio_url || '').trim();
       if (url && url !== '-' && url !== 'null' && url !== 'undefined') {
@@ -306,7 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   closeModalBtn?.addEventListener('click', closeReviewModal);
 
-  // Decision Action: Approve Candidate (Direct Database Hit)
+  // Decision Action: Approve Candidate (Direct Backend Hit)
   btnApprove?.addEventListener('click', async () => {
     if (!selectedReg) return;
     const token = getAuthToken();
@@ -318,30 +421,36 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify({
+          status: 'Accepted',
+          division: modalReviewDivision?.value || 'Akademik Riset',
+          role: modalReviewRole?.value || 'Anggota',
+          review_note: modalReviewNotes?.value.trim() || null
+        })
       });
 
       if (res.ok) {
         const updated = await res.json();
-        selectedReg.status = 'APPROVED';
+        selectedReg.status = 'Accepted';
         selectedReg.member_id = updated.member_id;
-        showToast(`Berkas Disetujui! Member ID ${updated.member_id || ''} resmi tersimpan di database.`, 'success');
+        showToast(`Calon anggota disetujui. Member ID: ${updated.member_id || '-'}`, 'success');
         renderStats();
         renderTable();
         closeReviewModal();
       } else {
         const err = await res.json().catch(() => ({}));
-        showToast(err.detail || 'Gagal menyetujui berkas di database.', 'error');
+        showToast(err.detail || 'Gagal menyetujui calon anggota.', 'error');
       }
     } catch (err) {
       console.error('Approve Error:', err);
-      showToast('Gagal terhubung ke server database.', 'error');
+      showToast('Gagal terhubung ke server.', 'error');
     } finally {
       btnApprove.disabled = false;
     }
   });
 
-  // Decision Action: Reject Candidate (Direct Database Hit)
+  // Decision Action: Reject Candidate (Direct Backend Hit)
   btnReject?.addEventListener('click', async () => {
     if (!selectedReg) return;
     const token = getAuthToken();
@@ -353,22 +462,26 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify({
+          status: 'Rejected',
+          review_note: modalReviewNotes?.value.trim() || null
+        })
       });
 
       if (res.ok) {
-        selectedReg.status = 'REJECTED';
-        showToast('Berkas Calon Anggota telah ditolak di database.', 'info');
+        selectedReg.status = 'Rejected';
+        showToast('Berkas calon anggota telah ditolak.', 'info');
         renderStats();
         renderTable();
         closeReviewModal();
       } else {
         const err = await res.json().catch(() => ({}));
-        showToast(err.detail || 'Gagal memperbarui status di database.', 'error');
+        showToast(err.detail || 'Gagal menolak berkas.', 'error');
       }
     } catch (err) {
       console.error('Reject Error:', err);
-      showToast('Gagal terhubung ke server database.', 'error');
+      showToast('Gagal terhubung ke server.', 'error');
     } finally {
       btnReject.disabled = false;
     }
