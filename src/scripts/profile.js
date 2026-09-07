@@ -1,6 +1,6 @@
 import '../style.css';
 import { initCRMLayout } from '../modules/crm-layout.js';
-import { showToast, initIcons } from '../modules/ui.js';
+import { showToast, initIcons, resolveAvatarUrl } from '../modules/ui.js';
 import { getAuthToken, getAuthUser } from '../modules/auth.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
@@ -36,11 +36,17 @@ function populateProfileUI(user) {
   if (!user) return;
 
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.student_id || 'orion')}&backgroundColor=240d42`;
-  const avatarUrl = user.avatar || defaultAvatar;
+  const avatarUrl = resolveAvatarUrl(user.avatar, user.student_id || 'orion');
 
   // Left Card Overview
   const cardAvatar = document.getElementById('profile-card-avatar');
-  if (cardAvatar) cardAvatar.src = avatarUrl;
+  if (cardAvatar) {
+    cardAvatar.src = avatarUrl;
+    cardAvatar.onerror = () => {
+      cardAvatar.onerror = null;
+      cardAvatar.src = defaultAvatar;
+    };
+  }
 
   const cardName = document.getElementById('profile-card-name');
   if (cardName) cardName.textContent = user.full_name || 'Pengurus KSM';
@@ -88,7 +94,7 @@ function setupAvatarGenerator() {
     const newAvatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}&backgroundColor=240d42`;
     if (cardAvatar) cardAvatar.src = newAvatarUrl;
     if (formAvatar) formAvatar.value = newAvatarUrl;
-    showToast(`Avatar baru dibuat dengan seed "${seed}"! Klik "Simpan Perubahan" untuk menyimpan.`, 'info');
+    showToast('Avatar dipilih. Klik "Simpan Perubahan" untuk menerapkan.', 'info');
   });
 }
 
@@ -193,7 +199,7 @@ function setupPasswordChangeForm() {
       });
 
       if (res.ok) {
-        showToast('Kata sandi berhasil diperbarui secara aman!', 'success');
+        showToast('Kata sandi berhasil diperbarui.', 'success');
         form.reset();
       } else {
         const err = await res.json();

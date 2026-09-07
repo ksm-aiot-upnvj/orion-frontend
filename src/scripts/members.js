@@ -1,6 +1,6 @@
 import '../style.css';
 import { initCRMLayout } from '../modules/crm-layout.js';
-import { showToast, initIcons } from '../modules/ui.js';
+import { showToast, initIcons, resolveAvatarUrl } from '../modules/ui.js';
 import { getAuthToken } from '../modules/auth.js';
 import { initialAlumniData } from '../modules/data.js';
 
@@ -193,9 +193,8 @@ function renderActiveMembers(filterText = '', division = 'all', track = 'all') {
       if (m.status === 'Tidak Aktif') statusClass = 'badge-rejected';
       if (m.status === 'Alumni') statusClass = 'badge-neutral';
 
-      const avatarSrc =
-        m.avatar ||
-        `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(m.student_id || 'orion')}&backgroundColor=240d42`;
+      const fallbackAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(m.student_id || m.full_name || 'orion')}&backgroundColor=240d42`;
+      const avatarSrc = resolveAvatarUrl(m.avatar, m.student_id || m.full_name || 'orion');
 
       return `
       <tr class="hover:bg-[#301057]/40 transition-colors">
@@ -211,7 +210,7 @@ function renderActiveMembers(filterText = '', division = 'all', track = 'all') {
         <td class="py-3 px-4">
           <div class="flex items-center space-x-3">
             <div class="w-8 h-8 rounded-full overflow-hidden bg-[#150626] border border-[#7C3AED]/40 flex-shrink-0">
-              <img src="${avatarSrc}" alt="${m.full_name}" class="w-full h-full object-cover" />
+              <img src="${avatarSrc}" alt="${m.full_name}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${fallbackAvatar}';" />
             </div>
             <div class="min-w-0">
               <p class="text-xs font-bold text-white truncate hover:text-[#A78BFA] cursor-pointer" onclick="window.showMemberProfile('${m.student_id}')">${m.full_name || '-'}</p>
@@ -357,9 +356,12 @@ window.showMemberProfile = function (studentId) {
 
   const avatarEl = document.getElementById('profile-modal-avatar');
   if (avatarEl) {
-    avatarEl.src =
-      m.avatar ||
-      `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(m.student_id || 'orion')}&backgroundColor=240d42`;
+    const fallbackUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(m.student_id || m.full_name || 'orion')}&backgroundColor=240d42`;
+    avatarEl.src = resolveAvatarUrl(m.avatar, m.student_id || m.full_name || 'orion');
+    avatarEl.onerror = () => {
+      avatarEl.onerror = null;
+      avatarEl.src = fallbackUrl;
+    };
   }
 
   // Status
@@ -683,7 +685,7 @@ async function handleImportExcelSubmit(e) {
     if (res.ok) {
       const data = await res.json();
       showToast(
-        `Sukses! Berhasil mengimpor/sinkron ${data.imported_count || data.count || 'semua'} anggota dari Excel!`,
+        `Berhasil mengimpor ${data.imported_count || data.count || ''} data anggota.`,
         'success'
       );
       closeModal('import-excel-modal');
@@ -759,10 +761,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (rawNim.length >= 2) {
-      const fullYear = `20${rawNim.slice(0, 2)}`;
+      const yearPrefix = rawNim.slice(0, 2);
+      const fullYear = parseInt(`20${yearPrefix}`, 10);
+      const currentYear = new Date().getFullYear() || 2026;
       const formIntake = document.getElementById('form-intake');
-      if (formIntake && !formIntake.value) {
-        formIntake.value = fullYear;
+      if (formIntake && !formIntake.value && fullYear >= 2000 && fullYear <= currentYear) {
+        formIntake.value = String(fullYear);
       }
     }
 

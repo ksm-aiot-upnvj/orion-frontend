@@ -253,3 +253,24 @@ NIM. ${signerNIM}
 
 \\end{document}`;
 }
+
+// ==========================================
+// AVATAR / IMAGE RESOLVER
+// ==========================================
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
+
+export function resolveAvatarUrl(avatar, defaultSeed = 'orion') {
+  const fallback = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(defaultSeed)}&backgroundColor=240d42`;
+  if (!avatar || avatar === '-' || avatar === 'null' || avatar === 'undefined') {
+    return fallback;
+  }
+  if (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('data:image')) {
+    return avatar;
+  }
+  let clean = avatar.replace(/^(\/|uploads\/)/, '');
+  if (!clean.startsWith('avatars/')) {
+    clean = `avatars/${clean}`;
+  }
+  return `${API_BASE_URL}/uploads/${clean}`;
+}
+

@@ -8,6 +8,7 @@
    ============================================================ */
 
 :root {
+  color-scheme: dark;
   /* Core Color Palette: Primary Black & Secondary Dark-Purple */
   --primary-dark: #0F051D;           /* Deep obsidian black-purple (Navbar, Topbar header) */
   --primary-light-accent: #9B5CE8;   /* Primary button, active link, focus highlight */
@@ -267,6 +268,7 @@ body {
   outline: none;
   transition: all 0.2s ease;
   width: 100%;
+  color-scheme: dark;
 }
 .input-institutional::placeholder {
   color: rgba(201, 164, 246, 0.4);
@@ -275,6 +277,41 @@ body {
   border-color: var(--primary-light-accent);
   box-shadow: 0 0 0 2px rgba(155, 92, 232, 0.25);
   background-color: #210a40;
+}
+
+/* ============================================================
+   NATIVE FORM CONTROLS DARK THEME (Datepickers, Indicators)
+   ============================================================ */
+
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23C9A4F6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 2v4'/%3E%3Cpath d='M16 2v4'/%3E%3Crect width='18' height='18' x='3' y='4' rx='2'/%3E%3Cpath d='M3 10h18'/%3E%3C/svg%3E");
+  background-position: center;
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  width: 20px;
+  height: 20px;
+  opacity: 0.9;
+  filter: none;
+  border-radius: 4px;
+  padding: 2px;
+  transition: opacity 0.2s ease, transform 0.15s ease, filter 0.2s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 5px rgba(201, 164, 246, 0.8));
 }
 
 /* ============================================================
@@ -461,6 +498,7 @@ body {
   outline: none;
   transition: all 0.2s ease;
   width: 100%;
+  color-scheme: dark;
 }
 .input-institutional::placeholder {
   color: rgba(201, 164, 246, 0.4);
