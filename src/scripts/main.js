@@ -109,13 +109,13 @@ function initStructureTabs() {
 async function initLiveStats() {
   try {
     const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
-    const res = await fetch(`${API_BASE}/members/`);
+    const res = await fetch(`${API_BASE}/members/count`);
     if (res.ok) {
-      const members = await res.json();
-      if (Array.isArray(members) && members.length > 0) {
+      const data = await res.json();
+      if (data && typeof data.total_members === 'number' && data.total_members > 0) {
         const memberCountEl = document.getElementById('stat-member-counter');
         if (memberCountEl) {
-          memberCountEl.setAttribute('data-target', String(members.length));
+          memberCountEl.setAttribute('data-target', String(data.total_members));
         }
       }
     }
@@ -230,7 +230,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check URL query parameters
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('login_required') === '1') {
-    showToast('Akses Dibatasi: Silakan login sebagai Pengurus KSM untuk masuk CRM.', 'error');
+    if (urlParams.get('expired') === '1') {
+      showToast('Sesi Anda telah berakhir. Silakan masuk kembali.', 'warning');
+    } else {
+      showToast('Akses Dibatasi: Silakan login sebagai Pengurus KSM.', 'error');
+    }
   }
 
   // Update Navbar UI based on active login session
@@ -272,9 +276,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeLoginBtn = document.getElementById('close-login-modal');
   const loginForm = document.getElementById('login-form');
 
-  if (urlParams.get('open_login') === '1') {
+  if (urlParams.get('open_login') === '1' || urlParams.get('login_required') === '1') {
     loginModal?.classList.remove('hidden');
     loginModal?.classList.add('flex');
+    loginModal?.classList.remove('opacity-0');
+    loginModal?.classList.add('opacity-100');
+    const inner = loginModal?.querySelector('div');
+    if (inner) {
+      inner.classList.remove('scale-95', 'opacity-0');
+      inner.classList.add('scale-100', 'opacity-100');
+    }
   }
 
   openLoginBtns.forEach(btn => {

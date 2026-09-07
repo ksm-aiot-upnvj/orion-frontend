@@ -1,8 +1,8 @@
 // Shared mock data & official Backend Enums for KSM AIoT Orion
 
 export const RESEARCH_FIELDS = [
-  { value: 'IoT Embedded', label: 'IoT Embedded', desc: 'ESP32, STM32, Sensor & Robotika, LoRa' },
-  { value: 'AI', label: 'Artificial Intelligence (AI)', desc: 'Computer Vision, Machine Learning, NLP, RAG' },
+  { value: 'IoT Embedded', label: 'IoT Embedded', desc: 'ESP32, Sensor, Aktuator, Protokol Komunikasi' },
+  { value: 'Artificial Intelligence', label: 'Artificial Intelligence (AI)', desc: 'Computer Vision, Machine Learning, NLP, RAG' },
   { value: 'Software Engineer & Cloud', label: 'Software Engineer & Cloud', desc: 'FastAPI, Modern Web App, Cloud Infrastructure' }
 ];
 

@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    showToast('Sedang merender PDF Surat Resmi (Times New Roman)...', 'info');
+    showToast('Menyiapkan dokumen PDF...', 'info');
 
     const opt = {
       margin: [15, 20, 15, 20], // top, left, bottom, right in mm
