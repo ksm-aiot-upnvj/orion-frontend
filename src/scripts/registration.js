@@ -172,12 +172,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (rawNim.length >= 7) {
       // Format is: YY (2) + 10 (2) + PRODI (3) -> digits at index 4..6
       const prodiCode = rawNim.slice(4, 7);
-      if (prodiCode === '510') {
-        detectedProdi = 'S1 Sistem Informasi';
+      if (prodiCode === '501') {
+        detectedProdi = 'D3 Sistem Informasi';
       } else if (prodiCode === '511') {
         detectedProdi = 'S1 Informatika';
       } else if (prodiCode === '512') {
-        detectedProdi = 'D3 Sistem Informasi';
+        detectedProdi = 'S1 Sistem Informasi';
       } else if (prodiCode === '513') {
         detectedProdi = 'S1 Sains Data';
       }

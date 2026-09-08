@@ -145,6 +145,10 @@
         <table class="table-institutional">
           <thead>
             <tr>
+              <th class="w-10 text-center">
+                <input type="checkbox" id="select-all-reg" title="Pilih Semua (Select All)"
+                  class="w-4 h-4 rounded bg-[#1f093a] border border-[#561F99] text-[#9B5CE8] focus:ring-[#9B5CE8] focus:ring-offset-0 cursor-pointer accent-[#9B5CE8]" />
+              </th>
               <th>Calon Anggota</th>
               <th>NIM Mahasiswa</th>
               <th>Program Studi</th>
@@ -153,12 +157,12 @@
               <th>Email UPNVJ</th>
               <th>Tanggal Submit</th>
               <th>Status Seleksi</th>
-              <th class="text-center">Aksi Review</th>
+              <th class="text-center">Aksi</th>
             </tr>
           </thead>
           <tbody id="admin-registrations-tbody" class="divide-y divide-[#561F99]/40">
             <tr>
-              <td colspan="9" class="text-center py-10 text-[#D8B4FE] font-mono text-xs">
+              <td colspan="10" class="text-center py-10 text-[#D8B4FE] font-mono text-xs">
                 Memuat data pendaftar dari backend...
               </td>
             </tr>
@@ -234,7 +238,8 @@
         </div>
 
         <!-- WhatsApp Direct Contact -->
-        <div class="p-3.5 rounded-lg bg-[#150626] border border-[#561F99] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div
+          class="p-3.5 rounded-lg bg-[#150626] border border-[#561F99] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div>
             <span class="text-[#D8B4FE] uppercase text-[10px] font-semibold block">Kontak WhatsApp</span>
             <span id="modal-review-phone" class="text-white font-mono font-bold text-xs mt-0.5 block">-</span>
@@ -283,16 +288,24 @@
               class="input-institutional text-xs"></textarea>
           </div>
 
-          <div class="flex items-center justify-end space-x-2.5 pt-2">
-            <button type="button" id="btn-decision-reject"
-              class="px-4 py-2 rounded-lg bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 border border-rose-500/40 text-xs font-semibold transition-colors flex items-center space-x-1.5">
-              <i data-lucide="x-circle" class="w-4 h-4"></i>
-              <span>Tolak (Reject)</span>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+            <button type="button" id="btn-decision-delete"
+              class="px-3.5 py-2 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/40 text-xs font-semibold transition-colors flex items-center justify-center space-x-1.5"
+              title="Hapus berkas pendaftaran ini permanen (Right to Erasure)">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-400"></i>
+              <span>Hapus Berkas</span>
             </button>
-            <button type="button" id="btn-decision-approve" class="btn-primary text-xs py-2 px-4 rounded-lg">
-              <i data-lucide="check-circle" class="w-4 h-4"></i>
-              <span>Setujui & Terbitkan Member ID</span>
-            </button>
+            <div class="flex items-center justify-end space-x-2.5">
+              <button type="button" id="btn-decision-reject"
+                class="px-4 py-2 rounded-lg bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 border border-rose-500/40 text-xs font-semibold transition-colors flex items-center space-x-1.5">
+                <i data-lucide="x-circle" class="w-4 h-4"></i>
+                <span>Tolak (Reject)</span>
+              </button>
+              <button type="button" id="btn-decision-approve" class="btn-primary text-xs py-2 px-4 rounded-lg">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span>Setujui & Terbitkan Member ID</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -345,7 +358,8 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block font-semibold text-[#D8B4FE] mb-1">Tanggal Deadline</label>
-            <input id="intake-deadline-date" type="date" value="2026-08-31" class="input-institutional text-xs cursor-pointer" />
+            <input id="intake-deadline-date" type="date"
+              class="input-institutional text-xs cursor-pointer" />
           </div>
           <div>
             <label class="block font-semibold text-[#D8B4FE] mb-1">Target Kuota Berkas</label>
@@ -361,6 +375,64 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Floating Bulk Action Bar -->
+  <div id="bulk-action-bar"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#240d42]/95 border border-[#561F99] shadow-2xl rounded-2xl px-5 py-3 backdrop-blur-md hidden items-center justify-between gap-5 text-white transition-all duration-300 min-w-[320px] sm:min-w-[440px]">
+    <div class="flex items-center space-x-3">
+      <div class="text-xs">
+        <span id="bulk-selected-count" class="font-bold text-[#C9A4F6] font-mono text-sm">0</span>
+        <span class="text-gray-300 ml-1">calon terpilih</span>
+      </div>
+    </div>
+    <div class="flex items-center space-x-2.5">
+      <button id="btn-cancel-bulk" type="button" class="btn-secondary text-xs py-1.5 px-3">
+        Batal
+      </button>
+      <button id="btn-bulk-delete" type="button"
+        class="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold inline-flex items-center space-x-1.5 shadow-sm transition-all cursor-pointer">
+        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+        <span>Hapus Terpilih</span>
+      </button>
+    </div>
+  </div>
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div id="deleteModalBackdrop" class="absolute inset-0 bg-black/75 backdrop-blur-sm cursor-pointer"></div>
+    <!-- Modal Dialog -->
+    <div
+      class="relative w-full max-w-md bg-[#240d42] border border-rose-500/40 rounded-2xl shadow-2xl p-6 text-white space-y-4">
+      <div class="flex items-start gap-4">
+        <!-- Icon -->
+        <div
+          class="flex-shrink-0 w-11 h-11 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center">
+          <i data-lucide="trash-2" class="w-5 h-5 text-rose-400"></i>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1">
+          <h2 class="text-base font-bold text-white">
+            Hapus Berkas Pendaftaran?
+          </h2>
+          <div id="deleteMessage" class="text-xs text-[#D8B4FE] mt-2 leading-relaxed space-y-1.5">
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-2.5 pt-2 border-t border-[#561F99]/40">
+        <button id="cancelDelete" type="button" class="btn-secondary text-xs px-4 py-2">
+          Batal
+        </button>
+        <button id="confirmDelete" type="button"
+          class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1.5 shadow-sm shadow-rose-950/50 cursor-pointer">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span id="confirmDeleteText">Hapus Permanen</span>
+        </button>
+      </div>
     </div>
   </div>
 

@@ -236,11 +236,21 @@ function renderActiveMembers(filterText = '', division = 'all', track = 'all') {
           </div>
         </td>
 
-        <!-- Status -->
+        <!-- Status & ERP Badge -->
         <td class="py-3 px-4">
-          <span class="badge-status ${statusClass} text-[10px]">
-            ${m.status || 'Aktif'}
-          </span>
+          <div class="flex flex-col space-y-1">
+            <span class="badge-status ${statusClass} text-[10px]">
+              ${m.status || 'Aktif'}
+            </span>
+            ${
+              m.has_erp_access
+                ? `<span title="Akses ERP: ${m.user_role || 'PENGURUS'} (Aktif)" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#7C3AED]/30 text-[#D8B4FE] border border-[#7C3AED]/50 w-max">
+                     <i data-lucide="shield-check" class="w-3 h-3 mr-1 text-emerald-400"></i>
+                     ERP: ${m.user_role || 'PENGURUS'}
+                   </span>`
+                : ''
+            }
+          </div>
         </td>
 
         <!-- Aksi -->
@@ -249,6 +259,10 @@ function renderActiveMembers(filterText = '', division = 'all', track = 'all') {
             <button onclick="window.showMemberProfile('${m.student_id}')" title="Cek Profil Lengkap"
               class="p-1.5 rounded-lg bg-[#150626] hover:bg-[#7C3AED]/30 text-[#A78BFA] hover:text-white border border-[#561F99]/60 transition-colors">
               <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+            </button>
+            <button onclick="window.openManageERP('${m.student_id}')" title="${m.has_erp_access ? 'Kelola / Reset Akses ERP' : 'Beri Akses Login ERP'}"
+              class="p-1.5 rounded-lg bg-[#150626] hover:bg-[#7C3AED]/30 ${m.has_erp_access ? 'text-emerald-400 border-emerald-500/50' : 'text-[#A78BFA] border-[#561F99]/60'} hover:text-white border transition-colors">
+              <i data-lucide="${m.has_erp_access ? 'shield-check' : 'key'}" class="w-3.5 h-3.5"></i>
             </button>
             <button onclick="window.openEditMember('${m.student_id}')" title="Edit Data"
               class="p-1.5 rounded-lg bg-[#150626] hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 border border-[#561F99]/60 transition-colors">
@@ -458,6 +472,21 @@ window.openCreateMember = function () {
   // Uncheck all tracks
   document.querySelectorAll('input[name="form_tracks"]').forEach((cb) => (cb.checked = false));
 
+  // Reset ERP access fields
+  const erpToggle = document.getElementById('form-erp-access-toggle');
+  if (erpToggle) erpToggle.checked = false;
+  document.getElementById('erp-access-fields')?.classList.add('hidden');
+  const pwdInput = document.getElementById('form-erp-password');
+  if (pwdInput) {
+    pwdInput.value = '';
+    pwdInput.placeholder = 'Minimal 8 karakter';
+  }
+  const roleSelect = document.getElementById('form-erp-role');
+  if (roleSelect) roleSelect.value = 'PENGURUS';
+
+  // Hide Make Alumni button in Create mode
+  document.getElementById('btn-make-alumni')?.classList.add('hidden');
+
   openModal('member-form-modal');
 };
 
@@ -495,6 +524,33 @@ window.openEditMember = function (studentId) {
   document.querySelectorAll('input[name="form_tracks"]').forEach((cb) => {
     cb.checked = tracks.includes(cb.value);
   });
+
+  // ERP Access fields in edit mode
+  const erpToggle = document.getElementById('form-erp-access-toggle');
+  const erpFields = document.getElementById('erp-access-fields');
+  const pwdInput = document.getElementById('form-erp-password');
+  const roleSelect = document.getElementById('form-erp-role');
+
+  if (m.has_erp_access) {
+    if (erpToggle) erpToggle.checked = true;
+    erpFields?.classList.remove('hidden');
+    if (pwdInput) {
+      pwdInput.value = '';
+      pwdInput.placeholder = 'Kosongkan jika tidak ingin diubah';
+    }
+    if (roleSelect) roleSelect.value = m.user_role || 'PENGURUS';
+  } else {
+    if (erpToggle) erpToggle.checked = false;
+    erpFields?.classList.add('hidden');
+    if (pwdInput) {
+      pwdInput.value = '';
+      pwdInput.placeholder = 'Minimal 8 karakter';
+    }
+    if (roleSelect) roleSelect.value = 'PENGURUS';
+  }
+
+  // Show Make Alumni button in Edit mode
+  document.getElementById('btn-make-alumni')?.classList.remove('hidden');
 
   openModal('member-form-modal');
 };
@@ -535,6 +591,17 @@ async function handleMemberFormSubmit(e) {
     portfolio_url: document.getElementById('form-portfolio').value.trim() || null,
     discord_id: document.getElementById('form-discord').value.trim() || null,
   };
+
+  // Add ERP fields if toggle is active
+  const erpToggle = document.getElementById('form-erp-access-toggle');
+  if (erpToggle && erpToggle.checked) {
+    payload.create_erp_account = true;
+    const pwd = document.getElementById('form-erp-password')?.value.trim();
+    if (pwd) {
+      payload.erp_password = pwd;
+    }
+    payload.erp_role = document.getElementById('form-erp-role')?.value || 'PENGURUS';
+  }
 
   try {
     const token = getAuthToken();
@@ -618,7 +685,133 @@ async function handleConfirmDelete() {
   }
 }
 
-// ==================== 4. IMPORT EXCEL ====================
+// ==================== 4. MANAGE ERP ACCESS ====================
+window.openManageERP = function (studentId) {
+  const m = activeMembersList.find((item) => String(item.student_id) === String(studentId));
+  if (!m) return;
+
+  document.getElementById('erp-target-identifier').value = m.student_id;
+  document.getElementById('erp-target-name').textContent = m.full_name;
+  document.getElementById('erp-target-nim').textContent = `${m.student_id} • ${m.role} ${m.division ? `(${m.division})` : ''}`;
+  document.getElementById('erp-modal-password').value = '';
+
+  const badgeContainer = document.getElementById('erp-current-status-badge');
+  const revokeBtn = document.getElementById('btn-revoke-erp-direct');
+  const pwdLabel = document.getElementById('erp-modal-pwd-label');
+  const saveLabel = document.getElementById('btn-save-erp-label');
+  const roleSelect = document.getElementById('erp-modal-role');
+
+  if (m.has_erp_access) {
+    badgeContainer.innerHTML = `<span class="badge-status bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[11px]"><i data-lucide="shield-check" class="w-3 h-3 mr-1 inline"></i>Akses ERP Aktif (${m.user_role || 'PENGURUS'})</span>`;
+    revokeBtn?.classList.remove('hidden');
+    pwdLabel.textContent = 'Reset Password Akun';
+    saveLabel.textContent = 'Perbarui Password';
+    if (roleSelect) roleSelect.value = m.user_role || 'PENGURUS';
+  } else {
+    badgeContainer.innerHTML = `<span class="badge-status bg-gray-500/20 text-gray-300 border-gray-500/40 text-[11px]">Belum Memiliki Akses ERP</span>`;
+    revokeBtn?.classList.add('hidden');
+    pwdLabel.textContent = 'Set Password Awal';
+    saveLabel.textContent = 'Aktifkan Akses';
+    if (roleSelect) roleSelect.value = 'PENGURUS';
+  }
+
+  openModal('manage-erp-modal');
+  initIcons();
+};
+
+async function handleSaveERP() {
+  const identifier = document.getElementById('erp-target-identifier').value;
+  const password = document.getElementById('erp-modal-password').value.trim();
+  const role = document.getElementById('erp-modal-role').value;
+  const m = activeMembersList.find((item) => String(item.student_id) === String(identifier));
+
+  if (!password) {
+    showToast('Password harus diisi (minimal 8 karakter)!', 'error');
+    return;
+  }
+  if (password.length < 8) {
+    showToast('Password terlalu pendek (minimal 8 karakter)!', 'error');
+    return;
+  }
+
+  const saveBtn = document.getElementById('btn-save-erp-modal');
+  saveBtn.disabled = true;
+
+  try {
+    const token = getAuthToken();
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+
+    let res;
+    if (m && m.has_erp_access) {
+      res = await fetch(`${API_BASE_URL}/members/${identifier}/reset-password`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ new_password: password }),
+      });
+    } else {
+      res = await fetch(`${API_BASE_URL}/members/${identifier}/access`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ password, role }),
+      });
+    }
+
+    if (res.ok) {
+      const data = await res.json();
+      showToast(data.message || 'Hak akses ERP berhasil diperbarui!', 'success');
+      closeModal('manage-erp-modal');
+      await fetchMembersFromBackend();
+    } else {
+      const err = await res.json();
+      showToast(`Gagal: ${err.detail || 'Terjadi kesalahan'}`, 'error');
+    }
+  } catch (e) {
+    showToast(`Error koneksi: ${e.message}`, 'error');
+  } finally {
+    saveBtn.disabled = false;
+  }
+}
+
+async function handleRevokeERP() {
+  const identifier = document.getElementById('erp-target-identifier').value;
+  const m = activeMembersList.find((item) => String(item.student_id) === String(identifier));
+  const name = m ? m.full_name : identifier;
+
+  if (!confirm(`Apakah Anda yakin ingin mencabut hak akses login ERP untuk ${name}? Akun pengurus ini tidak akan bisa login lagi.`)) {
+    return;
+  }
+
+  const revokeBtn = document.getElementById('btn-revoke-erp-direct');
+  revokeBtn.disabled = true;
+
+  try {
+    const token = getAuthToken();
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(`${API_BASE_URL}/members/${identifier}/access`, {
+      method: 'DELETE',
+      headers,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      showToast(data.message || 'Akses ERP berhasil dicabut!', 'success');
+      closeModal('manage-erp-modal');
+      await fetchMembersFromBackend();
+    } else {
+      const err = await res.json();
+      showToast(`Gagal mencabut akses: ${err.detail || 'Terjadi kesalahan'}`, 'error');
+    }
+  } catch (e) {
+    showToast(`Error koneksi: ${e.message}`, 'error');
+  } finally {
+    revokeBtn.disabled = false;
+  }
+}
+
+// ==================== 5. IMPORT EXCEL ====================
 function openImportExcelModal() {
   selectedExcelFile = null;
   const fileInput = document.getElementById('excel-file-input');
@@ -861,6 +1054,45 @@ document.addEventListener('DOMContentLoaded', () => {
   document
     .getElementById('btn-cancel-import')
     ?.addEventListener('click', () => closeModal('import-excel-modal'));
+  // ERP Access Controls & Alumni Handlers
+  document.getElementById('form-erp-access-toggle')?.addEventListener('change', (e) => {
+    const fields = document.getElementById('erp-access-fields');
+    if (e.target.checked) {
+      fields?.classList.remove('hidden');
+    } else {
+      fields?.classList.add('hidden');
+    }
+  });
+
+  document.getElementById('btn-make-alumni')?.addEventListener('click', () => {
+    const name = document.getElementById('form-full-name')?.value || 'Anggota ini';
+    if (!confirm(`Apakah Anda yakin ingin mengubah status ${name} menjadi Alumni? Tindakan ini akan otomatis mencabut hak akses login ERP.`)) {
+      return;
+    }
+    const statusSelect = document.getElementById('form-status');
+    if (statusSelect) statusSelect.value = 'Alumni';
+    const erpToggle = document.getElementById('form-erp-access-toggle');
+    if (erpToggle) erpToggle.checked = false;
+    document.getElementById('erp-access-fields')?.classList.add('hidden');
+
+    const form = document.getElementById('member-form');
+    if (form) {
+      form.requestSubmit();
+    }
+  });
+
+  document
+    .getElementById('close-erp-modal')
+    ?.addEventListener('click', () => closeModal('manage-erp-modal'));
+  document
+    .getElementById('btn-cancel-erp-modal')
+    ?.addEventListener('click', () => closeModal('manage-erp-modal'));
+  document
+    .getElementById('btn-save-erp-modal')
+    ?.addEventListener('click', handleSaveERP);
+  document
+    .getElementById('btn-revoke-erp-direct')
+    ?.addEventListener('click', handleRevokeERP);
 
   // Export CSV
   document.getElementById('btn-export-member')?.addEventListener('click', () => {

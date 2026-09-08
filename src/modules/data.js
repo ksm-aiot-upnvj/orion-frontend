@@ -7,10 +7,10 @@ export const RESEARCH_FIELDS = [
 ];
 
 export const STUDY_PROGRAMS = [
+  { value: 'D3 Sistem Informasi', code: '501' },
   { value: 'S1 Informatika', code: '511' },
-  { value: 'S1 Sistem Informasi', code: '510' },
+  { value: 'S1 Sistem Informasi', code: '512' },
   { value: 'S1 Sains Data', code: '513' },
-  { value: 'D3 Sistem Informasi', code: '512' }
 ];
 
 export const initialAlumniData = [
