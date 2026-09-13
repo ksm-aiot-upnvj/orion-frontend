@@ -91,7 +91,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
     const desktopNavLinksHtml = navItems.map(item => {
       const isActive = item.id === activePage;
       return `
-        <a href="${item.href}" class="text-xs font-semibold py-1.5 px-3 rounded-md transition-colors flex items-center space-x-1.5 ${isActive
+        <a href="${item.href}" class="w-28 justify-center text-xs font-semibold py-1.5 px-3 rounded-md transition-colors flex items-center space-x-1.5 ${isActive
           ? 'bg-[#9B5CE8] text-white font-bold border border-[#9B5CE8] shadow-xs'
           : 'text-purple-100 hover:text-white hover:bg-[#1E0A38]'
         }">
@@ -104,7 +104,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
     const mobileNavLinksHtml = navItems.map(item => {
       const isActive = item.id === activePage;
       return `
-        <a href="${item.href}" class="text-[11px] font-semibold py-1 px-2.5 rounded-lg whitespace-nowrap transition-colors flex items-center space-x-1.5 flex-shrink-0 ${isActive
+        <a href="${item.href}" class="w-28 justify-center text-[11px] font-semibold py-1 px-2.5 rounded-lg whitespace-nowrap transition-colors flex items-center space-x-1.5 flex-shrink-0 ${isActive
           ? 'bg-[#9B5CE8] text-white font-bold border border-[#9B5CE8] shadow-xs'
           : 'text-[#D8B4FE] hover:text-white bg-[#1E0A38] border border-[#561F99]'
         }">
@@ -115,7 +115,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
     }).join('');
 
     topbarContainer.innerHTML = `
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between relative gap-2">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center relative gap-2">
         
         <!-- Left: Brand / Title context -->
         <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
@@ -137,12 +137,12 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
         </div>
 
         <!-- Center: Quick Nav Modules (Primary Navigation on Navbar - Desktop) -->
-        <nav class="hidden md:flex items-center space-x-1.5 overflow-x-auto py-1">
+        <nav class="hidden md:flex items-center justify-self-center space-x-1.5 overflow-x-auto py-1">
           ${desktopNavLinksHtml}
         </nav>
 
         <!-- Right: Rounded Account Avatar with Flowbite-style Dropdown -->
-        <div class="relative flex items-center flex-shrink-0">
+        <div class="relative flex items-center justify-self-end flex-shrink-0">
           <button type="button" id="user-menu-btn" aria-expanded="false" title="Akun Pengurus"
             class="flex items-center text-sm rounded-full p-0.5 focus:ring-4 focus:ring-purple-900/50 focus:outline-none transition-all hover:ring-2 hover:ring-[#9B5CE8]">
             <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border border-[#561F99] bg-[#1E0A38] flex items-center justify-center">

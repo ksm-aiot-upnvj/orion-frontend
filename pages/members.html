@@ -74,7 +74,7 @@
           <!-- Search by Name/NIM -->
           <div class="sm:col-span-4 relative">
             <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#C9A4F6]"></i>
-            <input type="text" id="search-member-input" placeholder="Cari nama, NIM, email, atau keahlian..."
+            <input type="text" id="search-member-input" name="member-search" autocomplete="off" placeholder="Cari nama, NIM, email, atau keahlian..."
               class="input-institutional !pl-11 !py-2 text-xs" />
           </div>
 
@@ -563,6 +563,35 @@
         </div>
 
       </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 4: ALUMNI CONFIRMATION MODAL ==================== -->
+  <div id="alumni-confirm-modal"
+    class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-[#1e0a36] w-full max-w-md rounded-2xl border border-[#7C3AED]/50 shadow-2xl p-5 text-white space-y-4 animate-in fade-in zoom-in-95 duration-200">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-xl bg-[#7C3AED]/20 border border-[#7C3AED]/40 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="graduation-cap" class="w-5 h-5 text-[#C9A4F6]"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold text-white">Jadikan Alumni?</h3>
+          <p class="text-[11px] text-[#D8B4FE] mt-1">Perubahan status untuk <span id="alumni-confirm-name" class="font-bold text-white"></span></p>
+        </div>
+      </div>
+
+      <div class="rounded-xl bg-[#150626] border border-[#561F99] p-3 text-xs text-[#E9D8FD] leading-relaxed space-y-2">
+        <p>Status anggota akan berubah menjadi <strong class="text-[#C9A4F6]">Alumni</strong> dan akses login ERP akan dicabut.</p>
+        <p>Data histori anggota tetap disimpan. Profil Alumni dapat dilengkapi kemudian dengan persetujuan publikasi.</p>
+      </div>
+
+      <div class="pt-2 border-t border-[#561F99] flex items-center justify-end gap-2">
+        <button type="button" id="btn-cancel-alumni" class="btn-outline-neutral text-xs py-1.5 px-3.5">Batal</button>
+        <button type="button" id="btn-confirm-alumni" class="btn-primary-purple text-xs py-1.5 px-3.5 inline-flex items-center space-x-1.5">
+          <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+          <span>Ya, Jadikan Alumni</span>
+        </button>
+      </div>
     </div>
   </div>
 

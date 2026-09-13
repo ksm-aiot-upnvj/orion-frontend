@@ -7,9 +7,14 @@ import { initialAlumniData } from '../modules/data.js';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
 
 let activeMembersList = [];
-let alumniList = [...initialAlumniData];
+let alumniList = [];
 let memberToDelete = null;
 let selectedExcelFile = null;
+let pendingAlumniConfirmation = false;
+
+function showApiOfflineMessage() {
+  showToast('Layanan API offline / API tidak dapat dijangkau.', 'error');
+}
 
 // ==================== FETCH MEMBERS ====================
 async function fetchMembersFromBackend() {
@@ -37,12 +42,14 @@ async function fetchMembersFromBackend() {
     const res = await fetch(`${API_BASE_URL}/members/`, { headers });
 
     if (res.ok) {
-      activeMembersList = await res.json();
+      const members = await res.json();
+      activeMembersList = members.filter((member) => member.status === 'Aktif');
     } else {
       activeMembersList = getFallbackMembers();
     }
   } catch {
     activeMembersList = getFallbackMembers();
+    showApiOfflineMessage();
   }
 
   const tabLabel = document.getElementById('active-members-tab-label');
@@ -54,6 +61,33 @@ async function fetchMembersFromBackend() {
   }
 
   applyFilter();
+}
+
+async function fetchAlumniFromBackend() {
+  try {
+    const token = getAuthToken();
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(`${API_BASE_URL}/members/?status=Alumni`, { headers });
+    if (!res.ok) throw new Error(`Alumni request failed: ${res.status}`);
+
+    const members = await res.json();
+    alumniList = members.map((member) => ({
+      name: member.full_name,
+      angkatan: member.intake_period || '-',
+      currentRole: member.role || 'Alumni KSM AIoT',
+      company: 'Belum diisi',
+      category: 'KSM AIoT',
+      photo: resolveAvatarUrl(member.avatar, member.student_id || member.full_name),
+      project: member.focus_expertise || member.project_experience || 'Belum mengisi profil alumni.',
+      linkedin: member.portfolio_url || '#',
+    }));
+  } catch {
+    // Keep the existing showcase data available only when the backend is offline.
+    alumniList = [...initialAlumniData];
+    showApiOfflineMessage();
+  }
+
+  renderAlumni();
 }
 
 function getFallbackMembers() {
@@ -143,10 +177,13 @@ function renderActiveMembers(filterText = '', division = 'all', track = 'all') {
   }
 
   if (filtered.length === 0) {
+    const emptyMessage = activeMembersList.length === 0
+      ? 'Belum ada data anggota aktif di database.'
+      : 'Tidak ada data anggota yang sesuai dengan kriteria pencarian.';
     tbody.innerHTML = `
       <tr>
         <td colspan="7" class="text-center py-10 text-[#D8B4FE] font-mono text-xs">
-          Tidak ada data anggota yang sesuai dengan kriteria pencarian.
+          ${emptyMessage}
         </td>
       </tr>
     `;
@@ -628,12 +665,13 @@ async function handleMemberFormSubmit(e) {
       );
       closeModal('member-form-modal');
       await fetchMembersFromBackend();
+      await fetchAlumniFromBackend();
     } else {
       const err = await res.json();
       showToast(`Gagal menyimpan data: ${err.detail || 'Terjadi kesalahan'}`, 'error');
     }
   } catch (error) {
-    showToast(`Error koneksi backend: ${error.message}`, 'error');
+    showApiOfflineMessage();
   } finally {
     submitBtn.disabled = false;
     document.getElementById('btn-submit-member-label').textContent = originalLabel;
@@ -677,7 +715,7 @@ async function handleConfirmDelete() {
       showToast(`Gagal menghapus anggota: ${err.detail || 'Terjadi kesalahan'}`, 'error');
     }
   } catch (error) {
-    showToast(`Error: ${error.message}`, 'error');
+    showApiOfflineMessage();
   } finally {
     btn.disabled = false;
     btn.innerHTML = `<i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Hapus</span>`;
@@ -769,7 +807,7 @@ async function handleSaveERP() {
       showToast(`Gagal: ${err.detail || 'Terjadi kesalahan'}`, 'error');
     }
   } catch (e) {
-    showToast(`Error koneksi: ${e.message}`, 'error');
+    showApiOfflineMessage();
   } finally {
     saveBtn.disabled = false;
   }
@@ -805,7 +843,7 @@ async function handleRevokeERP() {
       showToast(`Gagal mencabut akses: ${err.detail || 'Terjadi kesalahan'}`, 'error');
     }
   } catch (e) {
-    showToast(`Error koneksi: ${e.message}`, 'error');
+    showApiOfflineMessage();
   } finally {
     revokeBtn.disabled = false;
   }
@@ -888,7 +926,7 @@ async function handleImportExcelSubmit(e) {
       showToast(`Gagal import Excel: ${err.detail || 'Terjadi kesalahan format sheet'}`, 'error');
     }
   } catch (error) {
-    showToast(`Error import: ${error.message}`, 'error');
+    showApiOfflineMessage();
   } finally {
     submitBtn.disabled = false;
     labelEl.textContent = 'Upload & Proses';
@@ -914,8 +952,13 @@ function closeModal(id) {
 // ==================== DOM INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
   initCRMLayout('members', 'Manajemen Anggota & Alumni');
+  const memberSearchInput = document.getElementById('search-member-input');
+  if (memberSearchInput) {
+    memberSearchInput.value = '';
+    memberSearchInput.setAttribute('autocomplete', 'off');
+  }
   fetchMembersFromBackend();
-  renderAlumni();
+  fetchAlumniFromBackend();
 
   // Tab switching
   const tabBtns = document.querySelectorAll('.tab-toggle-btn');
@@ -1066,9 +1109,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-make-alumni')?.addEventListener('click', () => {
     const name = document.getElementById('form-full-name')?.value || 'Anggota ini';
-    if (!confirm(`Apakah Anda yakin ingin mengubah status ${name} menjadi Alumni? Tindakan ini akan otomatis mencabut hak akses login ERP.`)) {
-      return;
-    }
+    document.getElementById('alumni-confirm-name').textContent = name;
+    pendingAlumniConfirmation = true;
+    openModal('alumni-confirm-modal');
+  });
+
+  document.getElementById('btn-cancel-alumni')?.addEventListener('click', () => {
+    pendingAlumniConfirmation = false;
+    closeModal('alumni-confirm-modal');
+  });
+
+  document.getElementById('btn-confirm-alumni')?.addEventListener('click', () => {
+    if (!pendingAlumniConfirmation) return;
+
+    pendingAlumniConfirmation = false;
+    closeModal('alumni-confirm-modal');
     const statusSelect = document.getElementById('form-status');
     if (statusSelect) statusSelect.value = 'Alumni';
     const erpToggle = document.getElementById('form-erp-access-toggle');
