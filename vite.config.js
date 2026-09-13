@@ -12,6 +12,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         registration: resolve(__dirname, 'pages/registration.html'),
+        profile: resolve(__dirname, 'pages/profile.html'),
         selection: resolve(__dirname, 'pages/selection.html'),
         members: resolve(__dirname, 'pages/members.html'),
         inventory: resolve(__dirname, 'pages/inventory.html'),
