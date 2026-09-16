@@ -53,3 +53,7 @@ Untuk membuat bundle siap rilis di server produksi:
 pnpm run build
 ```
 Hasil kompilasi siap saji akan tersimpan pada folder `dist/`.
+
+## 📚 Spesifikasi Kebutuhan
+
+Dokumen SKPL/SRS yang dihasilkan dari implementasi backend dan frontend tersedia di [orion-backend/docs/SKPL.md](../orion-backend/docs/SKPL.md).
