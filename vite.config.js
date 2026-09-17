@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
+  base: '/orion/',
   server: {
     port: 3000,
     open: true,
@@ -21,4 +22,5 @@ export default defineConfig({
       }
     }
   }
-});
+})
+

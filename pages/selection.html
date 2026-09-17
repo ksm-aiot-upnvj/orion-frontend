@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seleksi Calon Anggota — KSM AIoT ERP</title>
   <meta name="description" content="Panel Review Berkas & Keputusan Seleksi Calon Anggota Baru KSM AIoT UPNVJ." />
-  <link rel="icon" type="image/png" href="/ksm-aiot-logo.png" />
+  <link rel="icon" type="image/png" href="%BASE_URL%ksm-aiot-logo.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -228,13 +228,44 @@
           <p class="text-white text-xs leading-relaxed" id="modal-review-motivation">-</p>
         </div>
 
+        <!-- Berkas CV (PDF) & Preview Feature -->
+        <div class="p-3.5 rounded-lg bg-[#150626] border border-[#561F99] space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[#D8B4FE] uppercase text-[10px] font-semibold flex items-center space-x-1.5">
+              <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
+              <span>Berkas Dokumen CV (PDF)</span>
+            </span>
+            <span id="modal-cv-status-badge"
+              class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 border border-white/10 text-gray-400">Tidak ada
+              berkas</span>
+          </div>
+          <div id="modal-cv-actions" class="hidden flex items-center gap-2 pt-1">
+            <button type="button" id="btn-preview-cv"
+              class="px-3 py-1.5 rounded-lg bg-[#7C3AED]/20 hover:bg-[#7C3AED]/40 text-[#D8B4FE] hover:text-white border border-[#7C3AED]/50 text-xs font-semibold flex items-center space-x-1.5 transition-colors shadow-sm">
+              <i data-lucide="eye" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
+              <span>Preview CV</span>
+            </button>
+            <a id="btn-download-cv" href="#" target="_blank"
+              class="px-3 py-1.5 rounded-lg bg-[#301057] hover:bg-[#3d1566] text-white border border-[#561F99] text-xs font-semibold flex items-center space-x-1.5 transition-colors">
+              <i data-lucide="external-link" class="w-3.5 h-3.5 text-gray-300"></i>
+              <span>Buka di Tab Baru</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Tautan Portofolio / GitHub / LinkedIn -->
         <div class="p-3.5 rounded-lg bg-[#150626] border border-[#561F99] space-y-1.5">
-          <span class="text-[#D8B4FE] uppercase text-[10px] font-semibold block">Tautan Portofolio / GitHub / CV</span>
-          <a id="modal-review-portfolio" href="#" target="_blank"
-            class="text-[#C9A4F6] hover:text-white hover:underline font-mono text-xs flex items-center space-x-1.5 break-all transition-colors">
-            <i data-lucide="link" class="w-3.5 h-3.5 flex-shrink-0"></i>
-            <span class="truncate">-</span>
-          </a>
+          <span class="text-[#D8B4FE] uppercase text-[10px] font-semibold flex items-center space-x-1.5">
+            <i data-lucide="globe" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
+            <span>Tautan Portofolio / GitHub / LinkedIn</span>
+          </span>
+          <div id="modal-portfolio-container" class="pt-0.5">
+            <a id="modal-review-portfolio" href="#" target="_blank" rel="noopener noreferrer"
+              class="text-[#C9A4F6] hover:text-white hover:underline font-mono text-xs flex items-center space-x-1.5 break-all transition-colors">
+              <i data-lucide="link" class="w-3.5 h-3.5 flex-shrink-0"></i>
+              <span id="modal-portfolio-text" class="truncate">-</span>
+            </a>
+          </div>
         </div>
 
         <!-- WhatsApp Direct Contact -->
@@ -258,28 +289,14 @@
           </div>
         </div>
 
-        <!-- Decision Form Section -->
+        <!-- Decision Form Section (Default Role: Anggota) -->
         <div class="pt-3 border-t border-[#561F99] space-y-3">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-[#D8B4FE] mb-1">Divisi Penempatan</label>
-              <select id="modal-review-division" class="input-institutional text-xs">
-                <option value="Akademik Riset" class="bg-[#240d42] text-white">Akademik Riset</option>
-                <option value="PSDM" class="bg-[#240d42] text-white">PSDM</option>
-                <option value="Humas Multimedia" class="bg-[#240d42] text-white">Humas Multimedia</option>
-                <option value="BPH" class="bg-[#240d42] text-white">BPH</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-[#D8B4FE] mb-1">Jabatan / Role</label>
-              <select id="modal-review-role" class="input-institutional text-xs">
-                <option value="Anggota" class="bg-[#240d42] text-white">Anggota</option>
-                <option value="Staff" class="bg-[#240d42] text-white">Staff</option>
-                <option value="Sekretaris" class="bg-[#240d42] text-white">Sekretaris</option>
-                <option value="Bendahara" class="bg-[#240d42] text-white">Bendahara</option>
-                <option value="Kepala Divisi" class="bg-[#240d42] text-white">Kepala Divisi</option>
-              </select>
-            </div>
+          <div class="flex items-center justify-between p-2.5 rounded-lg bg-[#150626] border border-[#561F99]/60 text-xs">
+            <span class="text-gray-400">Penetapan Keanggotaan:</span>
+            <span class="font-semibold text-[#D8B4FE] font-mono flex items-center space-x-1.5">
+              <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>Role: Anggota (Default Seleksi)</span>
+            </span>
           </div>
 
           <div>
@@ -432,6 +449,37 @@
           <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
           <span id="confirmDeleteText">Hapus Permanen</span>
         </button>
+      </div>
+    </div>
+  <!-- Modal Preview CV PDF Inline -->
+  <div id="cv-preview-modal"
+    class="fixed inset-0 z-[60] bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6 overflow-hidden">
+    <div
+      class="bg-[#1e0a36] w-full max-w-4xl h-[90vh] rounded-2xl border border-[#7C3AED]/50 shadow-2xl flex flex-col overflow-hidden text-white animate-in fade-in zoom-in-95 duration-200">
+      <div class="p-4 border-b border-[#561F99] bg-[#301057]/80 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#7C3AED]/20 border border-[#7C3AED] flex items-center justify-center">
+            <i data-lucide="file-text" class="w-4 h-4 text-[#A78BFA]"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white" id="cv-preview-title">Preview Berkas CV</h3>
+            <p class="text-[11px] text-[#D8B4FE]">Pratinjau dokumen PDF kurikulum vitae calon anggota</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <a id="cv-preview-external" href="#" target="_blank"
+            class="p-1.5 rounded-lg text-[#C9A4F6] hover:text-white hover:bg-white/10" title="Buka di tab baru">
+            <i data-lucide="external-link" class="w-4 h-4"></i>
+          </a>
+          <button type="button" id="close-cv-preview-modal"
+            class="p-1.5 rounded-lg text-[#C9A4F6] hover:text-white hover:bg-white/10" title="Tutup">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+      <div class="flex-1 bg-[#0a0214] p-1 overflow-hidden relative">
+        <iframe id="cv-preview-frame" src="" class="w-full h-full rounded-xl border border-[#561F99]/40 bg-white"
+          title="CV Preview"></iframe>
       </div>
     </div>
   </div>

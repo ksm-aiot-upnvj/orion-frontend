@@ -2,6 +2,7 @@ import { login } from '../modules/auth.js';
 import { initIcons, showToast } from '../modules/ui.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
+const APP_BASE_URL = import.meta.env.BASE_URL;
 
 document.addEventListener('DOMContentLoaded', () => {
   initIcons();
@@ -36,6 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let uploadedPhotoBase64 = '';
   let uploadedCvName = '';
+  let uploadedCvPath = '';
+  let cvUploadInProgress = false;
 
   // ============================================================
   // Intake Status Verification (Real-Time Backend Endpoint Hit)
@@ -285,8 +288,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Handle CV / Resume File Upload
-  cvFileInput?.addEventListener('change', (e) => {
+  // Handle CV / Resume File Upload (Uploads to Backend Storage)
+  cvFileInput?.addEventListener('change', async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -296,12 +299,56 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    uploadedCvName = file.name;
-    if (cvFilenameLabel) {
-      cvFilenameLabel.textContent = `✓ ${file.name}`;
-      cvFilenameLabel.classList.add('text-emerald-300');
+    if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+      showToast('Format berkas CV harus PDF!', 'error');
+      cvFileInput.value = '';
+      return;
     }
-    showToast(`Berkas CV "${file.name}" siap dilampirkan.`, 'info');
+
+    uploadedCvName = file.name;
+    cvUploadInProgress = true;
+    if (cvFilenameLabel) {
+      cvFilenameLabel.textContent = `Mengunggah ${file.name}...`;
+      cvFilenameLabel.classList.remove('text-emerald-300');
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch(`${API_BASE_URL}/uploads/cv`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        uploadedCvPath = data.path; // e.g. 'cvs/uuid.pdf'
+        if (cvFilenameLabel) {
+          cvFilenameLabel.textContent = `✓ ${file.name}`;
+          cvFilenameLabel.classList.add('text-emerald-300');
+        }
+        showToast(`Berkas CV "${file.name}" berhasil diunggah ke server.`, 'success');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        showToast(`Gagal mengunggah CV: ${err.detail || 'Format file tidak didukung'}`, 'error');
+        if (cvFilenameLabel) {
+          cvFilenameLabel.textContent = 'Upload CV (.PDF)';
+          cvFilenameLabel.classList.remove('text-emerald-300');
+        }
+        uploadedCvPath = '';
+      }
+    } catch (err) {
+      console.error('CV Upload Error:', err);
+      showToast('Gagal terhubung ke server penyimpanan CV.', 'error');
+      if (cvFilenameLabel) {
+        cvFilenameLabel.textContent = 'Upload CV (.PDF)';
+        cvFilenameLabel.classList.remove('text-emerald-300');
+      }
+      uploadedCvPath = '';
+    } finally {
+      cvUploadInProgress = false;
+    }
   });
 
   // Live Motivation Sentence & Word Counter
@@ -371,6 +418,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    if (cvUploadInProgress) {
+      showToast('Tunggu sampai upload CV selesai sebelum mengirim formulir.', 'warning');
+      return;
+    }
+
     const originalBtnText = submitBtn?.innerHTML || 'Kirim Formulir Pendaftaran';
 
     const motivationText = motivationInput?.value.trim() || '';
@@ -403,6 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const portfolioInput = document.getElementById('input-portfolio');
     const payload = {
       student_id: rawNim,
       full_name: nameInput.value.trim(),
@@ -413,6 +466,8 @@ document.addEventListener('DOMContentLoaded', () => {
       interest_track: trackInput.value,
       motivation: motivationText,
       photo: uploadedPhotoPath || null,
+      cv_url: uploadedCvPath || null,
+      portfolio_url: portfolioInput ? portfolioInput.value.trim() || null : null,
       consent_given: true
     };
 
@@ -432,20 +487,71 @@ document.addEventListener('DOMContentLoaded', () => {
       if (res.ok) {
         const data = await res.json();
         showToast(`Pendaftaran berhasil dikirim! NIM: ${data.student_id}`, 'success');
-        if (stepIcon2) {
-          stepIcon2.className = 'w-8 h-8 rounded-full bg-[#9B5CE8] text-white flex items-center justify-center font-bold text-xs shadow-sm';
+
+        // Stepper: Set Step 1, 2, 3 as active/completed
+        const stepIcon1 = document.getElementById('step-icon-1');
+        const stepIcon2 = document.getElementById('step-icon-2');
+        const stepIcon3 = document.getElementById('step-icon-3');
+        const stepLine1 = document.getElementById('step-line-1');
+        const stepLabel3 = document.getElementById('step-label-3');
+
+        if (stepLine1) {
+          stepLine1.style.width = '100%';
         }
+        if (stepIcon2) {
+          stepIcon2.className = 'w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#9B5CE8] text-white flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#1E0A38]';
+        }
+        if (stepIcon3) {
+          stepIcon3.className = 'w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#1E0A38]';
+          stepIcon3.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i>';
+        }
+        if (stepLabel3) {
+          stepLabel3.className = 'text-[10px] sm:text-[11px] font-bold text-emerald-400 mt-2 font-mono leading-tight';
+        }
+
+        // Switch to Step 3: Thank You / Terima Kasih View
+        const mainGrid = document.getElementById('registration-main-grid');
+        const successContainer = document.getElementById('step-3-success-container');
+        if (mainGrid && successContainer) {
+          mainGrid.classList.add('hidden');
+          successContainer.classList.remove('hidden');
+
+          const sNim = document.getElementById('success-nim');
+          const sName = document.getElementById('success-name');
+          const sProdi = document.getElementById('success-prodi');
+          const sTrack = document.getElementById('success-track');
+
+          if (sNim) sNim.textContent = data.student_id || rawNim;
+          if (sName) sName.textContent = data.full_name || nameInput.value;
+          if (sProdi) sProdi.textContent = prodiInput.value;
+          if (sTrack) sTrack.textContent = trackInput.value;
+
+          initIcons();
+
+          // Smooth scroll to top
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+
+          // 5-second countdown to auto redirect to /orion/
+          let countdown = 5;
+          const countdownEl = document.getElementById('redirect-countdown');
+          const timer = setInterval(() => {
+            countdown -= 1;
+            if (countdownEl) countdownEl.textContent = String(countdown);
+            if (countdown <= 0) {
+              clearInterval(timer);
+              window.location.href = APP_BASE_URL;
+            }
+          }, 1000);
+        }
+
         form.reset();
         uploadedPhotoBase64 = '';
         uploadedCvName = '';
-        if (photoFilenameLabel) photoFilenameLabel.textContent = 'Pilih file (JPG / PNG, maks 2MB)';
+        uploadedCvPath = '';
+        if (photoFilenameLabel) photoFilenameLabel.textContent = 'Pilih Foto (.JPG, .PNG)';
         if (cvFilenameLabel) {
-          cvFilenameLabel.textContent = 'Pilih file (PDF, maks 5MB)';
+          cvFilenameLabel.textContent = 'Upload CV (.PDF)';
           cvFilenameLabel.classList.remove('text-emerald-300');
-        }
-        if (motivationCounter) {
-          motivationCounter.textContent = '0/3 Kalimat • 0/100 Kata';
-          motivationCounter.className = 'text-[11px] font-mono text-[#C9A4F6]';
         }
         updateLiveCard();
       } else {
@@ -558,7 +664,7 @@ document.addEventListener('DOMContentLoaded', () => {
       initIcons();
 
       if (success) {
-        window.location.href = '/pages/dashboard.html';
+        window.location.href = `${APP_BASE_URL}pages/members.html`;
       }
     });
   }

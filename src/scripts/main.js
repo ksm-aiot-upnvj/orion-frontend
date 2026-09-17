@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (desktopLoginArea) {
       desktopLoginArea.innerHTML = `
         <div class="flex items-center space-x-2">
-          <a href="/pages/selection.html"
+          <a href="${import.meta.env.BASE_URL}pages/selection.html"
             class="text-xs font-bold px-3 py-1.5 rounded-lg bg-white text-[#301057] hover:bg-purple-50 transition-colors flex items-center space-x-1.5 shadow-sm">
             <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-[#301057]"></i>
             <span>Dashboard </span>
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (mobileLoginArea) {
       mobileLoginArea.innerHTML = `
-        <a href="/pages/selection.html"
+        <a href="${import.meta.env.BASE_URL}pages/selection.html"
           class="w-full text-center py-2 rounded-lg bg-white text-[#301057] font-bold text-xs block">
           Masuk Dashboard
         </a>
@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         loginModal?.classList.add('hidden');
         loginModal?.classList.remove('flex');
-        window.location.href = '/pages/selection.html';
+        window.location.href = `${import.meta.env.BASE_URL}pages/selection.html`;
       }, 500);
     } else {
       showToast(result.message || 'NIM atau Password salah.', 'error');

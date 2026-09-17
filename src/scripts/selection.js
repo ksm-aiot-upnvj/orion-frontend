@@ -201,8 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalPortfolio = document.getElementById('modal-review-portfolio');
   const modalStatusBadge = document.getElementById('modal-review-status-badge');
   const modalPhone = document.getElementById('modal-review-phone');
-  const modalReviewDivision = document.getElementById('modal-review-division');
-  const modalReviewRole = document.getElementById('modal-review-role');
   const modalReviewNotes = document.getElementById('modal-review-notes');
   const btnWaAccepted = document.getElementById('btn-wa-accepted');
   const btnWaRejected = document.getElementById('btn-wa-rejected');
@@ -495,10 +493,60 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalTrack) modalTrack.textContent = selectedReg.interest_track;
     if (modalMotivation) modalMotivation.textContent = `"${selectedReg.motivation || 'Tidak ada catatan motivasi.'}"`;
     if (modalPhone) modalPhone.textContent = selectedReg.contact_info || '-';
-
-    if (modalReviewDivision) modalReviewDivision.value = 'Akademik Riset';
-    if (modalReviewRole) modalReviewRole.value = 'Anggota';
     if (modalReviewNotes) modalReviewNotes.value = selectedReg.review_note || '';
+
+    // Handle Berkas CV (PDF) & Preview Feature
+    const cvStatusBadge = document.getElementById('modal-cv-status-badge');
+    const cvActions = document.getElementById('modal-cv-actions');
+    const btnPreviewCv = document.getElementById('btn-preview-cv');
+    const btnDownloadCv = document.getElementById('btn-download-cv');
+
+    const rawCv = (selectedReg.cv_url || '').trim();
+    if (rawCv && rawCv !== '-' && rawCv !== 'null' && rawCv !== 'undefined') {
+      const cvUrl = rawCv.startsWith('http://') || rawCv.startsWith('https://')
+        ? rawCv
+        : rawCv.startsWith('/orion/api/v1/')
+          ? `${window.location.origin}${rawCv}`
+          : `${API_BASE_URL}/uploads/${rawCv.replace(/^(\/|uploads\/)/, '')}`;
+
+      if (cvStatusBadge) {
+        cvStatusBadge.className = 'badge-status badge-approved text-[10px]';
+        cvStatusBadge.textContent = 'Tersedia (.PDF)';
+      }
+      if (cvActions) cvActions.classList.remove('hidden');
+      if (btnDownloadCv) btnDownloadCv.href = cvUrl;
+      if (btnPreviewCv) {
+        btnPreviewCv.onclick = () => openCvPreviewModal(cvUrl, selectedReg.full_name);
+      }
+    } else {
+      if (cvStatusBadge) {
+        cvStatusBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 border border-white/10 text-gray-400';
+        cvStatusBadge.textContent = 'Tidak ada berkas';
+      }
+      if (cvActions) cvActions.classList.add('hidden');
+    }
+
+    // Handle Tautan Portofolio / GitHub / LinkedIn
+    const modalPortfolioLink = document.getElementById('modal-review-portfolio');
+    const rawPortfolio = (selectedReg.portfolio_url || '').trim();
+
+    if (modalPortfolioLink) {
+      if (rawPortfolio && rawPortfolio !== '-' && rawPortfolio !== 'null' && rawPortfolio !== 'undefined') {
+        const fullUrl = rawPortfolio.startsWith('http') ? rawPortfolio : `https://${rawPortfolio}`;
+        modalPortfolioLink.href = fullUrl;
+        modalPortfolioLink.className = 'text-[#C9A4F6] hover:text-white hover:underline font-mono text-xs flex items-center space-x-1.5 break-all transition-colors';
+
+        let iconName = 'link';
+        if (rawPortfolio.includes('github.com')) iconName = 'github';
+        else if (rawPortfolio.includes('linkedin.com')) iconName = 'linkedin';
+
+        modalPortfolioLink.innerHTML = `<i data-lucide="${iconName}" class="w-3.5 h-3.5 flex-shrink-0 text-[#C9A4F6]"></i><span class="truncate">${rawPortfolio}</span>`;
+      } else {
+        modalPortfolioLink.removeAttribute('href');
+        modalPortfolioLink.className = 'text-gray-400 font-mono text-xs flex items-center space-x-1.5 cursor-default';
+        modalPortfolioLink.innerHTML = `<i data-lucide="link-2-off" class="w-3.5 h-3.5 flex-shrink-0 text-gray-500"></i><span class="italic text-gray-400">Tidak melampirkan portofolio</span>`;
+      }
+    }
 
     // Bind WhatsApp Direct Contact Buttons
     if (btnWaAccepted) {
@@ -533,20 +581,6 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     }
 
-    if (modalPortfolio) {
-      const url = (selectedReg.portfolio_url || '').trim();
-      if (url && url !== '-' && url !== 'null' && url !== 'undefined') {
-        const fullUrl = url.startsWith('http') ? url : `https://${url}`;
-        modalPortfolio.href = fullUrl;
-        modalPortfolio.className = 'text-[#C9A4F6] hover:text-white hover:underline font-mono text-xs flex items-center space-x-1.5 break-all transition-colors';
-        modalPortfolio.innerHTML = `<i data-lucide="link" class="w-3.5 h-3.5 flex-shrink-0"></i><span class="truncate">${url}</span>`;
-      } else {
-        modalPortfolio.removeAttribute('href');
-        modalPortfolio.className = 'text-gray-400 font-mono text-xs flex items-center space-x-1.5 cursor-default';
-        modalPortfolio.innerHTML = `<i data-lucide="link-2-off" class="w-3.5 h-3.5 flex-shrink-0 text-gray-500"></i><span class="italic">Tidak melampirkan portofolio / CV</span>`;
-      }
-    }
-
     if (modalStatusBadge) {
       const norm = getNormalizedStatus(selectedReg.status);
       if (norm === 'Accepted') {
@@ -566,6 +600,35 @@ document.addEventListener('DOMContentLoaded', () => {
     initIcons();
   }
 
+  // CV Preview Modal Helpers
+  const cvPreviewModal = document.getElementById('cv-preview-modal');
+  const cvPreviewFrame = document.getElementById('cv-preview-frame');
+  const cvPreviewTitle = document.getElementById('cv-preview-title');
+  const cvPreviewExternal = document.getElementById('cv-preview-external');
+  const closeCvPreviewBtn = document.getElementById('close-cv-preview-modal');
+
+  function openCvPreviewModal(url, candidateName) {
+    if (!cvPreviewModal || !cvPreviewFrame) return;
+    cvPreviewFrame.src = url;
+    if (cvPreviewTitle) cvPreviewTitle.textContent = `Preview CV: ${candidateName || 'Calon Anggota'}`;
+    if (cvPreviewExternal) cvPreviewExternal.href = url;
+    cvPreviewModal.classList.remove('hidden');
+    cvPreviewModal.classList.add('flex');
+    initIcons();
+  }
+
+  function closeCvPreviewModal() {
+    if (!cvPreviewModal || !cvPreviewFrame) return;
+    cvPreviewFrame.src = '';
+    cvPreviewModal.classList.add('hidden');
+    cvPreviewModal.classList.remove('flex');
+  }
+
+  closeCvPreviewBtn?.addEventListener('click', closeCvPreviewModal);
+  cvPreviewModal?.addEventListener('click', (e) => {
+    if (e.target === cvPreviewModal) closeCvPreviewModal();
+  });
+
   function closeReviewModal() {
     modal?.classList.add('hidden');
     modal?.classList.remove('flex');
@@ -574,7 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   closeModalBtn?.addEventListener('click', closeReviewModal);
 
-  // Decision Action: Approve Candidate (Direct Backend Hit)
+  // Decision Action: Approve Candidate (Direct Backend Hit, default role: Anggota)
   btnApprove?.addEventListener('click', async () => {
     if (!selectedReg) return;
     const token = getAuthToken();
@@ -589,9 +652,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         body: JSON.stringify({
           status: 'Accepted',
-          division: modalReviewDivision?.value || 'Akademik Riset',
-          role: modalReviewRole?.value || 'Anggota',
-          review_note: modalReviewNotes?.value.trim() || null
+          role: 'Anggota',
+          review_note: modalReviewNotes?.value ? modalReviewNotes.value.trim() : null
         })
       });
 

@@ -3,6 +3,7 @@ import { showToast } from './ui.js';
 const AUTH_USER_KEY = 'aiot_auth_user';
 const AUTH_TOKEN_KEY = 'aiot_auth_token';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
+const APP_BASE_URL = import.meta.env.BASE_URL;
 
 let sessionTimerId = null;
 let sessionCheckIntervalId = null;
@@ -163,7 +164,7 @@ export function logout(redirect = true) {
   showToast('Anda telah berhasil keluar (Logout).', 'info');
   if (redirect) {
     setTimeout(() => {
-      window.location.href = '/index.html';
+      window.location.href = `${APP_BASE_URL}index.html`;
     }, 400);
   }
 }
@@ -178,7 +179,7 @@ export function requireAuth() {
   if (!user || !token) {
     showToast('Akses Dibatasi: Silakan login sebagai Pengurus KSM.', 'error');
     setTimeout(() => {
-      window.location.href = '/index.html?login_required=1';
+      window.location.href = `${APP_BASE_URL}index.html?login_required=1`;
     }, 600);
     return false;
   }
@@ -187,7 +188,7 @@ export function requireAuth() {
     clearAuthSession();
     showToast('Sesi Anda telah berakhir. Silakan login kembali.', 'warning');
     setTimeout(() => {
-      window.location.href = '/index.html?login_required=1&expired=1';
+      window.location.href = `${APP_BASE_URL}index.html?login_required=1&expired=1`;
     }, 600);
     return false;
   }

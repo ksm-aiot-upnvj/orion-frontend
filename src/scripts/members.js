@@ -72,6 +72,8 @@ async function fetchAlumniFromBackend() {
 
     const members = await res.json();
     alumniList = members.map((member) => ({
+      ...member,
+      student_id: member.student_id,
       name: member.full_name,
       angkatan: member.intake_period || '-',
       currentRole: member.role || 'Alumni KSM AIoT',
@@ -363,10 +365,16 @@ function renderAlumni(filterText = '') {
 
       <div class="pt-3 border-t border-[#561F99] flex items-center justify-between text-xs">
         <span class="badge-status badge-neutral text-[10px]">Alumni ${a.angkatan}</span>
-        <a href="${a.linkedin}" target="_blank" class="text-[#C9A4F6] hover:text-white flex items-center space-x-1 font-semibold transition-colors">
-          <span>LinkedIn</span>
-          <i data-lucide="external-link" class="w-3 h-3 text-[#C9A4F6]"></i>
-        </a>
+        <div class="flex items-center gap-2">
+          ${a.student_id ? `<button type="button" onclick="window.openEditMember('${a.student_id}')" title="Edit Data Alumni"
+            class="p-1.5 rounded-lg bg-[#150626] hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 border border-[#561F99]/60 transition-colors">
+            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+          </button>` : ''}
+          <a href="${a.linkedin}" target="_blank" rel="noopener noreferrer" class="text-[#C9A4F6] hover:text-white flex items-center space-x-1 font-semibold transition-colors">
+            <span>Profil</span>
+            <i data-lucide="external-link" class="w-3 h-3 text-[#C9A4F6]"></i>
+          </a>
+        </div>
       </div>
     </div>
   `
@@ -391,7 +399,7 @@ function applyFilter() {
 
 // ==================== 1. SHOW RICH PROFILE MODAL ====================
 window.showMemberProfile = function (studentId) {
-  const m = activeMembersList.find((item) => String(item.student_id) === String(studentId));
+  const m = [...activeMembersList, ...alumniList].find((item) => String(item.student_id) === String(studentId));
   if (!m) {
     showToast('Data anggota tidak ditemukan', 'error');
     return;
@@ -473,7 +481,7 @@ window.showMemberProfile = function (studentId) {
   if (portfolioBox) {
     if (m.portfolio_url) {
       portfolioBox.innerHTML = `
-        <a href="${m.portfolio_url}" target="_blank" class="text-[#A78BFA] hover:text-white underline truncate block font-mono text-xs flex items-center gap-1">
+        <a href="${m.portfolio_url}" target="_blank" class="text-[#A78BFA] hover:text-white underline truncate font-mono text-xs flex items-center gap-1">
           <span>${m.portfolio_url}</span>
           <i data-lucide="external-link" class="w-3 h-3 flex-shrink-0"></i>
         </a>

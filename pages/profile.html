@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profil & Pengaturan Akun — KSM AIoT Orion</title>
   <meta name="description" content="Kelola informasi profil akun pengurus dan kata sandi KSM AIoT." />
-  <link rel="icon" type="image/png" href="/ksm-aiot-logo.png" />
+  <link rel="icon" type="image/png" href="%BASE_URL%ksm-aiot-logo.png" />
 
   <!-- Google Fonts: Geist, Poppins & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,25 +40,27 @@
         </p>
       </div>
 
-      <a href="/pages/dashboard.html" class="btn-outline-neutral text-xs py-2 px-3.5 self-start sm:self-auto flex items-center space-x-1.5">
+      <a href="%BASE_URL%pages/members.html"
+        class="btn-outline-neutral text-xs py-2 px-3.5 self-start sm:self-auto flex items-center space-x-1.5">
         <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
         <span>Kembali ke Dashboard</span>
       </a>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      
+
       <!-- Left Column: Profile Card Overview (4 Cols) -->
       <div class="lg:col-span-4 space-y-6">
         <div class="card-institutional overflow-hidden">
-          
+
           <!-- Banner Header -->
           <div class="h-24 bg-gradient-to-r from-[#4C1D95] via-[#6D28D9] to-[#3B0764] relative"></div>
 
           <div class="px-5 pb-6 pt-0 relative space-y-4">
             <!-- Avatar Floating -->
             <div class="-mt-12 flex justify-center sm:justify-start">
-              <div class="w-24 h-24 rounded-2xl overflow-hidden bg-[#240d42] border-4 border-[#1e0a36] shadow-xl relative group">
+              <div
+                class="w-24 h-24 rounded-2xl overflow-hidden bg-[#240d42] border-4 border-[#1e0a36] shadow-xl relative group">
                 <img id="profile-card-avatar" src="" alt="Avatar" class="w-full h-full object-cover" />
               </div>
             </div>
@@ -94,7 +96,8 @@
               <div class="flex items-center space-x-2">
                 <input type="text" id="avatar-seed-input" placeholder="Ketik kata/seed avatar..."
                   class="input-institutional !py-1.5 text-xs font-mono" />
-                <button type="button" id="btn-generate-avatar" class="btn-outline-neutral text-xs py-1.5 px-3 flex-shrink-0">
+                <button type="button" id="btn-generate-avatar"
+                  class="btn-outline-neutral text-xs py-1.5 px-3 flex-shrink-0">
                   <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-[#A78BFA]"></i>
                 </button>
               </div>
@@ -107,11 +110,12 @@
 
       <!-- Right Column: Edit Forms (8 Cols) -->
       <div class="lg:col-span-8 space-y-6">
-        
+
         <!-- Form 1: Edit Informasi Akun -->
         <div class="card-institutional p-5 sm:p-6 space-y-4">
           <div class="flex items-center space-x-2.5 pb-3 border-b border-[#561F99]">
-            <div class="w-8 h-8 rounded-lg bg-[#7C3AED]/20 border border-[#7C3AED] flex items-center justify-center text-[#A78BFA]">
+            <div
+              class="w-8 h-8 rounded-lg bg-[#7C3AED]/20 border border-[#7C3AED] flex items-center justify-center text-[#A78BFA]">
               <i data-lucide="user-cog" class="w-4 h-4"></i>
             </div>
             <div>
@@ -128,7 +132,8 @@
                   class="input-institutional !py-2 text-xs font-mono !bg-[#0a0214] !text-gray-400 !border-[#3d1566] cursor-not-allowed select-none opacity-75 shadow-inner" />
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Nama Lengkap <span class="text-rose-400">*</span></label>
+                <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Nama Lengkap <span
+                    class="text-rose-400">*</span></label>
                 <input type="text" id="form-full-name" required placeholder="Nama Lengkap"
                   class="input-institutional !py-2 text-xs" />
               </div>
@@ -136,7 +141,8 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Email <span class="text-rose-400">*</span></label>
+                <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Email <span
+                    class="text-rose-400">*</span></label>
                 <input type="email" id="form-email" required placeholder="email@mahasiswa.upnvj.ac.id"
                   class="input-institutional !py-2 text-xs font-mono" />
               </div>
@@ -148,7 +154,8 @@
             </div>
 
             <div class="pt-2 flex justify-end">
-              <button type="submit" id="btn-save-profile" class="btn-primary-purple text-xs py-2 px-5 flex items-center space-x-1.5">
+              <button type="submit" id="btn-save-profile"
+                class="btn-primary-purple text-xs py-2 px-5 flex items-center space-x-1.5">
                 <i data-lucide="check" class="w-4 h-4"></i>
                 <span id="btn-save-profile-label">Simpan Perubahan</span>
               </button>
@@ -159,7 +166,8 @@
         <!-- Form 2: Ganti Password Keamanan -->
         <div class="card-institutional p-5 sm:p-6 space-y-4">
           <div class="flex items-center space-x-2.5 pb-3 border-b border-[#561F99]">
-            <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+            <div
+              class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
               <i data-lucide="key-round" class="w-4 h-4"></i>
             </div>
             <div>
@@ -170,26 +178,30 @@
 
           <form id="password-change-form" class="space-y-4 text-xs">
             <div>
-              <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Kata Sandi Saat Ini (Lama) <span class="text-rose-400">*</span></label>
+              <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Kata Sandi Saat Ini (Lama) <span
+                  class="text-rose-400">*</span></label>
               <input type="password" id="form-current-password" required placeholder="••••••••••••"
                 class="input-institutional !py-2 text-xs font-mono" />
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Kata Sandi Baru <span class="text-rose-400">*</span></label>
+                <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Kata Sandi Baru <span
+                    class="text-rose-400">*</span></label>
                 <input type="password" id="form-new-password" required minlength="6" placeholder="Minimal 6 karakter"
                   class="input-institutional !py-2 text-xs font-mono" />
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Konfirmasi Kata Sandi Baru <span class="text-rose-400">*</span></label>
-                <input type="password" id="form-confirm-password" required minlength="6" placeholder="Ulangi kata sandi baru"
-                  class="input-institutional !py-2 text-xs font-mono" />
+                <label class="block text-[11px] font-semibold text-[#D8B4FE] mb-1">Konfirmasi Kata Sandi Baru <span
+                    class="text-rose-400">*</span></label>
+                <input type="password" id="form-confirm-password" required minlength="6"
+                  placeholder="Ulangi kata sandi baru" class="input-institutional !py-2 text-xs font-mono" />
               </div>
             </div>
 
             <div class="pt-2 flex justify-end">
-              <button type="submit" id="btn-save-password" class="h-9 px-5 rounded-xl text-xs font-bold text-white bg-[#7C3AED] hover:bg-[#8B5CF6] border border-[#A78BFA]/50 transition-all inline-flex items-center justify-center space-x-1.5 shadow-md">
+              <button type="submit" id="btn-save-password"
+                class="h-9 px-5 rounded-xl text-xs font-bold text-white bg-[#7C3AED] hover:bg-[#8B5CF6] border border-[#A78BFA]/50 transition-all inline-flex items-center justify-center space-x-1.5 shadow-md">
                 <i data-lucide="lock" class="w-3.5 h-3.5"></i>
                 <span id="btn-save-password-label">Perbarui Kata Sandi</span>
               </button>
