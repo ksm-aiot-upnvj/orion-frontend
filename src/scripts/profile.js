@@ -6,6 +6,19 @@ import { getAuthToken, getAuthUser } from '../modules/auth.js';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
 
 let userProfile = null;
+let selectedAvatarPath = '';
+
+function setProfileAvatarPreview(path, seed = 'orion') {
+  const preview = document.getElementById('profile-form-avatar-preview');
+  if (!preview) return;
+
+  const fallback = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}&backgroundColor=240d42`;
+  preview.src = path ? resolveAvatarUrl(path, seed) : fallback;
+  preview.onerror = () => {
+    preview.onerror = null;
+    preview.src = fallback;
+  };
+}
 
 async function fetchUserProfile() {
   const localUser = getAuthUser();
@@ -34,6 +47,8 @@ async function fetchUserProfile() {
 
 function populateProfileUI(user) {
   if (!user) return;
+
+  selectedAvatarPath = user.avatar || '';
 
   const defaultAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.student_id || 'orion')}&backgroundColor=240d42`;
   const avatarUrl = resolveAvatarUrl(user.avatar, user.student_id || 'orion');
@@ -75,11 +90,58 @@ function populateProfileUI(user) {
 
   const formAvatar = document.getElementById('form-avatar-url');
   if (formAvatar) formAvatar.value = user.avatar || '';
+  setProfileAvatarPreview(user.avatar, user.student_id || 'orion');
 
   const seedInput = document.getElementById('avatar-seed-input');
   if (seedInput) seedInput.value = user.student_id || '';
 
   initIcons();
+}
+
+function setupProfileAvatarUpload() {
+  const fileInput = document.getElementById('profile-avatar-file');
+  const filename = document.getElementById('profile-avatar-filename');
+
+  fileInput?.addEventListener('change', async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      showToast('Ukuran foto maksimal 2MB.', 'error');
+      fileInput.value = '';
+      return;
+    }
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      showToast('Format foto harus PNG, JPG, atau WebP.', 'error');
+      fileInput.value = '';
+      return;
+    }
+
+    if (filename) filename.textContent = `Mengunggah ${file.name}...`;
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${API_BASE_URL}/uploads/avatar`, {
+        method: 'POST',
+        body: formData
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.detail || 'Gagal mengunggah foto profil.');
+      }
+
+      const data = await res.json();
+      selectedAvatarPath = data.path || '';
+      setProfileAvatarPreview(selectedAvatarPath, userProfile?.student_id || 'orion');
+      const avatarUrlInput = document.getElementById('form-avatar-url');
+      if (avatarUrlInput) avatarUrlInput.value = selectedAvatarPath;
+      if (filename) filename.textContent = `✓ ${file.name}`;
+      showToast('Foto profil berhasil diunggah. Klik Simpan Perubahan untuk menerapkan.', 'success');
+    } catch (error) {
+      if (filename) filename.textContent = 'Foto saat ini dipertahankan jika tidak diganti.';
+      showToast(error.message || 'Gagal mengunggah foto profil.', 'error');
+    }
+  });
 }
 
 // Avatar Generator Button
@@ -110,7 +172,7 @@ function setupProfileEditForm() {
 
     const fullName = document.getElementById('form-full-name')?.value.trim();
     const email = document.getElementById('form-email')?.value.trim();
-    const avatar = document.getElementById('form-avatar-url')?.value.trim() || null;
+    const avatar = document.getElementById('form-avatar-url')?.value.trim() || selectedAvatarPath || null;
 
     if (!fullName || !email) {
       showToast('Nama Lengkap dan Email wajib diisi!', 'error');
@@ -138,6 +200,7 @@ function setupProfileEditForm() {
         const updated = await res.json();
         userProfile = updated;
         localStorage.setItem('ksm_user', JSON.stringify(updated));
+        localStorage.setItem('aiot_auth_user', JSON.stringify(updated));
         populateProfileUI(updated);
         showToast('Profil akun berhasil diperbarui!', 'success');
       } else {
@@ -218,6 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCRMLayout('profile', 'Profil & Pengaturan Akun');
   fetchUserProfile();
   setupAvatarGenerator();
+  setupProfileAvatarUpload();
   setupProfileEditForm();
   setupPasswordChangeForm();
 });

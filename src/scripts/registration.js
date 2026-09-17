@@ -531,17 +531,6 @@ document.addEventListener('DOMContentLoaded', () => {
           // Smooth scroll to top
           window.scrollTo({ top: 0, behavior: 'smooth' });
 
-          // 5-second countdown to auto redirect to /orion/
-          let countdown = 5;
-          const countdownEl = document.getElementById('redirect-countdown');
-          const timer = setInterval(() => {
-            countdown -= 1;
-            if (countdownEl) countdownEl.textContent = String(countdown);
-            if (countdown <= 0) {
-              clearInterval(timer);
-              window.location.href = APP_BASE_URL;
-            }
-          }, 1000);
         }
 
         form.reset();

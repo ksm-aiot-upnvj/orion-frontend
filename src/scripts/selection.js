@@ -170,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const tbody = document.getElementById('admin-registrations-tbody');
   const searchInput = document.getElementById('admin-search-reg');
   const filterStatusSelect = document.getElementById('admin-filter-status');
+  const refreshRegistrationsBtn = document.getElementById('refresh-registrations-btn');
 
   // Bulk Selection Elements
   const selectAllCheckbox = document.getElementById('select-all-reg');
@@ -268,6 +269,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Load Registrations directly from Database
   async function loadRegistrations() {
+    if (refreshRegistrationsBtn) {
+      refreshRegistrationsBtn.disabled = true;
+      refreshRegistrationsBtn.classList.add('opacity-60', 'cursor-wait');
+      refreshRegistrationsBtn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>Memuat Data...</span>';
+      initIcons();
+    }
+
     try {
       const token = getAuthToken();
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
@@ -286,7 +294,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     renderStats();
     renderTable();
+
+    if (refreshRegistrationsBtn) {
+      refreshRegistrationsBtn.disabled = false;
+      refreshRegistrationsBtn.classList.remove('opacity-60', 'cursor-wait');
+      refreshRegistrationsBtn.innerHTML = '<i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-[#C9A4F6]"></i><span>Muat Ulang Data</span>';
+      initIcons();
+    }
   }
+
+  refreshRegistrationsBtn?.addEventListener('click', loadRegistrations);
 
   function getNormalizedStatus(status) {
     const s = (status || '').toLowerCase();

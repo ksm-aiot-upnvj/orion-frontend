@@ -11,9 +11,72 @@ let alumniList = [];
 let memberToDelete = null;
 let selectedExcelFile = null;
 let pendingAlumniConfirmation = false;
+let selectedAvatarPath = '';
+let currentAvatarPath = '';
 
 function showApiOfflineMessage() {
   showToast('Layanan API offline / API tidak dapat dijangkau.', 'error');
+}
+
+function setAvatarPreview(path, seed = 'orion') {
+  const preview = document.getElementById('form-avatar-preview');
+  const filename = document.getElementById('form-avatar-filename');
+  if (!preview) return;
+
+  preview.src = path
+    ? resolveAvatarUrl(path, seed)
+    : `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}&backgroundColor=240d42`;
+  preview.onerror = () => {
+    preview.onerror = null;
+    preview.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}&backgroundColor=240d42`;
+  };
+  if (filename) filename.textContent = path ? 'Foto saat ini dipertahankan jika tidak diganti.' : 'Belum ada foto profil.';
+}
+
+function resetAvatarPreview() {
+  const fileInput = document.getElementById('form-avatar-file');
+  if (fileInput) fileInput.value = '';
+  setAvatarPreview('', 'anggota-baru');
+}
+
+async function uploadMemberAvatar(file) {
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    showToast('Ukuran foto maksimal 2MB.', 'error');
+    return;
+  }
+  if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+    showToast('Format foto harus PNG, JPG, atau WebP.', 'error');
+    return;
+  }
+
+  const filename = document.getElementById('form-avatar-filename');
+  if (filename) filename.textContent = `Mengunggah ${file.name}...`;
+
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${API_BASE_URL}/uploads/avatar`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.detail || 'Gagal mengunggah foto profil.');
+    }
+
+    const data = await res.json();
+    selectedAvatarPath = data.path || '';
+    setAvatarPreview(selectedAvatarPath, 'anggota');
+    if (filename) filename.textContent = `✓ ${file.name}`;
+    showToast('Foto profil berhasil diunggah.', 'success');
+  } catch (error) {
+    selectedAvatarPath = '';
+    setAvatarPreview(currentAvatarPath, 'anggota');
+    if (filename) filename.textContent = 'Foto saat ini dipertahankan jika tidak diganti.';
+    showToast(error.message || 'Gagal mengunggah foto profil.', 'error');
+  }
 }
 
 // ==================== FETCH MEMBERS ====================
@@ -513,6 +576,9 @@ window.openCreateMember = function () {
   document.getElementById('member-form-modal-title').textContent = 'Tambah Anggota Baru';
   document.getElementById('btn-submit-member-label').textContent = 'Simpan Anggota Baru';
   document.getElementById('form-student-id').disabled = false;
+  selectedAvatarPath = '';
+  currentAvatarPath = '';
+  resetAvatarPreview();
 
   // Uncheck all tracks
   document.querySelectorAll('input[name="form_tracks"]').forEach((cb) => (cb.checked = false));
@@ -536,7 +602,7 @@ window.openCreateMember = function () {
 };
 
 window.openEditMember = function (studentId) {
-  const m = activeMembersList.find((item) => String(item.student_id) === String(studentId));
+  const m = [...activeMembersList, ...alumniList].find((item) => String(item.student_id) === String(studentId));
   if (!m) return;
 
   const form = document.getElementById('member-form');
@@ -549,6 +615,9 @@ window.openEditMember = function (studentId) {
   // Fill inputs
   document.getElementById('form-student-id').value = m.student_id || '';
   document.getElementById('form-student-id').disabled = true; // NIM cannot be changed
+  selectedAvatarPath = '';
+  currentAvatarPath = m.avatar || '';
+  setAvatarPreview(currentAvatarPath, m.student_id || m.full_name);
   document.getElementById('form-full-name').value = m.full_name || '';
   document.getElementById('form-prodi').value = m.program_of_study || 'S1 Informatika';
   document.getElementById('form-semester').value = m.semester || '';
@@ -635,6 +704,7 @@ async function handleMemberFormSubmit(e) {
     tools_frameworks: document.getElementById('form-tools').value.trim() || null,
     portfolio_url: document.getElementById('form-portfolio').value.trim() || null,
     discord_id: document.getElementById('form-discord').value.trim() || null,
+    avatar: selectedAvatarPath || currentAvatarPath || null,
   };
 
   // Add ERP fields if toggle is active
@@ -960,6 +1030,9 @@ function closeModal(id) {
 // ==================== DOM INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
   initCRMLayout('members', 'Manajemen Anggota & Alumni');
+  document.getElementById('form-avatar-file')?.addEventListener('change', (event) => {
+    uploadMemberAvatar(event.target.files?.[0]);
+  });
   const memberSearchInput = document.getElementById('search-member-input');
   if (memberSearchInput) {
     memberSearchInput.value = '';
