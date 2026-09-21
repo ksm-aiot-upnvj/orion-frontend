@@ -535,9 +535,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         form.reset();
         uploadedPhotoBase64 = '';
+        uploadedPhotoPath = '';
         uploadedCvName = '';
         uploadedCvPath = '';
+        if (photoFileInput) photoFileInput.value = '';
         if (photoFilenameLabel) photoFilenameLabel.textContent = 'Pilih Foto (.JPG, .PNG)';
+        if (photoFilenameLabel) photoFilenameLabel.classList.remove('text-emerald-300');
         if (cvFilenameLabel) {
           cvFilenameLabel.textContent = 'Upload CV (.PDF)';
           cvFilenameLabel.classList.remove('text-emerald-300');
