@@ -1,6 +1,226 @@
-import { animateCounters, initIcons, initThemeEngine, showToast } from '../modules/ui.js';
+import { animateCounters, initIcons, initThemeEngine, resolveAvatarUrl, showToast } from '../modules/ui.js';
 import { getAuthUser, login, logout } from '../modules/auth.js';
 import { initialProjectsData } from '../modules/data.js';
+
+function getAvatar(name, avatar) {
+  return resolveAvatarUrl(avatar, name.trim() || 'orion');
+}
+
+// Render Tree Hierarchy dari Backend API
+async function fetchAndRenderTree() {
+  const treeCanvas = document.getElementById('tree-canvas');
+  if (!treeCanvas) return;
+
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
+
+  try {
+    const res = await fetch(`${API_BASE}/members/public/organization`);
+    if (!res.ok) throw new Error('Gagal mengambil data pengurus');
+    const members = await res.json();
+
+    // 1. Filter Presidium & BPH Inti
+    const ketua = members.find(m => m.division === 'BPH' && m.role.toLowerCase() === 'ketua') || { full_name: 'Ketua', program_of_study: 'Informatika UPNVJ' };
+    const wakil = members.find(m => m.division === 'BPH' && m.role.toLowerCase().includes('wakil')) || { full_name: 'Wakil Ketua', program_of_study: 'Informatika UPNVJ' };
+    const sekretaris = members.find(m => m.division === 'BPH' && m.role.toLowerCase() === 'sekretaris') || { full_name: 'Sekretaris', program_of_study: 'Informatika UPNVJ' };
+    const bendahara = members.find(m => m.division === 'BPH' && m.role.toLowerCase() === 'bendahara') || { full_name: 'Bendahara', program_of_study: 'Informatika UPNVJ' };
+
+    // 2. Mapping Konfigurasi Divisi
+    const divConfigs = [
+      {
+        branchKey: 'riset',
+        backendDivName: 'Akademik Riset',
+        badgeTitle: 'Divisi Akademik & Riset',
+        badgeClass: 'bg-[#0284C7]/20 border-[#38BDF8]/50 text-[#38BDF8]',
+        borderAccentClass: 'border-accent-riset',
+        kadivBorderColor: 'border-[#38BDF8]',
+        kadivBadgeBg: 'bg-[#0c243c]',
+        kadivBadgeText: 'text-[#38BDF8]',
+        kadivBadgeBorder: 'border-[#38BDF8]/40',
+        kadivHoverText: 'group-hover:text-[#38BDF8]',
+        kadivRoleTitle: 'Kepala Divisi Riset',
+        staffHoverBorder: 'hover:border-[#38BDF8]/70',
+        staffNumBorder: 'border-[#38BDF8]/50 text-[#38BDF8]',
+        staffHoverText: 'group-hover:text-[#38BDF8]',
+      },
+      {
+        branchKey: 'psdm',
+        backendDivName: 'PSDM',
+        badgeTitle: 'Divisi PSDM',
+        badgeClass: 'bg-[#166534]/20 border-[#4ADE80]/50 text-[#4ADE80]',
+        borderAccentClass: 'border-accent-psdm',
+        kadivBorderColor: 'border-[#4ADE80]',
+        kadivBadgeBg: 'bg-[#0e301d]',
+        kadivBadgeText: 'text-[#4ADE80]',
+        kadivBadgeBorder: 'border-[#4ADE80]/40',
+        kadivHoverText: 'group-hover:text-[#4ADE80]',
+        kadivRoleTitle: 'Kepala Divisi PSDM',
+        staffHoverBorder: 'hover:border-[#4ADE80]/70',
+        staffNumBorder: 'border-[#4ADE80]/50 text-[#4ADE80]',
+        staffHoverText: 'group-hover:text-[#4ADE80]',
+      },
+      {
+        branchKey: 'humas',
+        backendDivName: 'Humas Multimedia',
+        badgeTitle: 'Divisi Humas & Multimedia',
+        badgeClass: 'bg-[#9A3412]/20 border-[#FB923C]/50 text-[#FB923C]',
+        borderAccentClass: 'border-accent-humas',
+        kadivBorderColor: 'border-[#FB923C]',
+        kadivBadgeBg: 'bg-[#3a1d0d]',
+        kadivBadgeText: 'text-[#FB923C]',
+        kadivBadgeBorder: 'border-[#FB923C]/40',
+        kadivHoverText: 'group-hover:text-[#FB923C]',
+        kadivRoleTitle: 'Kepala Divisi Humas',
+        staffHoverBorder: 'hover:border-[#FB923C]/70',
+        staffNumBorder: 'border-[#FB923C]/50 text-[#FB923C]',
+        staffHoverText: 'group-hover:text-[#FB923C]',
+      }
+    ];
+
+    // Render HTML Divisi Columns
+    const divisionsHTML = divConfigs.map(conf => {
+      const divMembers = members.filter(m => m.division === conf.backendDivName);
+      const kadiv = divMembers.find(m => m.role.toLowerCase().includes('kepala')) || { full_name: 'Kadiv', program_of_study: 'Informatika UPNVJ' };
+      const staffs = divMembers.filter(m => !m.role.toLowerCase().includes('kepala'));
+
+      const staffStackHTML = staffs.map((staff, idx) => `
+        <div class="tree-node-card border border-[#561F99]/60 ${conf.staffHoverBorder} py-2.5 px-3.5 flex items-center justify-between group">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-7 h-7 rounded-full bg-[#1E0A38] border ${conf.staffNumBorder} flex items-center justify-center text-[10px] font-bold">
+              ${idx + 1}
+            </div>
+            <div class="text-left">
+              <p class="text-xs font-bold text-white ${conf.staffHoverText} transition-colors">${staff.full_name}</p>
+              <p class="text-[10px] text-purple-200/70 font-mono">Staff ${conf.branchKey.toUpperCase()}</p>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      return `
+        <div class="tree-branch-group flex flex-col items-center" data-branch="${conf.branchKey}">
+          <div class="w-0.5 h-6 bg-[#561F99]"></div>
+
+          <!-- Division Pill Badge -->
+          <div class="px-3.5 py-1 rounded-full border text-[11px] font-mono font-bold mb-5 shadow-sm ${conf.badgeClass}">
+            ${conf.badgeTitle}
+          </div>
+
+          <!-- Kadiv Card -->
+          <div class="tree-node-card ${conf.borderAccentClass} w-full pt-6 pb-3.5 px-4 text-center relative group mb-4">
+            <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 ${conf.kadivBorderColor} ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+              <img src="${getAvatar(kadiv.full_name, kadiv.avatar)}" alt="${kadiv.full_name}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${getAvatar(kadiv.full_name)}';" />
+            </div>
+            <div class="absolute top-2 left-2 text-[9px] font-mono ${conf.kadivBadgeText} ${conf.kadivBadgeBg} px-1.5 py-0.5 rounded border ${conf.kadivBadgeBorder} font-bold">
+              Kadiv
+            </div>
+            <h5 class="text-xs font-bold text-white ${conf.kadivHoverText} transition-colors">${kadiv.full_name}</h5>
+            <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">${conf.kadivRoleTitle}</p>
+            <p class="text-[9px] font-mono text-purple-300/70 mt-0.5">${kadiv.program_of_study || 'UPNVJ'}</p>
+          </div>
+
+          <!-- Connector Line to Staff -->
+          <div class="w-0.5 h-4 bg-[#561F99] mb-3"></div>
+
+          <!-- Staff Stack -->
+          <div class="w-full space-y-2">
+            ${staffStackHTML}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Construct full Tree Structure HTML
+    treeCanvas.innerHTML = `
+      <!-- 1. KETUA & WAKIL KETUA (PRESIDIUM STACK) -->
+      <div class="tree-branch-group relative flex flex-col items-center z-20" data-branch="root">
+        <!-- Ketua Card -->
+        <div class="tree-node-card border-accent-presidium w-64 pt-6 pb-4 px-5 text-center relative group">
+          <div class="tree-avatar-bubble mx-auto -mt-10 mb-2 border-2 border-[#9B5CE8] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+            <img src="${getAvatar(ketua.full_name, ketua.avatar)}" alt="Ketua" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${getAvatar(ketua.full_name)}';" />
+          </div>
+          <div class="absolute top-2.5 left-3 text-[10px] font-mono text-purple-300 bg-[#301057] px-2 py-0.5 rounded border border-[#561F99] font-bold">01</div>
+          <h4 class="text-sm font-bold text-white tracking-tight group-hover:text-[#C9A4F6] transition-colors">${ketua.full_name}</h4>
+          <p class="text-xs font-semibold text-[#E9D8FD] mt-0.5">Ketua KSM AIoT</p>
+        </div>
+
+        <!-- Vertical Connector to Wakil Ketua -->
+        <div class="w-0.5 h-6 bg-[#561F99] my-0.5"></div>
+
+        <!-- Wakil Ketua Card -->
+        <div class="tree-node-card border-accent-presidium w-64 pt-6 pb-4 px-5 text-center relative group">
+          <div class="tree-avatar-bubble mx-auto -mt-10 mb-2 border-2 border-[#9B5CE8] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+            <img src="${getAvatar(wakil.full_name, wakil.avatar)}" alt="Wakil Ketua" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${getAvatar(wakil.full_name)}';" />
+          </div>
+          <div class="absolute top-2.5 left-3 text-[10px] font-mono text-purple-300 bg-[#301057] px-2 py-0.5 rounded border border-[#561F99] font-bold">02</div>
+          <h4 class="text-sm font-bold text-white tracking-tight group-hover:text-[#C9A4F6] transition-colors">${wakil.full_name}</h4>
+          <p class="text-xs font-semibold text-[#E9D8FD] mt-0.5">Wakil Ketua KSM AIoT</p>
+        </div>
+
+        <div class="w-0.5 h-8 bg-[#561F99] mt-0.5"></div>
+      </div>
+
+      <!-- 2. BPH INTI FORK (SEKRETARIS & BENDAHARA WINGS) -->
+      <div class="w-full max-w-4xl relative z-10 my-0">
+        <div class="relative flex items-center justify-between px-16">
+          <div class="absolute left-28 right-28 top-0 h-0.5 bg-[#561F99] z-0"></div>
+
+          <!-- Sekretaris -->
+          <div class="tree-branch-group flex flex-col items-center relative z-10" data-branch="bph">
+            <div class="w-0.5 h-5 bg-[#561F99]"></div>
+            <div class="tree-node-card border-accent-bph w-60 pt-6 pb-3.5 px-4 text-center relative group">
+              <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#C084FC] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                <img src="${getAvatar(sekretaris.full_name, sekretaris.avatar)}" alt="Sekretaris" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${getAvatar(sekretaris.full_name)}';" />
+              </div>
+              <div class="absolute top-2 left-2 text-[9px] font-mono text-purple-300 bg-[#301057] px-1.5 py-0.5 rounded border border-[#561F99] font-bold">BPH</div>
+              <h5 class="text-xs font-bold text-white group-hover:text-[#C084FC] transition-colors">${sekretaris.full_name}</h5>
+              <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Sekretaris</p>
+            </div>
+          </div>
+
+          <!-- Central Trunk -->
+          <div class="w-0.5 h-28 bg-[#561F99] self-stretch mx-auto absolute left-1/2 -translate-x-1/2 top-0 z-0"></div>
+
+          <!-- Bendahara -->
+          <div class="tree-branch-group flex flex-col items-center relative z-10" data-branch="bph">
+            <div class="w-0.5 h-5 bg-[#561F99]"></div>
+            <div class="tree-node-card border-accent-bph w-60 pt-6 pb-3.5 px-4 text-center relative group">
+              <div class="tree-avatar-bubble mx-auto -mt-9 mb-1.5 border-2 border-[#C084FC] ring-4 ring-[#090312] bg-[#1E0A38] shadow-md">
+                <img src="${getAvatar(bendahara.full_name, bendahara.avatar)}" alt="Bendahara" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${getAvatar(bendahara.full_name)}';" />
+              </div>
+              <div class="absolute top-2 left-2 text-[9px] font-mono text-purple-300 bg-[#301057] px-1.5 py-0.5 rounded border border-[#561F99] font-bold">BPH</div>
+              <h5 class="text-xs font-bold text-white group-hover:text-[#C084FC] transition-colors">${bendahara.full_name}</h5>
+              <p class="text-[11px] font-semibold text-[#D8B4FE] mt-0.5">Bendahara</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. MAIN HORIZONTAL RAIL -->
+      <div class="w-full max-w-5xl relative px-16 z-10 mt-6">
+        <div class="w-full h-0.5 bg-[#561F99] relative">
+          <div id="tree-bus-highlight" class="w-full h-full bg-[#9B5CE8] transition-all duration-300"></div>
+        </div>
+      </div>
+
+      <!-- 4. 3 MAIN DIVISION COLUMNS -->
+      <div class="grid grid-cols-3 gap-8 w-full max-w-5xl pt-0 relative z-20">
+        ${divisionsHTML}
+      </div>
+    `;
+
+    // Re-initialize tab interaktivitas dan icon lucide setelah DOM berhasil dirender
+    initStructureTabs();
+    initIcons();
+
+  } catch (err) {
+    console.error('Tree render error:', err);
+    treeCanvas.innerHTML = `
+      <div class="py-8 text-center text-red-400 font-mono text-xs">
+        Gagal memuat struktur organisasi dari server.
+      </div>
+    `;
+  }
+}
 
 // Organizational Structure Interactive Hierarchy Tree & Branch Highlighting
 function initStructureTabs() {
@@ -220,10 +440,11 @@ function initProjectShowcase() {
 }
 
 // Main DOM Content Loaded Initializer
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   initIcons();
   initThemeEngine();
-  initStructureTabs();
+  await fetchAndRenderTree();
+  // initStructureTabs();
   initLiveStats();
   initProjectShowcase();
 
