@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
   checkIntakeStatus();
 
   // ============================================================
-  // Dynamic 4-Year Intake Angkatan Generator (e.g., current 2026 -> 2026, 2025, 2024, 2023, 2022)
+  // Dynamic 4-Year Intake Angkatan Generator (e.g., current 2026 -> 2026, 2025, 2024, 2023)
   // ============================================================
   const CURRENT_YEAR = new Date().getFullYear() || 2026;
   const MIN_VALID_YEAR = CURRENT_YEAR - 3; // Maksimal 4 tahun ke belakang
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 510 -> S1 Sistem Informasi
   // 511 -> S1 Informatika
   // 512 -> D3 Sistem Informasi
-  // 513 -> S1 Sains Data
+  // 514 -> S1 Sains Data
   const digitCounter = document.getElementById('nim-digit-counter');
   const detectionBadge = document.getElementById('nim-detection-badge');
   const detectionText = document.getElementById('nim-detection-text');
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         detectedProdi = 'S1 Informatika';
       } else if (prodiCode === '512') {
         detectedProdi = 'S1 Sistem Informasi';
-      } else if (prodiCode === '513') {
+      } else if (prodiCode === '514') {
         detectedProdi = 'S1 Sains Data';
       }
 
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         detectionBadge.classList.remove('hidden');
         detectionBadge.className =
           'text-[11px] mt-1.5 p-1.5 rounded bg-amber-950/60 border border-amber-500/40 text-amber-300 font-medium flex items-center gap-1.5';
-        detectionText.innerHTML = `<span class="text-amber-300">Format kode prodi UPNVJ tidak dikenali (digit 5-7 bukan 510/511/512/513)</span>`;
+        detectionText.innerHTML = `<span class="text-amber-300">Format kode prodi UPNVJ tidak dikenali (digit 5-7 bukan 510/511/512/514)</span>`;
       } else {
         detectionBadge.classList.add('hidden');
       }
@@ -548,7 +548,16 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLiveCard();
       } else {
         const err = await res.json().catch(() => ({}));
-        showToast(err.detail || 'Gagal mengirim pendaftaran.', 'error');
+
+        let errorMsg = 'Gagal mengirim pendaftaran.';
+        if (Array.isArray(err.detail)) {
+          const firstError = err.detail[0];
+          const fieldName = firstError?.loc ? firstError.loc[firstError.loc.length - 1] : 'Input';
+          errorMsg = `Validasi gagal pada "${fieldName}": ${firstError?.msg || 'Tidak valid'}`;
+        } else if (typeof err.detail === 'string') {
+          errorMsg = `Gagal: ${err.detail}`;
+        }
+        showToast(errorMsg, 'error');
       }
     } catch (err) {
       console.error('Registration API Error:', err);

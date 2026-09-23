@@ -1094,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (prodiCode === '510') formProdi.value = 'S1 Sistem Informasi';
         else if (prodiCode === '511') formProdi.value = 'S1 Informatika';
         else if (prodiCode === '512') formProdi.value = 'D3 Sistem Informasi';
-        else if (prodiCode === '513') formProdi.value = 'S1 Sains Data';
+        else if (prodiCode === '514') formProdi.value = 'S1 Sains Data';
       }
     }
   });
