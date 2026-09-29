@@ -40,7 +40,6 @@ export function parseJwtPayload(token) {
  */
 export function isTokenExpired(token = getAuthToken()) {
   if (!token) return true;
-  if (token === 'dev-mock-jwt-token') return false;
 
   const payload = parseJwtPayload(token);
   if (!payload || !payload.exp) {
@@ -56,7 +55,7 @@ export function isTokenExpired(token = getAuthToken()) {
  * Get remaining milliseconds until the current token expires
  */
 export function getTokenRemainingTime(token = getAuthToken()) {
-  if (!token || token === 'dev-mock-jwt-token') return Infinity;
+  if (!token) return Infinity;
   const payload = parseJwtPayload(token);
   if (!payload || !payload.exp) return 0;
   const remaining = payload.exp * 1000 - Date.now();
@@ -111,7 +110,7 @@ export function clearAuthSession() {
  */
 export async function refreshSession() {
   const refreshToken = getRefreshToken();
-  if (!refreshToken || refreshToken === 'dev-mock-jwt-token') return false;
+  if (!refreshToken) return false;
 
   // Prevent multiple concurrent refresh calls
   if (isRefreshing && refreshPromise) {
@@ -244,24 +243,6 @@ export async function login(studentId, password) {
       message: errData.detail || 'NIM / Password tidak valid. Silakan coba lagi.'
     };
   } catch {
-    // Development offline fallback
-    if (studentId.trim() === '2310511001' && password === 'aiotupnvj2026') {
-      const fallbackUser = {
-        id: '01a04935-646a-779a-a858-ca2f001ed71e',
-        student_id: '2310511001',
-        full_name: 'Dzulfikri Adjmal',
-        email: 'dzulfikri@mahasiswa.upnvj.ac.id',
-        role: 'SUPERADMIN',
-        division: 'BPH',
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop',
-        is_superadmin: true,
-        is_active: true
-      };
-      localStorage.setItem(AUTH_TOKEN_KEY, 'dev-mock-jwt-token');
-      localStorage.setItem(AUTH_REFRESH_TOKEN_KEY, 'dev-mock-refresh-token');
-      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(fallbackUser));
-      return { success: true, user: fallbackUser };
-    }
     return {
       success: false,
       message: 'Gagal terhubung ke server autentikasi backend.'
@@ -343,7 +324,7 @@ export function requireAuth() {
  */
 export function initSessionWatcher(onSessionExpired) {
   const token = getAuthToken();
-  if (!token || token === 'dev-mock-jwt-token') return;
+  if (!token) return;
 
   if (sessionTimerId) clearTimeout(sessionTimerId);
   if (sessionCheckIntervalId) clearInterval(sessionCheckIntervalId);

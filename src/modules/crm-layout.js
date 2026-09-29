@@ -14,13 +14,8 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
     return;
   }
 
-  const currentUser = getAuthUser() || {
-    full_name: 'Dzulfikri Adjmal',
-    role: 'SUPERADMIN',
-    student_id: '2310511001',
-    division: 'BPH',
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop'
-  };
+  // requireAuth() guarantees a stored user; the placeholder only avoids crashing on corrupt storage
+  const currentUser = getAuthUser() || { full_name: 'Pengurus', role: '', student_id: '-', division: '' };
 
   const initials = currentUser.full_name
     .split(' ')
@@ -170,7 +165,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
             <div class="px-4 py-3 bg-[#0F051D] rounded-t-xl">
               <span class="block text-xs font-bold text-white truncate leading-tight">${currentUser.full_name}</span>
               <span class="block text-[10px] text-[#C9A4F6] font-mono font-semibold truncate mt-0.5">${roleLabel}</span>
-              <span class="block text-[10px] text-purple-200 font-mono truncate mt-0.5">NIM: ${currentUser.student_id || '2310511001'}</span>
+              <span class="block text-[10px] text-purple-200 font-mono truncate mt-0.5">NIM: ${currentUser.student_id || '-'}</span>
             </div>
 
             <!-- Navigation Links Inside Dropdown -->
