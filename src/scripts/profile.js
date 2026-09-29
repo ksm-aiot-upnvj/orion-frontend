@@ -241,8 +241,8 @@ function setupPasswordChangeForm() {
       return;
     }
 
-    if (newPassword.length < 6) {
-      showToast('Kata sandi baru minimal 6 karakter!', 'error');
+    if (newPassword.length < 8) {
+      showToast('Kata sandi baru minimal 8 karakter!', 'error');
       return;
     }
 
