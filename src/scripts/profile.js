@@ -2,8 +2,8 @@ import '../style.css';
 import { initCRMLayout } from '../modules/crm-layout.js';
 import { showToast, initIcons, resolveAvatarUrl } from '../modules/ui.js';
 import { getAuthToken, getAuthUser } from '../modules/auth.js';
+import { API_ROUTES, apiUrl } from '../modules/api.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
 
 let userProfile = null;
 let selectedAvatarPath = '';
@@ -26,7 +26,7 @@ async function fetchUserProfile() {
 
   try {
     if (token) {
-      const res = await fetch(`${API_BASE_URL}/auth/me`, {
+      const res = await fetch(apiUrl(API_ROUTES.me), {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -121,7 +121,7 @@ function setupProfileAvatarUpload() {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetch(`${API_BASE_URL}/uploads/avatar`, {
+      const res = await fetch(apiUrl(API_ROUTES.avatarUploads), {
         method: 'POST',
         body: formData
       });
@@ -183,7 +183,7 @@ function setupProfileEditForm() {
     labelEl.textContent = 'Menyimpan...';
 
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/me`, {
+      const res = await fetch(apiUrl(API_ROUTES.me), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -250,8 +250,8 @@ function setupPasswordChangeForm() {
     labelEl.textContent = 'Memperbarui...';
 
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/change-password`, {
-        method: 'POST',
+      const res = await fetch(apiUrl(API_ROUTES.myPassword), {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {})

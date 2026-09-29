@@ -1,8 +1,8 @@
 import { initIcons, showToast } from '../modules/ui.js';
 import { initCRMLayout } from '../modules/crm-layout.js';
 import { getAuthToken, getAuthUser } from '../modules/auth.js';
+import { API_ROUTES, apiUrl } from '../modules/api.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
 
 let registrationsList = [];
 let selectedReg = null;
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Real-time Intake Status from Backend API
   async function fetchIntakeStatus() {
     try {
-      const res = await fetch(`${API_BASE_URL}/registrations/intake-status`);
+      const res = await fetch(apiUrl(API_ROUTES.intakeStatus));
       if (res.ok) {
         const data = await res.json();
         const serverDeadline = data.deadline ? String(data.deadline).slice(0, 10) : null;
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       try {
-        const res = await fetch(`${API_BASE_URL}/registrations/intake-status`, {
+        const res = await fetch(apiUrl(API_ROUTES.intakeStatus), {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const token = getAuthToken();
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-      const res = await fetch(`${API_BASE_URL}/registrations/`, { headers });
+      const res = await fetch(apiUrl(API_ROUTES.registrations), { headers });
       if (res.ok) {
         registrationsList = await res.json();
       } else {
@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return photo;
       }
       const clean = photo.replace(/^(\/|uploads\/)/, '');
-      return `${API_BASE_URL}/uploads/${clean}`;
+      return apiUrl(API_ROUTES.upload(clean));
     }
 
     tbody.innerHTML = filtered.map(r => {
@@ -500,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return photo;
       }
       const clean = photo.replace(/^(\/|uploads\/)/, '');
-      return `${API_BASE_URL}/uploads/${clean}`;
+      return apiUrl(API_ROUTES.upload(clean));
     }
 
     if (modalPhoto) modalPhoto.src = resolvePhotoUrl(selectedReg.photo, selectedReg.student_id || selectedReg.full_name);
@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ? rawCv
         : rawCv.startsWith('/orion/api/v1/')
           ? `${window.location.origin}${rawCv}`
-          : `${API_BASE_URL}/uploads/${rawCv.replace(/^(\/|uploads\/)/, '')}`;
+          : apiUrl(API_ROUTES.upload(rawCv));
 
       if (cvStatusBadge) {
         cvStatusBadge.className = 'badge-status badge-approved text-[10px]';
@@ -661,7 +661,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       btnApprove.disabled = true;
-      const res = await fetch(`${API_BASE_URL}/registrations/${selectedReg.id}/approve`, {
+      const res = await fetch(apiUrl(API_ROUTES.registrationApprove(selectedReg.id)), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -701,7 +701,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       btnReject.disabled = true;
-      const res = await fetch(`${API_BASE_URL}/registrations/${selectedReg.id}/reject`, {
+      const res = await fetch(apiUrl(API_ROUTES.registrationReject(selectedReg.id)), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -741,7 +741,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     try {
-      const res = await fetch(`${API_BASE_URL}/registrations/bulk-delete`, {
+      const res = await fetch(apiUrl(API_ROUTES.registrationBulkDelete), {
         method: 'POST',
         headers,
         body: JSON.stringify({ registration_ids: ids.map(String) })

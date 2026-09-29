@@ -15,14 +15,14 @@ Aplikasi frontend ORION menyajikan dua pengalaman pengguna utama:
 
 ### 🌐 Laman Publik
 - **Beranda (`/index.html`):** Informasi visi, statistik organisasi, struktur kepengurusan, etalase riset AIoT, serta tombol akses masuk pengurus.
-- **Pendaftaran (`/pages/registration.html`):** Formulir pendaftaran calon anggota baru dengan validasi data diri, pilihan fokus riset, dan unggah portofolio.
+- **Pendaftaran (`/orion/registration`):** Formulir pendaftaran calon anggota baru dengan validasi data diri, pilihan fokus riset, dan unggah portofolio.
 
 ### 🔒 Panel CRM Khusus Pengurus
-- **Seleksi Calon Anggota (`/pages/selection.html`):** Panel peninjauan berkas pendaftaran calon anggota, verifikasi motivasi & komitmen, serta persetujuan penerbitan Member ID.
-- **Manajemen Anggota & Alumni (`/pages/members.html`):** Basis data anggota aktif terdaftar lintas divisi lengkap dengan pencarian, filter, dan rekam jejak karir alumni.
-- **Inventaris Lab IoT (`/pages/inventory.html`):** Pencatatan stok perangkat riset (NVIDIA Jetson, Raspberry Pi, Sensor, Alat Lab) dan peminjaman alat.
-- **Transparansi Keuangan (`/pages/finance.html`):** Pencatatan arus kas masuk/keluar, iuran anggota, dan transparansi dana hibah riset.
-- **Arsip Surat & Dokumen (`/pages/archive.html`):** Penomoran surat resmi universitas dan generator template dokumen LaTeX standar fakultas.
+- **Seleksi Calon Anggota (`/orion/selection`):** Panel peninjauan berkas pendaftaran calon anggota, verifikasi motivasi & komitmen, serta persetujuan penerbitan Member ID.
+- **Manajemen Anggota & Alumni (`/orion/members`):** Basis data anggota aktif terdaftar lintas divisi lengkap dengan pencarian, filter, dan rekam jejak karir alumni.
+- **Inventaris Lab IoT (`/orion/inventory`):** Pencatatan stok perangkat riset (NVIDIA Jetson, Raspberry Pi, Sensor, Alat Lab) dan peminjaman alat.
+- **Transparansi Keuangan (`/orion/finance`):** Pencatatan arus kas masuk/keluar, iuran anggota, dan transparansi dana hibah riset.
+- **Arsip Surat & Dokumen (`/orion/archive`):** Penomoran surat resmi universitas dan generator template dokumen LaTeX standar fakultas.
 
 ---
 

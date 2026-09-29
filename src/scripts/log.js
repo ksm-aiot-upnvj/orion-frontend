@@ -2,8 +2,8 @@ import '../style.css';
 import { initCRMLayout } from '../modules/crm-layout.js';
 import { getAuthToken, getValidAccessToken } from '../modules/auth.js';
 import { initIcons, showToast } from '../modules/ui.js';
+import { API_ROUTES, apiUrl } from '../modules/api.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
 
 let logsData = [];
 let filteredLogs = [];
@@ -276,7 +276,7 @@ export async function loadLogs() {
   if (summary) summary.textContent = 'Memuat data...';
 
   try {
-    const url = `${API_BASE_URL}/audit-logs/?limit=${currentLimit}&offset=${currentOffset}`;
+    const url = apiUrl(API_ROUTES.auditLogs, { limit: currentLimit, offset: currentOffset });
     let response = await fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
     if (response.status === 401) {
       token = await getValidAccessToken();

@@ -1,3 +1,4 @@
+import { API_ROUTES, apiUrl } from './api.js';
 import { createIcons, icons } from 'lucide';
 import * as allLucideIcons from 'lucide';
 
@@ -257,7 +258,6 @@ NIM. ${signerNIM}
 // ==========================================
 // AVATAR / IMAGE RESOLVER
 // ==========================================
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
 
 export function resolveAvatarUrl(avatar, defaultSeed = 'orion') {
   const fallback = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(defaultSeed)}&backgroundColor=240d42`;
@@ -272,6 +272,6 @@ export function resolveAvatarUrl(avatar, defaultSeed = 'orion') {
   if (!clean.startsWith('avatars/') && !clean.startsWith('tmp/avatars/')) {
     clean = `avatars/${clean}`;
   }
-  return `${API_BASE_URL}/uploads/${clean}`;
+  return apiUrl(API_ROUTES.upload(clean));
 }
 

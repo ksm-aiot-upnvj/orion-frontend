@@ -1,6 +1,7 @@
 import { animateCounters, initIcons, initThemeEngine, resolveAvatarUrl, showToast } from '../modules/ui.js';
 import { getAuthUser, login, logout } from '../modules/auth.js';
 import { initialProjectsData } from '../modules/data.js';
+import { API_ROUTES, PAGE_URLS, apiUrl } from '../modules/api.js';
 
 function getAvatar(name, avatar) {
   return resolveAvatarUrl(avatar, name.trim() || 'orion');
@@ -11,10 +12,9 @@ async function fetchAndRenderTree() {
   const treeCanvas = document.getElementById('tree-canvas');
   if (!treeCanvas) return;
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
 
   try {
-    const res = await fetch(`${API_BASE}/members/public/organization`);
+    const res = await fetch(apiUrl(API_ROUTES.publicMembers));
     if (!res.ok) throw new Error('Gagal mengambil data pengurus');
     const members = await res.json();
 
@@ -335,8 +335,7 @@ function initStructureTabs() {
 // Live Statistics Fetcher & Counter Animator
 async function initLiveStats() {
   try {
-    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
-    const res = await fetch(`${API_BASE}/members/count`);
+    const res = await fetch(apiUrl(API_ROUTES.memberStats));
     if (res.ok) {
       const data = await res.json();
       if (data && typeof data.total_members === 'number' && data.total_members > 0) {
@@ -474,7 +473,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (desktopLoginArea) {
       desktopLoginArea.innerHTML = `
         <div class="flex items-center space-x-2">
-          <a href="${import.meta.env.BASE_URL}pages/selection"
+          <a href="${PAGE_URLS.selection}"
             class="text-xs font-bold px-3 py-1.5 rounded-lg bg-white text-[#301057] hover:bg-purple-50 transition-colors flex items-center space-x-1.5 shadow-sm">
             <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-[#301057]"></i>
             <span>Dashboard </span>
@@ -488,7 +487,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (mobileLoginArea) {
       mobileLoginArea.innerHTML = `
-        <a href="${import.meta.env.BASE_URL}pages/selection"
+        <a href="${PAGE_URLS.selection}"
           class="w-full text-center py-2 rounded-lg bg-white text-[#301057] font-bold text-xs block">
           Masuk Dashboard
         </a>
@@ -565,7 +564,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       setTimeout(() => {
         loginModal?.classList.add('hidden');
         loginModal?.classList.remove('flex');
-        window.location.href = `${import.meta.env.BASE_URL}pages/selection`;
+        window.location.href = PAGE_URLS.selection;
       }, 500);
     } else {
       showToast(result.message || 'NIM atau Password salah.', 'error');

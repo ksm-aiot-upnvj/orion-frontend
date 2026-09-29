@@ -1,9 +1,9 @@
 import { showToast } from './ui.js';
+import { API_ROUTES, apiUrl } from './api.js';
 
 const AUTH_USER_KEY = 'aiot_auth_user';
 const AUTH_TOKEN_KEY = 'aiot_auth_token';
 const AUTH_REFRESH_TOKEN_KEY = 'aiot_refresh_token';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
 const APP_BASE_URL = import.meta.env.BASE_URL;
 
 let sessionTimerId = null;
@@ -121,7 +121,7 @@ export async function refreshSession() {
   isRefreshing = true;
   refreshPromise = (async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      const res = await fetch(apiUrl(API_ROUTES.refresh), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -180,7 +180,7 @@ export async function getValidAccessToken() {
  */
 export async function login(studentId, password) {
   try {
-    const res = await fetch(`${API_BASE_URL}/auth/login`, {
+    const res = await fetch(apiUrl(API_ROUTES.login), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

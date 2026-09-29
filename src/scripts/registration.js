@@ -1,7 +1,7 @@
 import { login } from '../modules/auth.js';
 import { initIcons, showToast } from '../modules/ui.js';
+import { API_ROUTES, PAGE_URLS, apiUrl } from '../modules/api.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
 const APP_BASE_URL = import.meta.env.BASE_URL;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function checkIntakeStatus() {
     try {
-      const res = await fetch(`${API_BASE_URL}/registrations/intake-status`);
+      const res = await fetch(apiUrl(API_ROUTES.intakeStatus));
       if (res.ok) {
         const cfg = await res.json();
         if (deadlineDisplay && cfg.deadline) {
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetch(`${API_BASE_URL}/uploads/avatar`, {
+      const res = await fetch(apiUrl(API_ROUTES.avatarUploads), {
         method: 'POST',
         body: formData
       });
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await res.json();
         uploadedPhotoPath = data.path; // staged: 'tmp/avatars/<uuid4>.webp', made permanent on submit
         if (cardPhoto) {
-          cardPhoto.src = `${API_BASE_URL}/uploads/${data.path}`;
+          cardPhoto.src = apiUrl(API_ROUTES.upload(data.path));
         }
         if (photoFilenameLabel) {
           photoFilenameLabel.textContent = `✓ ${file.name}`;
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const res = await fetch(`${API_BASE_URL}/uploads/cv`, {
+      const res = await fetch(apiUrl(API_ROUTES.cvUploads), {
         method: 'POST',
         body: formData,
       });
@@ -478,7 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initIcons();
       }
 
-      const res = await fetch(`${API_BASE_URL}/registrations/`, {
+      const res = await fetch(apiUrl(API_ROUTES.registrations), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', () => {
       initIcons();
 
       if (success) {
-        window.location.href = `${APP_BASE_URL}pages/members`;
+        window.location.href = PAGE_URLS.members;
       }
     });
   }

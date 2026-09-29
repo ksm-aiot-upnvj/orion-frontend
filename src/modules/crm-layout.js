@@ -1,4 +1,5 @@
 import { initIcons, resolveAvatarUrl } from './ui.js';
+import { PAGE_URLS } from './api.js';
 import { getAuthUser, logout, requireAuth, clearAuthSession, initSessionWatcher } from './auth.js';
 
 /**
@@ -42,7 +43,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       id: 'selection',
       label: 'Seleksi Calon Anggota',
       shortLabel: 'Seleksi',
-      href: `${appBaseUrl}pages/selection`,
+      href: PAGE_URLS.selection,
       icon: 'user-check',
       badge: 'Admin',
       badgeClass: 'badge-pending'
@@ -51,7 +52,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       id: 'members',
       label: 'Anggota & Alumni',
       shortLabel: 'Anggota',
-      href: `${appBaseUrl}pages/members`,
+      href: PAGE_URLS.members,
       icon: 'users',
       badge: '11',
       badgeClass: 'badge-neutral'
@@ -60,7 +61,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       id: 'inventory',
       label: 'Inventaris Hardware',
       shortLabel: 'Inventaris',
-      href: `${appBaseUrl}pages/inventory`,
+      href: PAGE_URLS.inventory,
       icon: 'cpu',
       badge: '62 Unit',
       badgeClass: 'badge-neutral'
@@ -69,7 +70,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       id: 'finance',
       label: 'Kas & Keuangan',
       shortLabel: 'Kas & Keuangan',
-      href: `${appBaseUrl}pages/finance`,
+      href: PAGE_URLS.finance,
       icon: 'wallet',
       badge: 'Rp 12.4M',
       badgeClass: 'badge-approved'
@@ -78,7 +79,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       id: 'archive',
       label: 'Arsip & Surat Resmi',
       shortLabel: 'Arsip Surat',
-      href: `${appBaseUrl}pages/archive`,
+      href: PAGE_URLS.archive,
       icon: 'file-text',
       badge: 'Baku',
       badgeClass: 'badge-neutral'
@@ -87,7 +88,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       id: 'log',
       label: 'Log Aktivitas',
       shortLabel: 'Log Aktivitas',
-      href: `${appBaseUrl}pages/log`,
+      href: PAGE_URLS.log,
       icon: 'activity',
       badge: 'Terbaru',
       badgeClass: 'badge-neutral'
@@ -175,7 +176,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
             <!-- Navigation Links Inside Dropdown -->
             <ul class="py-1.5 text-xs text-purple-100">
               <li>
-                <a href="${appBaseUrl}pages/profile" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#280E48] hover:text-white transition-colors">
+                <a href="${PAGE_URLS.profile}" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#280E48] hover:text-white transition-colors">
                   <i data-lucide="user" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
                   <span>Profil & Pengaturan Akun</span>
                 </a>
@@ -187,7 +188,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
                 </a>
               </li>
               <li>
-                <a href="${appBaseUrl}pages/registration" target="_blank" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#301057] hover:text-white transition-colors">
+                <a href="${PAGE_URLS.registration}" target="_blank" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#301057] hover:text-white transition-colors">
                   <i data-lucide="external-link" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
                   <span>Portal Pendaftaran</span>
                 </a>

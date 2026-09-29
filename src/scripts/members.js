@@ -3,8 +3,8 @@ import { initCRMLayout } from '../modules/crm-layout.js';
 import { showToast, initIcons, resolveAvatarUrl } from '../modules/ui.js';
 import { getAuthToken } from '../modules/auth.js';
 import { initialAlumniData } from '../modules/data.js';
+import { API_ROUTES, apiUrl } from '../modules/api.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
 
 let activeMembersList = [];
 let alumniList = [];
@@ -56,7 +56,7 @@ async function uploadMemberAvatar(file) {
   try {
     const formData = new FormData();
     formData.append('file', file);
-    const res = await fetch(`${API_BASE_URL}/uploads/avatar`, {
+    const res = await fetch(apiUrl(API_ROUTES.avatarUploads), {
       method: 'POST',
       body: formData,
     });
@@ -102,7 +102,7 @@ async function fetchMembersFromBackend() {
   try {
     const token = getAuthToken();
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    const res = await fetch(`${API_BASE_URL}/members/`, { headers });
+    const res = await fetch(apiUrl(API_ROUTES.members), { headers });
 
     if (res.ok) {
       const members = await res.json();
@@ -130,7 +130,7 @@ async function fetchAlumniFromBackend() {
   try {
     const token = getAuthToken();
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    const res = await fetch(`${API_BASE_URL}/members/?status=Alumni`, { headers });
+    const res = await fetch(apiUrl(API_ROUTES.members, { status: 'Alumni' }), { headers });
     if (!res.ok) throw new Error(`Alumni request failed: ${res.status}`);
 
     const members = await res.json();
@@ -725,7 +725,7 @@ async function handleMemberFormSubmit(e) {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
 
-    const url = isEdit ? `${API_BASE_URL}/members/${hiddenId}` : `${API_BASE_URL}/members/`;
+    const url = isEdit ? apiUrl(API_ROUTES.member(hiddenId)) : apiUrl(API_ROUTES.members);
     const method = isEdit ? 'PUT' : 'POST';
 
     const res = await fetch(url, {
@@ -778,7 +778,7 @@ async function handleConfirmDelete() {
   try {
     const token = getAuthToken();
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    const res = await fetch(`${API_BASE_URL}/members/${memberToDelete.student_id}`, {
+    const res = await fetch(apiUrl(API_ROUTES.member(memberToDelete.student_id)), {
       method: 'DELETE',
       headers,
     });
@@ -862,13 +862,13 @@ async function handleSaveERP() {
 
     let res;
     if (m && m.has_erp_access) {
-      res = await fetch(`${API_BASE_URL}/members/${identifier}/reset-password`, {
-        method: 'POST',
+      res = await fetch(apiUrl(API_ROUTES.memberPassword(identifier)), {
+        method: 'PUT',
         headers,
         body: JSON.stringify({ new_password: password }),
       });
     } else {
-      res = await fetch(`${API_BASE_URL}/members/${identifier}/access`, {
+      res = await fetch(apiUrl(API_ROUTES.memberAccess(identifier)), {
         method: 'POST',
         headers,
         body: JSON.stringify({ password, role }),
@@ -906,7 +906,7 @@ async function handleRevokeERP() {
   try {
     const token = getAuthToken();
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    const res = await fetch(`${API_BASE_URL}/members/${identifier}/access`, {
+    const res = await fetch(apiUrl(API_ROUTES.memberAccess(identifier)), {
       method: 'DELETE',
       headers,
     });
@@ -984,7 +984,7 @@ async function handleImportExcelSubmit(e) {
     const token = getAuthToken();
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-    const url = `${API_BASE_URL}/members/import-excel?sheet_name=${encodeURIComponent(sheetName)}`;
+    const url = apiUrl(API_ROUTES.memberImports, { sheet_name: sheetName });
     const res = await fetch(url, {
       method: 'POST',
       headers,
