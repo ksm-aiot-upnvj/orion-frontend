@@ -98,7 +98,7 @@ export const initialProjectsData = [
     category: 'iot',
     categoryLabel: 'IoT & Smart Agriculture',
     description: 'Sistem otomasi dan monitoring cerdas parameter nutrisi tanaman hidroponik (pH, TDS, suhu, kelembapan) berbasis ESP32, FastAPI, dan TimescaleDB.',
-    image: '/smart-hydroponic.png',
+    image: `${import.meta.env.BASE_URL}smart-hydroponic.png`,
     repoUrl: 'https://github.com/ksm-aiot-upnvj/smart-hydroponic',
     techStack: ['ESP32', 'FastAPI', 'TimescaleDB', 'Vue.js', 'CoAP', 'Docker']
   },
@@ -108,7 +108,7 @@ export const initialProjectsData = [
     category: 'iot',
     categoryLabel: 'IoT & Smart Agriculture',
     description: 'Solusi mikroklimat cerdas berbasis logika Fuzzy untuk otomasi presisi penyiraman tanaman berdasarkan kelembapan tanah, suhu, dan intensitas cahaya matahari.',
-    image: '/greenhouse.jpeg',
+    image: `${import.meta.env.BASE_URL}greenhouse.jpeg`,
     repoUrl: 'https://github.com/ksm-aiot-upnvj/Greenhouse-Web-App',
     techStack: ['ESP32', 'Fuzzy Logic', 'Web Dashboard', 'Actuators']
   },
@@ -118,7 +118,7 @@ export const initialProjectsData = [
     category: 'bot',
     categoryLabel: 'Discord Bot & AI Agent',
     description: 'Asisten cerdas dan Discord bot interaktif KSM AIoT dengan integrasi Model Context Protocol (MCP), automasi tugas, dan query informasi organisasi.',
-    image: '/response-nexo-mcp.png',
+    image: `${import.meta.env.BASE_URL}response-nexo-mcp.png`,
     repoUrl: 'https://github.com/ksm-aiot-upnvj/nexo',
     techStack: ['Python', 'Discord.py', 'MCP Protocol', 'LLM Agent', 'Tool Automation']
   }

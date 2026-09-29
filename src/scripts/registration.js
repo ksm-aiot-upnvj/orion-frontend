@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', () => {
       initIcons();
 
       if (success) {
-        window.location.href = `${APP_BASE_URL}pages/members.html`;
+        window.location.href = `${APP_BASE_URL}pages/members`;
       }
     });
   }

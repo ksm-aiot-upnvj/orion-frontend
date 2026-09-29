@@ -82,11 +82,17 @@ async function fetchAndRenderTree() {
       const kadiv = divMembers.find(m => m.role.toLowerCase().includes('kepala')) || { full_name: 'Kadiv', program_of_study: 'Informatika UPNVJ' };
       const staffs = divMembers.filter(m => !m.role.toLowerCase().includes('kepala'));
 
-      const staffStackHTML = staffs.map((staff, idx) => `
-        <div class="tree-node-card border border-[#561F99]/60 ${conf.staffHoverBorder} py-2.5 px-3.5 flex items-center justify-between group">
+      const staffStackHTML = staffs.map((staff, idx) => {
+        const photoUrl = getAvatar(staff.full_name, staff.avatar);
+
+        const avatarHTML = photoUrl ? `<img src="${photoUrl}" alt="${staff.full_name}" class="w-full h-full object-cover rounded-full" onerror="this.parentElement.innerText='${idx + 1}'" />`
+          : `${idx + 1}`;
+        
+        return `
+        <div class="tree-node-card border border-[#561F99]/60 ${conf.staffHoverBorder} py-3.5 px-3.5 flex items-center justify-between group">
           <div class="flex items-center space-x-2.5">
-            <div class="w-7 h-7 rounded-full bg-[#1E0A38] border ${conf.staffNumBorder} flex items-center justify-center text-[10px] font-bold">
-              ${idx + 1}
+            <div class="w-9 h-9 rounded-full bg-[#1E0A38] border ${conf.staffNumBorder} flex items-center justify-center text-[10px] font-bold overflow-hidden flex-shrink-0">
+              ${avatarHTML}
             </div>
             <div class="text-left">
               <p class="text-xs font-bold text-white ${conf.staffHoverText} transition-colors">${staff.full_name}</p>
@@ -94,7 +100,8 @@ async function fetchAndRenderTree() {
             </div>
           </div>
         </div>
-      `).join('');
+      `;
+    }).join('');
 
       return `
         <div class="tree-branch-group flex flex-col items-center" data-branch="${conf.branchKey}">
@@ -467,7 +474,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (desktopLoginArea) {
       desktopLoginArea.innerHTML = `
         <div class="flex items-center space-x-2">
-          <a href="${import.meta.env.BASE_URL}pages/selection.html"
+          <a href="${import.meta.env.BASE_URL}pages/selection"
             class="text-xs font-bold px-3 py-1.5 rounded-lg bg-white text-[#301057] hover:bg-purple-50 transition-colors flex items-center space-x-1.5 shadow-sm">
             <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-[#301057]"></i>
             <span>Dashboard </span>
@@ -481,7 +488,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (mobileLoginArea) {
       mobileLoginArea.innerHTML = `
-        <a href="${import.meta.env.BASE_URL}pages/selection.html"
+        <a href="${import.meta.env.BASE_URL}pages/selection"
           class="w-full text-center py-2 rounded-lg bg-white text-[#301057] font-bold text-xs block">
           Masuk Dashboard
         </a>
@@ -558,7 +565,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       setTimeout(() => {
         loginModal?.classList.add('hidden');
         loginModal?.classList.remove('flex');
-        window.location.href = `${import.meta.env.BASE_URL}pages/selection.html`;
+        window.location.href = `${import.meta.env.BASE_URL}pages/selection`;
       }, 500);
     } else {
       showToast(result.message || 'NIM atau Password salah.', 'error');
