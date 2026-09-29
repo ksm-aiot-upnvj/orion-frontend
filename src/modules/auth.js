@@ -2,11 +2,15 @@ import { showToast } from './ui.js';
 
 const AUTH_USER_KEY = 'aiot_auth_user';
 const AUTH_TOKEN_KEY = 'aiot_auth_token';
+const AUTH_REFRESH_TOKEN_KEY = 'aiot_refresh_token';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/orion/api/v1';
 const APP_BASE_URL = import.meta.env.BASE_URL;
 
 let sessionTimerId = null;
 let sessionCheckIntervalId = null;
+let isRefreshing = false;
+let refreshPromise = null;
+let visibilityRefreshHandler = null;
 
 /**
  * Safely parse base64url JWT payload
@@ -79,27 +83,100 @@ export function getAuthToken() {
 }
 
 /**
+ * Get long-lived JWT refresh token from localStorage
+ */
+export function getRefreshToken() {
+  return localStorage.getItem(AUTH_REFRESH_TOKEN_KEY);
+}
+
+/**
  * Clear stored auth session from localStorage
  */
 export function clearAuthSession() {
   localStorage.removeItem(AUTH_USER_KEY);
   localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_REFRESH_TOKEN_KEY);
   if (sessionTimerId) clearTimeout(sessionTimerId);
   if (sessionCheckIntervalId) clearInterval(sessionCheckIntervalId);
+  if (visibilityRefreshHandler) {
+    window.removeEventListener('focus', visibilityRefreshHandler);
+    document.removeEventListener('visibilitychange', visibilityRefreshHandler);
+    visibilityRefreshHandler = null;
+  }
 }
 
 /**
- * Check if a valid session exists and is unexpired
+ * Refresh current access token using the 7-day refresh token
+ * Seamlessly extends user session without prompting re-login
+ */
+export async function refreshSession() {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken || refreshToken === 'dev-mock-jwt-token') return false;
+
+  // Prevent multiple concurrent refresh calls
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise;
+  }
+
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ refresh_token: refreshToken })
+      });
+
+      if (!res.ok) {
+        return false;
+      }
+
+      const data = await res.json();
+      if (!data.access_token) return false;
+      localStorage.setItem(AUTH_TOKEN_KEY, data.access_token);
+      if (data.refresh_token) {
+        localStorage.setItem(AUTH_REFRESH_TOKEN_KEY, data.refresh_token);
+      }
+      if (data.user) {
+        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+      }
+      return true;
+    } catch (err) {
+      console.warn('Gagal memperpanjang sesi via refresh token:', err);
+      return false;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
+/**
+ * Check if a valid session exists (either access token or valid refresh token)
  */
 export function isAuthenticated() {
   const user = getAuthUser();
   const token = getAuthToken();
-  return !!user && !!token && !isTokenExpired(token);
+  const refreshToken = getRefreshToken();
+  return !!user && ((!!token && !isTokenExpired(token)) || (!!refreshToken && !isTokenExpired(refreshToken)));
+}
+
+/** Return a usable access token, refreshing it first when it has expired. */
+export async function getValidAccessToken() {
+  let token = getAuthToken();
+  if (token && !isTokenExpired(token)) return token;
+  if (!(await refreshSession())) return null;
+  token = getAuthToken();
+  return token && !isTokenExpired(token) ? token : null;
 }
 
 /**
  * Perform login using NIM/Email & Password against backend API
- * Falls back to dev session if backend is temporarily unreachable.
+ * Saves both 30-minute access_token and 7-day refresh_token.
  */
 export async function login(studentId, password) {
   try {
@@ -116,15 +193,49 @@ export async function login(studentId, password) {
 
     if (res.ok) {
       const data = await res.json();
-      if (data.user && data.user.role === 'Anggota') {
-        return {
-          success: false,
-          message: 'Akun Anda terdaftar sebagai Anggota Umum dan tidak memiliki akses ke CRM Internal.'
-        };
+      const user = data.user;
+
+      if (user) {
+        if (!user.is_active) {
+          return {
+            success: false,
+            message: 'Akun Anda saat ini tidak aktif. Silakan hubungi admin untuk bantuan.'
+          };
+        }
+
+        // Store tokens
+        if (data.access_token) {
+          localStorage.setItem(AUTH_TOKEN_KEY, data.access_token);
+        }
+        if (data.refresh_token) {
+          localStorage.setItem(AUTH_REFRESH_TOKEN_KEY, data.refresh_token);
+        }
+        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+
+        if (user.is_superadmin === true) {
+          return {
+            success: true,
+            user: user,
+            message: 'Login berhasil sebagai SUPERADMIN. Anda memiliki akses penuh ke sistem.'
+          };
+        }
+
+        const restrictedRoles = ['Anggota', 'Guest'];
+        if (restrictedRoles.includes(user.role)) {
+          clearAuthSession();
+          return {
+            success: false,
+            message: 'Akses Ditolak: Akun Anda tidak memiliki hak akses ke CRM Internal.'
+          };
+        }
+
+        return { success: true, user: user };
       }
-      localStorage.setItem(AUTH_TOKEN_KEY, data.access_token);
-      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
-      return { success: true, user: data.user };
+
+      return {
+        success: false,
+        message: 'Gagal mendapatkan informasi pengguna. Silakan coba lagi.'
+      };
     }
 
     const errData = await res.json().catch(() => ({}));
@@ -133,7 +244,7 @@ export async function login(studentId, password) {
       message: errData.detail || 'NIM / Password tidak valid. Silakan coba lagi.'
     };
   } catch {
-    // Development offline fallback for seamless pairing
+    // Development offline fallback
     if (studentId.trim() === '2310511001' && password === 'aiotupnvj2026') {
       const fallbackUser = {
         id: '01a04935-646a-779a-a858-ca2f001ed71e',
@@ -143,9 +254,11 @@ export async function login(studentId, password) {
         role: 'SUPERADMIN',
         division: 'BPH',
         avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop',
+        is_superadmin: true,
         is_active: true
       };
       localStorage.setItem(AUTH_TOKEN_KEY, 'dev-mock-jwt-token');
+      localStorage.setItem(AUTH_REFRESH_TOKEN_KEY, 'dev-mock-refresh-token');
       localStorage.setItem(AUTH_USER_KEY, JSON.stringify(fallbackUser));
       return { success: true, user: fallbackUser };
     }
@@ -164,7 +277,7 @@ export function logout(redirect = true) {
   showToast('Anda telah berhasil keluar (Logout).', 'info');
   if (redirect) {
     setTimeout(() => {
-      window.location.href = `${APP_BASE_URL}index.html`;
+      window.location.href = `${APP_BASE_URL}`;
     }, 400);
   }
 }
@@ -175,35 +288,58 @@ export function logout(redirect = true) {
 export function requireAuth() {
   const user = getAuthUser();
   const token = getAuthToken();
+  const refreshToken = getRefreshToken();
 
-  if (!user || !token) {
+  if (!user || (!token && !refreshToken)) {
     showToast('Akses Dibatasi: Silakan login sebagai Pengurus KSM.', 'error');
     setTimeout(() => {
-      window.location.href = `${APP_BASE_URL}index.html?login_required=1`;
+      window.location.href = `${APP_BASE_URL}?login_required=1`;
     }, 600);
     return false;
   }
 
   if (isTokenExpired(token)) {
+    if (refreshToken && !isTokenExpired(refreshToken)) {
+      // Proactively refresh in background
+      refreshSession();
+      return true;
+    }
+
     clearAuthSession();
     showToast('Sesi Anda telah berakhir. Silakan login kembali.', 'warning');
     setTimeout(() => {
-      window.location.href = `${APP_BASE_URL}index.html?login_required=1&expired=1`;
+      window.location.href = `${APP_BASE_URL}?login_required=1&expired=1`;
     }, 600);
     return false;
   }
 
-  if (user.role === 'Anggota') {
-    showToast('Akses Ditolak: Anggota Umum tidak memiliki hak akses ke CRM Internal.', 'error');
+  if (user.is_superadmin === true) {
+    return true;
+  }
+
+  const allowedRoles = [
+    'SUPERADMIN',
+    'Ketua',
+    'Wakil Ketua',
+    'Sekretaris',
+    'Bendahara',
+    'Kepala Divisi',
+    'Staff'
+  ];
+
+  if (!allowedRoles.includes(user.role)) {
+    showToast(`Akses Ditolak: Role "${user.role || 'Tidak Dikenal'}" tidak memiliki hak akses ke CRM Internal.`, 'error');
     logout();
     return false;
   }
+
   return true;
 }
 
 /**
  * Real-time Proactive Session Expiry Watcher
- * Watches active token and triggers callback when token reaches expiration
+ * Proactively refreshes the 30-minute access token 2 minutes before it expires
+ * using the 7-day refresh token, ensuring seamless uninterrupted user sessions.
  */
 export function initSessionWatcher(onSessionExpired) {
   const token = getAuthToken();
@@ -211,30 +347,56 @@ export function initSessionWatcher(onSessionExpired) {
 
   if (sessionTimerId) clearTimeout(sessionTimerId);
   if (sessionCheckIntervalId) clearInterval(sessionCheckIntervalId);
-
-  const remaining = getTokenRemainingTime(token);
-  if (remaining <= 0) {
-    if (typeof onSessionExpired === 'function') {
-      onSessionExpired();
-    }
-    return;
+  if (visibilityRefreshHandler) {
+    window.removeEventListener('focus', visibilityRefreshHandler);
+    document.removeEventListener('visibilitychange', visibilityRefreshHandler);
   }
 
-  // Set timeout for exact expiry
-  sessionTimerId = setTimeout(() => {
-    if (typeof onSessionExpired === 'function') {
-      onSessionExpired();
-    }
-  }, remaining);
+  const remaining = getTokenRemainingTime(token);
+  // Auto-refresh 2 minutes before access token expiry
+  const refreshThreshold = 2 * 60 * 1000;
+  const timeToRefresh = Math.max(1000, remaining - refreshThreshold);
 
-  // Fallback periodic check every 15 seconds (handles system sleep / background tab resume)
-  sessionCheckIntervalId = setInterval(() => {
-    if (isTokenExpired(getAuthToken())) {
-      clearInterval(sessionCheckIntervalId);
-      if (sessionTimerId) clearTimeout(sessionTimerId);
-      if (typeof onSessionExpired === 'function') {
-        onSessionExpired();
+  sessionTimerId = setTimeout(async () => {
+    const refreshed = await refreshSession();
+    if (refreshed) {
+      // Sesi berhasil diperpanjang, arm ulang session watcher
+      initSessionWatcher(onSessionExpired);
+    } else {
+      if (isTokenExpired(getAuthToken())) {
+        if (typeof onSessionExpired === 'function') {
+          onSessionExpired();
+        }
       }
     }
-  }, 15000);
+  }, timeToRefresh);
+
+  // Fallback periodic check every 30 seconds
+  sessionCheckIntervalId = setInterval(async () => {
+    const currentToken = getAuthToken();
+    if (isTokenExpired(currentToken)) {
+      const refreshed = await refreshSession();
+      if (!refreshed) {
+        clearInterval(sessionCheckIntervalId);
+        if (sessionTimerId) clearTimeout(sessionTimerId);
+        if (typeof onSessionExpired === 'function') {
+          onSessionExpired();
+        }
+      }
+    }
+  }, 30000);
+
+  // Browser timers can be suspended in background tabs. Re-check the session as soon as
+  // the user returns so an expired access token does not leave API requests using a stale JWT.
+  visibilityRefreshHandler = async () => {
+    if (document.visibilityState === 'hidden') return;
+    const validToken = await getValidAccessToken();
+    if (validToken) {
+      initSessionWatcher(onSessionExpired);
+    } else if (typeof onSessionExpired === 'function') {
+      onSessionExpired();
+    }
+  };
+  window.addEventListener('focus', visibilityRefreshHandler);
+  document.addEventListener('visibilitychange', visibilityRefreshHandler);
 }

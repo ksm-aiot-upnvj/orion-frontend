@@ -42,7 +42,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       id: 'selection',
       label: 'Seleksi Calon Anggota',
       shortLabel: 'Seleksi',
-      href: `${appBaseUrl}pages/selection.html`,
+      href: `${appBaseUrl}pages/selection`,
       icon: 'user-check',
       badge: 'Admin',
       badgeClass: 'badge-pending'
@@ -51,7 +51,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       id: 'members',
       label: 'Anggota & Alumni',
       shortLabel: 'Anggota',
-      href: `${appBaseUrl}pages/members.html`,
+      href: `${appBaseUrl}pages/members`,
       icon: 'users',
       badge: '11',
       badgeClass: 'badge-neutral'
@@ -60,7 +60,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       id: 'inventory',
       label: 'Inventaris Hardware',
       shortLabel: 'Inventaris',
-      href: `${appBaseUrl}pages/inventory.html`,
+      href: `${appBaseUrl}pages/inventory`,
       icon: 'cpu',
       badge: '62 Unit',
       badgeClass: 'badge-neutral'
@@ -69,7 +69,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       id: 'finance',
       label: 'Kas & Keuangan',
       shortLabel: 'Kas & Keuangan',
-      href: `${appBaseUrl}pages/finance.html`,
+      href: `${appBaseUrl}pages/finance`,
       icon: 'wallet',
       badge: 'Rp 12.4M',
       badgeClass: 'badge-approved'
@@ -78,9 +78,18 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
       id: 'archive',
       label: 'Arsip & Surat Resmi',
       shortLabel: 'Arsip Surat',
-      href: `${appBaseUrl}pages/archive.html`,
+      href: `${appBaseUrl}pages/archive`,
       icon: 'file-text',
       badge: 'Baku',
+      badgeClass: 'badge-neutral'
+    },
+    {
+      id: 'log',
+      label: 'Log Aktivitas',
+      shortLabel: 'Log Aktivitas',
+      href: `${appBaseUrl}pages/log`,
+      icon: 'activity',
+      badge: 'Terbaru',
       badgeClass: 'badge-neutral'
     }
   ];
@@ -120,7 +129,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
         
         <!-- Left: Brand / Title context -->
         <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
-          <a href="${appBaseUrl}index.html" class="flex items-center space-x-2 group min-w-0 flex-shrink">
+          <a href="${appBaseUrl}" class="flex items-center space-x-2 group min-w-0 flex-shrink">
             <div class="flex items-center space-x-1 flex-shrink-0">
               <img src="${appBaseUrl}Logo_UPNVJ.png" alt="Logo UPNVJ" class="w-6 h-6 sm:w-7 sm:h-7 object-contain flex-shrink-0" />
               <img src="${appBaseUrl}ksm-aiot-logo.png" alt="KSM AIoT Logo" class="w-7 h-7 sm:w-8 sm:h-8 object-contain flex-shrink-0" />
@@ -133,8 +142,6 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
               <span class="text-[8px] sm:text-[9px] text-purple-200 font-mono uppercase font-semibold leading-tight truncate">ERP Management</span>
             </div>
           </a>
-          <span class="hidden md:inline text-[#561F99]">/</span>
-          <span class="hidden md:inline text-xs font-semibold text-purple-200 bg-[#090312] px-2 py-0.5 rounded border border-[#561F99]">${pageTitle}</span>
         </div>
 
         <!-- Center: Quick Nav Modules (Primary Navigation on Navbar - Desktop) -->
@@ -168,19 +175,19 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
             <!-- Navigation Links Inside Dropdown -->
             <ul class="py-1.5 text-xs text-purple-100">
               <li>
-                <a href="${appBaseUrl}pages/profile.html" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#280E48] hover:text-white transition-colors">
+                <a href="${appBaseUrl}pages/profile" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#280E48] hover:text-white transition-colors">
                   <i data-lucide="user" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
                   <span>Profil & Pengaturan Akun</span>
                 </a>
               </li>
               <li>
-                <a href="${appBaseUrl}index.html" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#280E48] hover:text-white transition-colors">
+                <a href="${appBaseUrl}" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#280E48] hover:text-white transition-colors">
                   <i data-lucide="home" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
                   <span>Laman Utama</span>
                 </a>
               </li>
               <li>
-                <a href="${appBaseUrl}pages/registration.html" target="_blank" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#301057] hover:text-white transition-colors">
+                <a href="${appBaseUrl}pages/registration" target="_blank" class="flex items-center space-x-2.5 px-4 py-2 hover:bg-[#301057] hover:text-white transition-colors">
                   <i data-lucide="external-link" class="w-3.5 h-3.5 text-[#C9A4F6]"></i>
                   <span>Portal Pendaftaran</span>
                 </a>
@@ -366,7 +373,7 @@ export function initCRMLayout(activePage = 'selection', pageTitle = 'Dashboard')
 
     // Relogin after Session Expired
     btnReloginSession?.addEventListener('click', () => {
-      window.location.href = `${appBaseUrl}index.html?login_required=1&expired=1`;
+      window.location.href = `${appBaseUrl}?login_required=1&expired=1`;
     });
 
     // Initialize Proactive Session Expiration Watcher

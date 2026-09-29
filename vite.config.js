@@ -18,7 +18,8 @@ export default defineConfig({
         members: resolve(__dirname, 'pages/members.html'),
         inventory: resolve(__dirname, 'pages/inventory.html'),
         finance: resolve(__dirname, 'pages/finance.html'),
-        archive: resolve(__dirname, 'pages/archive.html')
+        archive: resolve(__dirname, 'pages/archive.html'),
+        log: resolve(__dirname, 'pages/log.html')
       }
     }
   }
