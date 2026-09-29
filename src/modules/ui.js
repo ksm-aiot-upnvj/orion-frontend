@@ -268,7 +268,8 @@ export function resolveAvatarUrl(avatar, defaultSeed = 'orion') {
     return avatar;
   }
   let clean = avatar.replace(/^(\/|uploads\/)/, '');
-  if (!clean.startsWith('avatars/')) {
+  // Staged (unsaved) uploads are previewed from tmp/avatars/
+  if (!clean.startsWith('avatars/') && !clean.startsWith('tmp/avatars/')) {
     clean = `avatars/${clean}`;
   }
   return `${API_BASE_URL}/uploads/${clean}`;

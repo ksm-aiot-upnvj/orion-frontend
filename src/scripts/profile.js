@@ -199,6 +199,7 @@ function setupProfileEditForm() {
       if (res.ok) {
         const updated = await res.json();
         userProfile = updated;
+        selectedAvatarPath = ''; // staged upload is now permanent; server returns the final path
         localStorage.setItem('ksm_user', JSON.stringify(updated));
         localStorage.setItem('aiot_auth_user', JSON.stringify(updated));
         populateProfileUI(updated);

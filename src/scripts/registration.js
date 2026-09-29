@@ -269,9 +269,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (res.ok) {
         const data = await res.json();
-        uploadedPhotoPath = data.path; // 'avatars/<uuid4>.webp'
+        uploadedPhotoPath = data.path; // staged: 'tmp/avatars/<uuid4>.webp', made permanent on submit
         if (cardPhoto) {
-          cardPhoto.src = `${API_BASE_URL}/${data.path}`;
+          cardPhoto.src = `${API_BASE_URL}/uploads/${data.path}`;
         }
         if (photoFilenameLabel) {
           photoFilenameLabel.textContent = `✓ ${file.name}`;
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (res.ok) {
         const data = await res.json();
-        uploadedCvPath = data.path; // e.g. 'cvs/uuid.pdf'
+        uploadedCvPath = data.path; // staged: 'tmp/cvs/<uuid4>.pdf', made permanent on submit
         if (cvFilenameLabel) {
           cvFilenameLabel.textContent = `✓ ${file.name}`;
           cvFilenameLabel.classList.add('text-emerald-300');
