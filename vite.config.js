@@ -42,6 +42,7 @@ function cleanPageUrls() {
 
 export default defineConfig({
   base: BASE,
+  appType: 'mpa',
   plugins: [cleanPageUrls()],
   server: {
     port: 3000,
