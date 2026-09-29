@@ -947,8 +947,8 @@ function openImportExcelModal() {
 
 function handleExcelFileSelect(file) {
   if (!file) return;
-  if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
-    showToast('Format file harus berupa Excel (.xlsx atau .xls)', 'error');
+  if (!file.name.toLowerCase().endsWith('.xlsx')) {
+    showToast('Format file harus berupa Excel (.xlsx)', 'error');
     return;
   }
 
