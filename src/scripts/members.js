@@ -1,6 +1,6 @@
 import '../style.css';
 import { initCRMLayout } from '../modules/crm-layout.js';
-import { showToast, initIcons, resolveAvatarUrl } from '../modules/ui.js';
+import { showToast, initIcons, resolveAvatarUrl, safeLinkUrl } from '../modules/ui.js';
 import { getAuthToken } from '../modules/auth.js';
 import { initialAlumniData } from '../modules/data.js';
 import { API_ROUTES, apiUrl } from '../modules/api.js';
@@ -144,7 +144,7 @@ async function fetchAlumniFromBackend() {
       category: 'KSM AIoT',
       photo: resolveAvatarUrl(member.avatar, member.student_id || member.full_name),
       project: member.focus_expertise || member.project_experience || 'Belum mengisi profil alumni.',
-      linkedin: member.portfolio_url || '#',
+      linkedin: member.portfolio_url ? safeLinkUrl(member.portfolio_url) : '#',
     }));
   } catch {
     // Keep the existing showcase data available only when the backend is offline.
@@ -544,7 +544,7 @@ window.showMemberProfile = function (studentId) {
   if (portfolioBox) {
     if (m.portfolio_url) {
       portfolioBox.innerHTML = `
-        <a href="${m.portfolio_url}" target="_blank" class="text-[#A78BFA] hover:text-white underline truncate font-mono text-xs flex items-center gap-1">
+        <a href="${safeLinkUrl(m.portfolio_url)}" target="_blank" rel="noopener noreferrer" class="text-[#A78BFA] hover:text-white underline truncate font-mono text-xs flex items-center gap-1">
           <span>${m.portfolio_url}</span>
           <i data-lucide="external-link" class="w-3 h-3 flex-shrink-0"></i>
         </a>

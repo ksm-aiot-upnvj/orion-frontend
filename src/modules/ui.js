@@ -259,6 +259,18 @@ NIM. ${signerNIM}
 // AVATAR / IMAGE RESOLVER
 // ==========================================
 
+/**
+ * Return a link that is safe for an href attribute: http(s) URLs as-is, scheme-less values
+ * prefixed with https://, anything else (javascript:, data:, ...) replaced by '#'.
+ */
+export function safeLinkUrl(url) {
+  const value = String(url || '').trim();
+  if (!value) return '#';
+  const scheme = value.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
+  if (!scheme) return `https://${value}`;
+  return ['http', 'https'].includes(scheme[1].toLowerCase()) ? value : '#';
+}
+
 export function resolveAvatarUrl(avatar, defaultSeed = 'orion') {
   const fallback = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(defaultSeed)}&backgroundColor=240d42`;
   if (!avatar || avatar === '-' || avatar === 'null' || avatar === 'undefined') {

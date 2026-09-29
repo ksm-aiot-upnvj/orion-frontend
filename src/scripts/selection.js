@@ -1,4 +1,4 @@
-import { initIcons, showToast } from '../modules/ui.js';
+import { initIcons, safeLinkUrl, showToast } from '../modules/ui.js';
 import { initCRMLayout } from '../modules/crm-layout.js';
 import { getAuthToken, getAuthUser } from '../modules/auth.js';
 import { API_ROUTES, apiUrl } from '../modules/api.js';
@@ -549,7 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (modalPortfolioLink) {
       if (rawPortfolio && rawPortfolio !== '-' && rawPortfolio !== 'null' && rawPortfolio !== 'undefined') {
-        const fullUrl = rawPortfolio.startsWith('http') ? rawPortfolio : `https://${rawPortfolio}`;
+        const fullUrl = safeLinkUrl(rawPortfolio);
         modalPortfolioLink.href = fullUrl;
         modalPortfolioLink.className = 'text-[#C9A4F6] hover:text-white hover:underline font-mono text-xs flex items-center space-x-1.5 break-all transition-colors';
 
