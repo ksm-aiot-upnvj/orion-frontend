@@ -4,7 +4,8 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Enable Corepack and pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Pinned pnpm (was @latest, a moving target for a build tool)
+RUN corepack enable && corepack prepare pnpm@10.34.6 --activate
 
 # Copy package manifests, lockfile, and pnpm workspace config (contains allowBuilds for esbuild)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* ./
